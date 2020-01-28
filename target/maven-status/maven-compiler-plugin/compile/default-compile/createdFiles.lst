@@ -1,4 +1,6 @@
 myproject\EmployeeRepository.class
+myproject\ConnectionClass.class
 myproject\EmployeeController.class
+myproject\LoginController.class
 myproject\Employee.class
 myproject\Main.class
