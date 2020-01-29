@@ -6,13 +6,11 @@ import java.io.FileInputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Properties;
-import java.util.ResourceBundle;
 
 @Component
 public class ConnectionClass {
     public static Connection connect(){
         Connection c = null;
-        String url = "jdbc:sqlserver://127.0.0.1\\SQLEXPRESS;database=4375db";
         Properties props= new Properties();
         FileInputStream input = null;
         try
