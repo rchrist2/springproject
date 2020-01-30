@@ -1,4 +1,4 @@
-package myproject;
+package myproject.models;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
