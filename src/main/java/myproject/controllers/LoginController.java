@@ -50,15 +50,15 @@ public class LoginController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
-        try{
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/signin.fxml"));
-            fxmlLoader.setControllerFactory(springContext::getBean);
-            Pane pane = fxmlLoader.load();
-
-            changeSigninStack.getChildren().setAll(pane);
-        } catch (IOException io){
-            io.printStackTrace();
-        }
+//        try{
+//            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/signin.fxml"));
+//            fxmlLoader.setControllerFactory(springContext::getBean);
+//            Pane pane = fxmlLoader.load();
+//
+//            changeSigninStack.getChildren().setAll(pane);
+//        } catch (IOException io){
+//            io.printStackTrace();
+//        }
     }
 
     /*public void login(){
