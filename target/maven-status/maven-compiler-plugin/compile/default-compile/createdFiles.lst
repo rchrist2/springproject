@@ -1,6 +1,6 @@
-myproject\EmployeeRepository.class
-myproject\ConnectionClass.class
-myproject\EmployeeController.class
-myproject\LoginController.class
-myproject\Employee.class
+myproject\controllers\LoginController.class
+myproject\controllers\EmployeeController.class
+myproject\repositories\EmployeeRepository.class
+myproject\models\Employee.class
 myproject\Main.class
+myproject\ConnectionClass.class

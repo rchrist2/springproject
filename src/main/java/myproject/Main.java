@@ -4,8 +4,10 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import javafx.stage.StageStyle;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -13,9 +15,10 @@ import org.springframework.context.ConfigurableApplicationContext;
 @SpringBootApplication
 public class Main extends Application {
 
-
+    private double xOffset = 0, yOffset = 0;
     private ConfigurableApplicationContext springContext;
     private Parent root;
+    private Scene scene;
 
     public static void main(String[] args) {
         launch();
@@ -70,9 +73,22 @@ public class Main extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
+        scene = new Scene(root);
+        primaryStage.initStyle(StageStyle.TRANSPARENT);
         primaryStage.setTitle("Management Home Page");
-        primaryStage.setScene(new Scene(root,600,400));
-        primaryStage.show();
+        scene.setFill(Color.TRANSPARENT);
+        primaryStage.setScene(scene);
 
+        root.setOnMousePressed((event -> {
+            xOffset = event.getSceneX();
+            yOffset = event.getSceneY();
+        }));
+
+        root.setOnMouseDragged((event) -> {
+            primaryStage.setX(event.getScreenX() - xOffset);
+            primaryStage.setY(event.getScreenY() - yOffset);
+        });
+
+        primaryStage.show();
     }
 }
