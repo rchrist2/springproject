@@ -1,6 +1,9 @@
-myproject\controllers\LoginController.class
-myproject\controllers\EmployeeController.class
-myproject\repositories\EmployeeRepository.class
-myproject\models\Employee.class
-myproject\Main.class
+myproject\models\TblRoles.class
+myproject\controllers\SigninController.class
+myproject\repositories\RoleRepository.class
+myproject\controllers\SignupController.class
+myproject\repositories\UserRepository.class
 myproject\ConnectionClass.class
+myproject\ErrorMessages.class
+myproject\models\TblUsers.class
+myproject\Main.class

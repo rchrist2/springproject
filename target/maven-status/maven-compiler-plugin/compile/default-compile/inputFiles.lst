@@ -1,6 +1,9 @@
-C:\Users\nguye\IdeaProjects\springproject\src\main\java\myproject\controllers\LoginController.java
-C:\Users\nguye\IdeaProjects\springproject\src\main\java\myproject\ConnectionClass.java
-C:\Users\nguye\IdeaProjects\springproject\src\main\java\myproject\repositories\EmployeeRepository.java
-C:\Users\nguye\IdeaProjects\springproject\src\main\java\myproject\models\Employee.java
-C:\Users\nguye\IdeaProjects\springproject\src\main\java\myproject\controllers\EmployeeController.java
-C:\Users\nguye\IdeaProjects\springproject\src\main\java\myproject\Main.java
+C:\Users\rache\IdeaProjects\4375spring\src\main\java\myproject\ConnectionClass.java
+C:\Users\rache\IdeaProjects\4375spring\src\main\java\myproject\controllers\SigninController.java
+C:\Users\rache\IdeaProjects\4375spring\src\main\java\myproject\controllers\SignupController.java
+C:\Users\rache\IdeaProjects\4375spring\src\main\java\myproject\ErrorMessages.java
+C:\Users\rache\IdeaProjects\4375spring\src\main\java\myproject\models\TblRoles.java
+C:\Users\rache\IdeaProjects\4375spring\src\main\java\myproject\repositories\RoleRepository.java
+C:\Users\rache\IdeaProjects\4375spring\src\main\java\myproject\Main.java
+C:\Users\rache\IdeaProjects\4375spring\src\main\java\myproject\models\TblUsers.java
+C:\Users\rache\IdeaProjects\4375spring\src\main\java\myproject\repositories\UserRepository.java

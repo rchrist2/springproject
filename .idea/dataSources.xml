@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="4375db@98.197.147.149" uuid="922010d1-f047-4df3-930d-6e4037eacab8">
+    <data-source source="LOCAL" name="4375db@127.0.0.1" uuid="78043d76-2483-4807-bf54-72bfb8690fd2">
+      <driver-ref>sqlserver.ms</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.microsoft.sqlserver.jdbc.SQLServerDriver</jdbc-driver>
+      <jdbc-url>jdbc:sqlserver://127.0.0.1\SQLEXPRESS;database=4375db</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="4375db@98.197.147.149" uuid="677bcdc2-6138-4c45-b146-2a3b621e889f">
       <driver-ref>sqlserver.ms</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.microsoft.sqlserver.jdbc.SQLServerDriver</jdbc-driver>

@@ -3,14 +3,12 @@ package myproject.controllers;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import myproject.ErrorMessages;
 import myproject.models.TblUsers;
 import myproject.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +26,7 @@ public class SigninController implements Initializable {
     private TextField usernameText, passwordText;
 
     @FXML
-    private Button signinButton;
+    private Button closeButton;
 
     private ConfigurableApplicationContext springContext;
     private UserRepository userRepository;
@@ -47,18 +45,24 @@ public class SigninController implements Initializable {
 
     @FXML
     private void signinUser(){
+        //find user and pass in db to login
         TblUsers currentUser = userRepository.findUserLogin(usernameText.getText(), passwordText.getText());
 
         if(currentUser != null){
             System.out.println("User successfully logged in");
         } else {
             System.out.println("Username or Password is incorrect");
+
+            //output an error message for user
+            ErrorMessages errormsg = new ErrorMessages();
+            errormsg.showErrorMessage("Login Failed","Username or Password is incorrect",
+                    "Please check that username and password are correct or contact administrator");
         }
     }
 
     @FXML
     private void changeToSignup(){
-
+        //open the sign up page
         try{
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/signup.fxml"));
             fxmlLoader.setControllerFactory(springContext::getBean);
@@ -69,4 +73,13 @@ public class SigninController implements Initializable {
             io.printStackTrace();
         }
     }
+
+    @FXML
+    private void closeLogin(){
+        //get current stage and close it
+        Stage stage = (Stage) closeButton.getScene().getWindow();
+        stage.close();
+    }
+
+    //still need method for "Forgot Password?" and "Need Help?" buttons
 }
