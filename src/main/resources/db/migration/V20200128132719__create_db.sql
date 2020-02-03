@@ -25,3 +25,16 @@ create table tblAvailability(
     User_ID int FOREIGN KEY REFERENCES tblUsers(User_ID),
     Day_ID int FOREIGN KEY REFERENCES tblDay(Day_ID)
 );
+
+INSERT INTO tblRoles VALUES ('Manager');
+INSERT INTO tblRoles VALUES ('Employee');
+
+INSERT INTO tblUsers VALUES ('kevin', 'kevin', 1);
+INSERT INTO tblUsers VALUES ('rachel', 'rachel', 1);
+INSERT INTO tblUsers VALUES ('sim', 'sim', 1);
+INSERT INTO tblUsers VALUES ('shail', 'shail', 1);
+INSERT INTO tblUsers VALUES ('hue', 'hue', 2);
+INSERT INTO tblUsers VALUES ('ivan', 'ivan', 2);
+INSERT INTO tblUsers VALUES ('thien', 'thien', 2);
+INSERT INTO tblUsers VALUES ('sy', 'sy', 2);
+INSERT INTO tblUsers VALUES ('marvin', 'marvin', 2);

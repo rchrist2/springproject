@@ -1,0 +1,10 @@
+.button {
+     -fx-background-color: none;
+ }
+
+.button:focused {
+    -fx-background-radius: 15 15 0 0;
+    -fx-border-radius: 15 15 0 0;
+    -fx-border-color: derive(black, 0%) derive(black, 0%) transparent derive(black, 0%);
+    -fx-background-color: White;
+}

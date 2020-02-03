@@ -30,7 +30,7 @@ public class SignupController implements Initializable {
     private void changeToSignin(){
 
         try{
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/signin.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/login.fxml"));
             fxmlLoader.setControllerFactory(springContext::getBean);
             Pane pane = fxmlLoader.load();
 
