@@ -89,6 +89,13 @@ public class LoginController implements Initializable {
             }
 
         }
+        else{
+            System.out.println("Username or Password is incorrect");
+
+            //output an error message for user
+            ErrorMessages.showErrorMessage("Login Failed","Username or Password is incorrect",
+                    "Please check that username and password are correct or contact administrator");
+        }
     }
 
     @FXML

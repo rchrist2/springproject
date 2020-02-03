@@ -1,5 +1,4 @@
 myproject\models\TblRoles.class
-myproject\controllers\SigninController.class
 myproject\repositories\RoleRepository.class
 myproject\controllers\SignupController.class
 myproject\repositories\UserRepository.class
