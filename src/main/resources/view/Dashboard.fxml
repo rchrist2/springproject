@@ -12,65 +12,69 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="750.0" prefWidth="1170.0" style="-fx-border-color: black;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.DashboardController">
+<AnchorPane prefHeight="750.0" prefWidth="1170.0" style="-fx-border-color: black;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.DashboardController">
    <children>
-      <GridPane fx:id="calendarGridPane" gridLinesVisible="true" layoutX="5.0" layoutY="227.0" prefHeight="590.0" prefWidth="990.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="170.0">
-        <columnConstraints>
-            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-        </columnConstraints>
-        <rowConstraints>
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="100.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="100.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="100.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="100.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="100.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        </rowConstraints>
+      <Pane layoutX="170.0" layoutY="149.0" prefHeight="600.0" prefWidth="1000.0" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="170.0" AnchorPane.topAnchor="149.0">
          <children>
-            <Label text="Sunday">
+            <GridPane fx:id="calendarGridPane" gridLinesVisible="true" layoutX="14.0" layoutY="28.0" prefHeight="571.0" prefWidth="986.0">
+              <columnConstraints>
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                  <RowConstraints minHeight="100.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="100.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="100.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="100.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="100.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </GridPane>
+            <Label alignment="CENTER" layoutX="6.0" layoutY="2.0" prefHeight="24.0" prefWidth="141.0" text="Sunday">
                <font>
-                  <Font name="System Bold Italic" size="18.0" />
+                  <Font name="System Italic" size="18.0" />
                </font>
             </Label>
-            <Label text="Monday" GridPane.columnIndex="1">
+            <Label alignment="CENTER" layoutX="148.0" layoutY="2.0" prefHeight="24.0" prefWidth="141.0" text="Monday">
                <font>
-                  <Font name="System Bold Italic" size="18.0" />
+                  <Font name="System Italic" size="18.0" />
                </font>
             </Label>
-            <Label text="Tuesday" GridPane.columnIndex="2">
+            <Label alignment="CENTER" layoutX="290.0" layoutY="2.0" prefHeight="24.0" prefWidth="141.0" text="Tuesday">
                <font>
-                  <Font name="System Bold Italic" size="18.0" />
+                  <Font name="System Italic" size="18.0" />
                </font>
             </Label>
-            <Label text="Wednesday" GridPane.columnIndex="3">
+            <Label alignment="CENTER" layoutX="431.0" layoutY="2.0" prefHeight="24.0" prefWidth="141.0" text="Wednesday">
                <font>
-                  <Font name="System Bold Italic" size="18.0" />
+                  <Font name="System Italic" size="18.0" />
                </font>
             </Label>
-            <Label text="Thursday" GridPane.columnIndex="4">
+            <Label alignment="CENTER" layoutX="572.0" layoutY="2.0" prefHeight="24.0" prefWidth="141.0" text="Thursday">
                <font>
-                  <Font name="System Bold Italic" size="18.0" />
+                  <Font name="System Italic" size="18.0" />
                </font>
             </Label>
-            <Label text="Friday" GridPane.columnIndex="5">
+            <Label alignment="CENTER" layoutX="713.0" layoutY="2.0" prefHeight="24.0" prefWidth="141.0" text="Friday">
                <font>
-                  <Font name="System Bold Italic" size="18.0" />
+                  <Font name="System Italic" size="18.0" />
                </font>
             </Label>
-            <Label text="Staturday" GridPane.columnIndex="6">
+            <Label alignment="CENTER" layoutX="854.0" layoutY="2.0" prefHeight="24.0" prefWidth="141.0" text="Saturday">
                <font>
-                  <Font name="System Bold Italic" size="18.0" />
+                  <Font name="System Italic" size="18.0" />
                </font>
             </Label>
          </children>
-      </GridPane>
-      <Pane prefHeight="150.0" prefWidth="1000.0" style="-fx-background-color: linear-gradient(to right, #2596b3 , #6bd3eb); -fx-border-color: transparent transparent derive(black, 10%) transparent;" AnchorPane.bottomAnchor="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="170.0">
+      </Pane>
+      <Pane layoutX="172.0" layoutY="2.0" prefHeight="142.0" prefWidth="1000.0" style="-fx-background-color: linear-gradient(to right, #39a7c3 , white); -fx-border-color: transparent transparent derive(black, 10%) transparent;" AnchorPane.bottomAnchor="607.0" AnchorPane.leftAnchor="171.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <VBox prefHeight="150.0" prefWidth="1000.0">
                <children>
@@ -80,23 +84,6 @@
                      </font>
                   </Label>
                   <HBox alignment="BOTTOM_LEFT" prefHeight="70.0" prefWidth="1000.0" spacing="20.0">
-                     <children>
-                        <Button fx:id="calendarButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="130.0" stylesheets="@../css/Dashboard.css" text="Calendar" underline="true">
-                           <font>
-                              <Font name="System Bold" size="14.0" />
-                           </font>
-                        </Button>
-                        <Button fx:id="employeeButton" layoutX="10.0" layoutY="45.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="182.0" stylesheets="@../css/Dashboard.css" text="Employee Management" underline="true">
-                           <font>
-                              <Font name="System Bold" size="14.0" />
-                           </font>
-                        </Button>
-                        <Button fx:id="buttonButton" layoutX="170.0" layoutY="45.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="100.0" stylesheets="@../css/Dashboard.css" text="Button" underline="true">
-                           <font>
-                              <Font name="System Bold" size="14.0" />
-                           </font>
-                        </Button>
-                     </children>
                      <padding>
                         <Insets left="5.0" right="5.0" />
                      </padding>
@@ -105,5 +92,32 @@
             </VBox>
          </children>
       </Pane>
+      <VBox layoutX="1.0" layoutY="1.0" style="-fx-background-color: linear-gradient(to right, #2596b3, #39a7c3); -fx-border-color: transparent derive(black, 10%) transparent transparent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <VBox prefHeight="138.0" prefWidth="170.0" />
+            <VBox alignment="TOP_RIGHT" prefHeight="609.0" prefWidth="182.0" spacing="20.0">
+               <children>
+                  <Button fx:id="calendarButton1" alignment="CENTER_RIGHT" mnemonicParsing="false" prefHeight="40.0" prefWidth="130.0" stylesheets="@../css/Dashboard.css" text="Calendar" underline="true">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="employeeButton1" alignment="CENTER_RIGHT" mnemonicParsing="false" prefHeight="40.0" prefWidth="182.0" stylesheets="@../css/Dashboard.css" text="Employee Management" underline="true">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="buttonButton1" alignment="CENTER_RIGHT" mnemonicParsing="false" prefHeight="40.0" prefWidth="100.0" stylesheets="@../css/Dashboard.css" text="Button" underline="true">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Button>
+               </children>
+               <padding>
+                  <Insets top="20.0" />
+               </padding>
+            </VBox>
+         </children>
+      </VBox>
    </children>
 </AnchorPane>

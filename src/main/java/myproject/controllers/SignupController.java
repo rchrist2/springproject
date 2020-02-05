@@ -8,6 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import myproject.ErrorMessages;
 import myproject.models.TblUsers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -59,7 +60,7 @@ public class SignupController implements Initializable {
         }
     }
 
-    //follows example here: https://www.baeldung.com/spring-email
+    //Follows example here: https://www.baeldung.com/spring-email
     @FXML
     private void sendCode() throws IOException, MessagingException{
         //this is just to make sure emailing works
@@ -75,8 +76,8 @@ public class SignupController implements Initializable {
 
         //maybe change this to a pop-up message or label
         System.out.println("Email sent");
-
-        }
+        ErrorMessages.showInformationMessage("Success", "Successfully sent email", "Email sent");
+    }
 
     //maybe move this to a different class
     @Bean
