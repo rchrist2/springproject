@@ -13,4 +13,8 @@ public interface UserRepository extends CrudRepository<TblUsers, Integer> {
     @Query(value = "SELECT * FROM tblUsers WHERE Username = :username AND Password = :password", nativeQuery = true)
     TblUsers findUserLogin(@Param("username") String user, @Param("password") String password);
 
+    /*//Find by username only
+    @Query(value = "SELECT * FROM tblUsers WHERE Username = :username", nativeQuery = true)
+    TblUsers findUsername(@Param("username") String user);*/
+
 }

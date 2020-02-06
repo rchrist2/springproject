@@ -2,14 +2,25 @@ package myproject.models;
 
 import javax.persistence.*;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
-//@Table(name = "tblUsers")
+@Table(name = "tblusers")
 public class TblUsers {
     private int userId;
     private String username;
     private String password;
     //private TblRoles roleId;
+   private Set<TblAvailability> availabilities;
+
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "users",cascade = CascadeType.ALL)
+    public Set<TblAvailability> getAvailabilities() {
+        return availabilities;
+    }
+
+    public void setAvailabilities(Set<TblAvailability> availabilities) {
+        this.availabilities = availabilities;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

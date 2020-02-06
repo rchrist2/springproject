@@ -86,9 +86,12 @@ public class SignupController implements Initializable {
         mailSender.setHost("smtp.gmail.com");
         mailSender.setPort(587);
 
+        //used to take properties from .properties file for username/password
+        Properties props1 = new Properties();
+
         //this is set here and in application.properties
-        mailSender.setUsername("email of sender account");
-        mailSender.setPassword("application password (not normal password)");
+        mailSender.setUsername(props1.getProperty("spring.mail.username"));
+        mailSender.setPassword(props1.getProperty("spring.mail.password"));
 
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.smtp.ssl.trust", "smtp.gmail.com");

@@ -1,8 +1,14 @@
+myproject\models\TblDay.class
 myproject\models\TblRoles.class
+myproject\controllers\EmployeeManagementController.class
+myproject\controllers\CalendarController.class
+myproject\models\TblAvailability.class
+myproject\ConnectionClass.class
+myproject\repositories\DayRepository.class
 myproject\repositories\RoleRepository.class
 myproject\controllers\SignupController.class
 myproject\repositories\UserRepository.class
-myproject\ConnectionClass.class
 myproject\ErrorMessages.class
 myproject\models\TblUsers.class
+myproject\repositories\AvailabilityRepository.class
 myproject\Main.class

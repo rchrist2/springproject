@@ -30,7 +30,7 @@ import java.util.ResourceBundle;
 public class LoginController implements Initializable {
 
     @FXML
-    private TextField usernameText;
+    public TextField usernameText;
 
     @FXML
     private PasswordField passwordText;
@@ -44,6 +44,7 @@ public class LoginController implements Initializable {
     private UserRepository userRepository;
     private ConfigurableApplicationContext springContext;
     public Rectangle2D screenBounds;
+    public static String userStore;
 
     @Autowired
     public LoginController(UserRepository userRepository, ConfigurableApplicationContext springContext) {
@@ -61,11 +62,11 @@ public class LoginController implements Initializable {
     private void signinUser(ActionEvent event){
         //find user and pass in db to login
         TblUsers currentUser = userRepository.findUserLogin(usernameText.getText(), passwordText.getText());
-
         System.out.println(currentUser);
 
         if(currentUser != null){
             System.out.println("User successfully logged in");
+            userStore = usernameText.getText();
 
             try {
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/Dashboard.fxml"));
