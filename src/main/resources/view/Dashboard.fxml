@@ -23,14 +23,6 @@
                   </Label>
                   <Pane prefWidth="984.0">
                      <children>
-                        <HBox fx:id="employeeManagementNavBar" alignment="BOTTOM_LEFT" prefHeight="65.0" prefWidth="984.0" spacing="20.0" style="-fx-background-color: linear-gradient(to right, #39a7c3 , white); -fx-border-color: transparent transparent derive(black, 0) transparent;">
-                           <padding>
-                              <Insets left="5.0" right="5.0" />
-                           </padding>
-                           <children>
-                              <Label text="This is the Employee Management Navigation Bar" />
-                           </children>
-                        </HBox>
                         <HBox fx:id="buttonNavBar" alignment="BOTTOM_LEFT" prefHeight="65.0" prefWidth="984.0" spacing="20.0" style="-fx-background-color: linear-gradient(to right, #39a7c3 , white); -fx-border-color: transparent transparent derive(black, 0) transparent;">
                            <padding>
                               <Insets left="5.0" right="5.0" />
@@ -39,13 +31,45 @@
                               <Label text="This is the Button Navigation Bar" />
                            </children>
                         </HBox>
-                        <HBox fx:id="calendarNavBar" alignment="BOTTOM_LEFT" prefHeight="65.0" prefWidth="984.0" spacing="20.0" style="-fx-background-color: linear-gradient(to right, #39a7c3 , white); -fx-border-color: transparent transparent derive(black, 0) transparent;">
+                        <HBox fx:id="calendarNavBar" alignment="BOTTOM_RIGHT" prefHeight="65.0" prefWidth="984.0" spacing="20.0" style="-fx-background-color: linear-gradient(to right, #39a7c3 , white); -fx-border-color: transparent transparent derive(black, 0) transparent;">
                            <padding>
-                              <Insets left="5.0" right="5.0" />
+                              <Insets bottom="5.0" left="10.0" right="15.0" />
                            </padding>
                            <children>
-                              <Label text="This is the Calendar Navigation Bar" />
+                              <Button fx:id="addShiftButton" mnemonicParsing="false" style="-fx-background-color: darkblue;" text="+ Add Shifts" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Bold" size="15.0" />
+                                 </font>
+                              </Button>
                            </children>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </HBox>
+                        <HBox fx:id="employeeManagementNavBar" alignment="BOTTOM_RIGHT" prefHeight="65.0" prefWidth="984.0" spacing="15.0" style="-fx-background-color: linear-gradient(to right, #39a7c3 , white); -fx-border-color: transparent transparent derive(black, 0) transparent;">
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="15.0" />
+                           </padding>
+                           <children>
+                              <Button fx:id="addNewEmployeeButton" mnemonicParsing="false" onAction="#handleCrudButton" style="-fx-background-color: #39a7c3;" text="Add New Employee" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Italic" size="15.0" />
+                                 </font>
+                              </Button>
+                              <Button fx:id="editEmployeeButton" mnemonicParsing="false" onAction="#handleCrudButton" style="-fx-background-color: #39a7c3;" text="Edit Employee" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Italic" size="15.0" />
+                                 </font>
+                              </Button>
+                              <Button fx:id="deleteEmployeeButton" mnemonicParsing="false" onAction="#handleCrudButton" style="-fx-background-color: red;" text="Delete" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Italic" size="15.0" />
+                                 </font>
+                              </Button>
+                           </children>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
                         </HBox>
                      </children>
                   </Pane>

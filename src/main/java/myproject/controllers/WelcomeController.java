@@ -15,7 +15,9 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import myproject.ErrorMessages;
+import myproject.models.TblEmployee;
 import myproject.models.TblUsers;
+import myproject.repositories.EmployeeRepository;
 import myproject.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -39,13 +41,15 @@ public class WelcomeController implements Initializable {
 
     private ConfigurableApplicationContext springContext;
     private UserRepository userRepository;
+    private EmployeeRepository employeeRepository;
     public AnchorPane signinAnchor;
     public Rectangle2D screenBounds;
 
     @Autowired
-    public WelcomeController(ConfigurableApplicationContext springContext, UserRepository userRepository) {
+    public WelcomeController(ConfigurableApplicationContext springContext, UserRepository userRepository, EmployeeRepository employeeRepository) {
         this.springContext = springContext;
         this.userRepository = userRepository;
+        this.employeeRepository = employeeRepository;
     }
 
     @Override
@@ -61,7 +65,6 @@ public class WelcomeController implements Initializable {
         } catch (IOException io){
             io.printStackTrace();
         }
-
     }
 
     //Still need method for "Forgot Password?" and "Need Help?" buttons

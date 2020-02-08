@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-//@Table(name = "tblDay")
+@Table(name = "tblday")
 public class TblDay {
     private int dayId;
     private String dayDesc;

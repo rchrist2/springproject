@@ -13,3 +13,7 @@
     -fx-background-color: lightblue;
     -fx-background-radius: 30 0 0 30;
 }
+
+/*.table-view .table-cell:even {*/
+/*    -fx-background-color: lightblue;*/
+/*}*/

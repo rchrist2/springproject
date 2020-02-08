@@ -37,7 +37,7 @@ public class CalendarController implements Initializable {
 
         //sets label to show start and end time for user, but does not check for day of week
         TblAvailability availability = availabilityRepository.findTblAvailabilitiesByUser(currentUser);
-        availabilityLabel.setText("Available from " + availability.getTimeBegin().toString() + " to " + availability.getTimeEnd().toString());
+//        availabilityLabel.setText("Available from " + availability.getTimeBegin().toString() + " to " + availability.getTimeEnd().toString());
 
         //TODO currently using a one-to-many with tblAvailability and tblUsers, but should be many-to-many with tblDay and tblUsers
         //TODO needs to check day of week and assign the proper column
