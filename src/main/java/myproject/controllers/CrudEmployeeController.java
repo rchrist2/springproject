@@ -42,7 +42,7 @@ public class CrudEmployeeController implements Initializable {
 
     private ConfigurableApplicationContext springContext;
     private EmployeeRepository employeeRepository;
-    private DashboardController dashboardController;
+    private EmployeeManagementController employeeManagementController;
     private EmployeeService employeeService;
 
     private TblEmployee tblEmployee;
@@ -54,8 +54,8 @@ public class CrudEmployeeController implements Initializable {
         this.employeeService = employeeService;
     }
 
-    public void setController(DashboardController dashboardController) {
-        this.dashboardController = dashboardController;
+    public void setController(EmployeeManagementController employeeManagementController) {
+        this.employeeManagementController = employeeManagementController;
     }
 
     @Override
@@ -94,25 +94,26 @@ public class CrudEmployeeController implements Initializable {
                     ErrorMessages.showInformationMessage("Successful", "Employee Success", "Added " + nameText.getText() + " successfully");
 
                     stage.close();
-                    dashboardController.switchWindow("/view/EmployeeManagementView.fxml");
                 } catch (Exception e) {
                     e.printStackTrace();
                     System.out.println("Adding Employee Error");
                 }
                 break;
             case "Save":
-                /*
-                Fix the save employee (check employee services and repository)
-                 */
 
+                Stage stage = (Stage)saveButton.getScene().getWindow();
+                try {
+                    employeeService.updateEmployee(nameText.getText(),
+                            emailText.getText(),
+                            addressText.getText(),
+                            phoneText.getText(),
+                            tblEmployee.getId());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
-//                try {
-//                    employeeService.updateEmployee(newEmp.getName(), newEmp.getEmail(), newEmp.getAddress(), newEmp.getPhone(), newEmp.getId());
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//                System.out.println("Saved");
-//                dashboardController.switchWindow("/view/EmployeeManagementView.fxml");
+                System.out.println("Saved");
+                stage.close();
                 break;
         }
     }
