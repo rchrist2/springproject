@@ -114,6 +114,12 @@ public class LoginController implements Initializable {
     }
 
     @FXML
+    private void needHelp(){
+        ErrorMessages.showInformationMessage("Need Help?","Contact info listed below:",
+                "Email us at email@gmail.com or Call 999-999-9999");
+    }
+
+    @FXML
     private void closeLogin(){
         //get current stage and close it
         Stage stage = (Stage) closeButton.getScene().getWindow();

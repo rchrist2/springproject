@@ -91,7 +91,7 @@
                 <artifactId>flyway-maven-plugin</artifactId>
                 <version>6.1.3</version>
                 <configuration>
-                    <url>jdbc:sqlserver://98.197.147.149:1433;database=4375db</url>
+                    <url>jdbc:sqlserver://LAPTOP-AQ2F2FCE;database=4375db</url>
                     <user>kevin</user>
                     <password>kevin</password>
                 </configuration>

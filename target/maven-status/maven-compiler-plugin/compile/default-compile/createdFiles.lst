@@ -3,10 +3,14 @@ myproject\models\TblRoles.class
 myproject\controllers\EmployeeManagementController.class
 myproject\controllers\CalendarController.class
 myproject\models\TblAvailability.class
+myproject\models\TblEmployee.class
 myproject\ConnectionClass.class
+myproject\controllers\CrudEmployeeController.class
 myproject\repositories\DayRepository.class
+myproject\repositories\EmployeeRepository.class
 myproject\repositories\RoleRepository.class
 myproject\controllers\SignupController.class
+myproject\services\EmployeeService.class
 myproject\repositories\UserRepository.class
 myproject\ErrorMessages.class
 myproject\models\TblUsers.class

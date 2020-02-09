@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -11,7 +16,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="750.0" prefWidth="985.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.CalendarController">
+<AnchorPane prefHeight="750.0" prefWidth="985.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.CalendarController">
    <children>
       <GridPane fx:id="calendarGridPane" gridLinesVisible="true" layoutX="9.0" layoutY="33.0" prefHeight="571.0" prefWidth="903.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0">
          <columnConstraints>
@@ -31,10 +36,20 @@
             <RowConstraints minHeight="100.0" prefHeight="30.0" vgrow="SOMETIMES" />
          </rowConstraints>
          <children>
-            <Label fx:id="availabilityLabel" text="Availability" wrapText="true" GridPane.columnIndex="1">
+            <Label fx:id="availabilityLabelMon1" prefHeight="95.0" prefWidth="123.0" wrapText="true" GridPane.columnIndex="1">
                <opaqueInsets>
                   <Insets />
                </opaqueInsets></Label>
+            <Label fx:id="availabilityLabelSun1" prefHeight="99.0" prefWidth="123.0" wrapText="true">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </Label>
+            <Label fx:id="availabilityLabelSat1" prefHeight="97.0" prefWidth="125.0" wrapText="true" GridPane.columnIndex="6">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </Label>
          </children>
       </GridPane>
       <Label alignment="CENTER" layoutX="5.0" layoutY="140.0" prefHeight="24.0" prefWidth="141.0" text="Sunday">

@@ -10,17 +10,28 @@ public class TblAvailability {
     private java.sql.Time timeEnd;
     private boolean assigned;
     private int availabilityId;
-    TblUsers users;
+    TblUsers user;
+    TblDay day;
 
     //TODO change this to a many to many w/ tblDay and tblUsers
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "User_ID", referencedColumnName = "User_ID")
-    public TblUsers getUsers() {
-        return users;
+    public TblUsers getUser() {
+        return user;
     }
 
-    public void setUsers(TblUsers user) {
-        this.users = user;
+    public void setUser(TblUsers user) {
+        this.user = user;
+    }
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "Day_ID", referencedColumnName = "Day_id")
+    public TblDay getDay() {
+        return day;
+    }
+
+    public void setDay(TblDay day) {
+        this.day = day;
     }
 
 
@@ -55,6 +66,7 @@ public class TblAvailability {
     }
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "availability_id")
     public int getAvailabilityId() {
         return availabilityId;

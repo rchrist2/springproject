@@ -13,7 +13,7 @@ public class TblUsers {
     //private TblRoles roleId;
    private Set<TblAvailability> availabilities;
 
-    @OneToMany(fetch = FetchType.EAGER,mappedBy = "users",cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "user",cascade = CascadeType.ALL)
     public Set<TblAvailability> getAvailabilities() {
         return availabilities;
     }

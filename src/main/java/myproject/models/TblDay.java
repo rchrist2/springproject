@@ -2,12 +2,24 @@ package myproject.models;
 
 import javax.persistence.*;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "tblday")
 public class TblDay {
     private int dayId;
     private String dayDesc;
+    private Set<TblAvailability> availabilities;
+
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "day",cascade = CascadeType.ALL)
+    public Set<TblAvailability> getAvailabilities() {
+        return availabilities;
+    }
+
+    public void setAvailabilities(Set<TblAvailability> availabilities) {
+        this.availabilities = availabilities;
+    }
+
 
     @Id
     @Column(name = "Day_id")
