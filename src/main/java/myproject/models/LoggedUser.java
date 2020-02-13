@@ -1,0 +1,24 @@
+package myproject.models;
+
+public class LoggedUser {
+
+    private static LoggedUser instance;
+    private TblUsers loggedInUser;
+
+    public LoggedUser(TblUsers loggedInUser) {
+        this.loggedInUser = loggedInUser;
+    }
+
+    public static LoggedUser getInstance(){
+
+        return instance;
+    }
+
+    public String getUserName(){
+        return loggedInUser.getUsername();
+    }
+
+    public void logoutEmployee(){
+        loggedInUser = null;
+    }
+}

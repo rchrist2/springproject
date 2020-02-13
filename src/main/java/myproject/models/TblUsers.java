@@ -11,7 +11,7 @@ public class TblUsers {
     private String username;
     private String password;
     //private TblRoles roleId;
-   private Set<TblAvailability> availabilities;
+    private Set<TblAvailability> availabilities;
 
     @OneToMany(fetch = FetchType.EAGER,mappedBy = "user",cascade = CascadeType.ALL)
     public Set<TblAvailability> getAvailabilities() {

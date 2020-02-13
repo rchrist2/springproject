@@ -18,6 +18,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import myproject.ErrorMessages;
+import myproject.models.LoggedUser;
 import myproject.models.TblEmployee;
 import myproject.repositories.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,8 @@ import java.util.ResourceBundle;
 public class DashboardController implements Initializable {
 
     @FXML
-    private Label titleLabel;
+    private Label titleLabel,
+            loggedUserLabel;
 
     @FXML
     private Button calendarButton, employeeButton, buttonButton;
@@ -53,6 +55,7 @@ public class DashboardController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         switchWindow("/view/CalendarView.fxml");
+        //loggedUserLabel.setText(LoggedUser.getInstance().getUserName());
     }
 
     //Will change the pane to the button that was clicked

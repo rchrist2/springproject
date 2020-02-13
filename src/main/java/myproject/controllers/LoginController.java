@@ -9,6 +9,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
@@ -16,6 +17,8 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import myproject.ErrorMessages;
+import myproject.models.LoggedUser;
+import myproject.models.TblEmployee;
 import myproject.models.TblUsers;
 import myproject.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +48,7 @@ public class LoginController implements Initializable {
     private ConfigurableApplicationContext springContext;
     public Rectangle2D screenBounds;
     public static String userStore;
+    //public static TblEmployee employeeStore;
 
     @Autowired
     public LoginController(UserRepository userRepository, ConfigurableApplicationContext springContext) {
@@ -67,6 +71,8 @@ public class LoginController implements Initializable {
         if(currentUser != null){
             System.out.println("User successfully logged in");
             userStore = usernameText.getText();
+
+            LoggedUser user = new LoggedUser(currentUser);
 
             try {
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/Dashboard.fxml"));

@@ -2,8 +2,14 @@ package myproject.controllers;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import myproject.ErrorMessages;
 import myproject.models.TblAvailability;
 import myproject.models.TblDay;
@@ -21,10 +27,8 @@ import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Calendar;
-import java.util.Random;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.time.YearMonth;
+import java.util.*;
 
 @Component
 public class CalendarController implements Initializable {
@@ -41,6 +45,9 @@ public class CalendarController implements Initializable {
     @FXML
     private Label availabilityLabelSat1;
 
+    @FXML
+    private Label titleLabel;
+
     @Autowired
     private ConfigurableApplicationContext springContext;
 
@@ -53,8 +60,17 @@ public class CalendarController implements Initializable {
     @Autowired
     private UserRepository userRepository;
 
+    private ArrayList<VBox> calendarDays = new ArrayList<>(35);
+
+    private YearMonth currentYearAndMonth;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        currentYearAndMonth = YearMonth.now();
+        System.out.println("Current Year: " + currentYearAndMonth.getYear() + " Month: " + currentYearAndMonth.getMonth());
+
+        createCalendar();
+
         //get the current user (String) from LoginController
         String currentUser = LoginController.userStore;
         System.out.println("Current user is " + currentUser);
@@ -106,4 +122,72 @@ public class CalendarController implements Initializable {
             }
         }
     }
+
+    //Create the calender
+    public void createCalendar(){
+        int rows = 5, columns = 7;
+
+        for (int r = 0; r < columns; r++) {
+            for (int c = 0; c < rows; c++) {
+
+                VBox vBox = new VBox();
+
+                GridPane.setVgrow(vBox, Priority.ALWAYS);
+
+                calendarGridPane.add(vBox, r, c);
+
+                calendarDays.add(vBox);
+            }
+        }
+
+        refreshCalendar(currentYearAndMonth);
+    }
+
+    //Populates the calender with dates
+    private void refreshCalendar(YearMonth currentYearMonth){
+        int year = currentYearMonth.getYear();
+        int month = currentYearMonth.getMonthValue();
+
+        //Set the title of the calendar
+        titleLabel.setText(currentYearAndMonth.getYear() + " Calendar");
+
+
+        LocalDate localDate = LocalDate.of(year, month, 1);
+
+        //Goes through each day of the month
+        for(VBox dayBox : calendarDays){
+
+            //Delete everything inside of each day box
+            if(dayBox.getChildren().size() != 0){
+                dayBox.getChildren().remove(0);
+            }
+
+            //Day label
+            Label dayLabel = new Label(String.valueOf(localDate.getDayOfMonth()));
+            dayLabel.setTextAlignment(TextAlignment.LEFT);
+
+            //vBox holding each employee hour
+            VBox employeeHoursBox = new VBox();
+
+            //Add the day number and employee vBox into the Day Box
+            dayBox.getChildren().addAll(dayLabel, employeeHoursBox);
+
+            localDate = localDate.plusDays(1);
+        }
+    }
+
+    @FXML
+    private void handlePreviousMonth(){
+        currentYearAndMonth = currentYearAndMonth.minusYears(1);
+        titleLabel.setText(currentYearAndMonth.getYear() + " Calendar");
+        //refreshCalendar(currentYearAndMonth);
+    }
+
+    @FXML
+    private void handleNextMonth(){
+        currentYearAndMonth = currentYearAndMonth.plusYears(1);
+        titleLabel.setText(currentYearAndMonth.getYear() + " Calendar");
+        //refreshCalendar(currentYearAndMonth);
+    }
+
 }
