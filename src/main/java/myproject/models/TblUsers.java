@@ -12,6 +12,17 @@ public class TblUsers {
     private String password;
     //private TblRoles roleId;
     private Set<TblAvailability> availabilities;
+    private Set<TblTimeOff> timeOffs;
+
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "user",cascade = CascadeType.ALL)
+    public Set<TblTimeOff> getTimeOffs() {
+        return timeOffs;
+    }
+
+    public void setTimeOffs(Set<TblTimeOff> timeOffs) {
+        this.timeOffs = timeOffs;
+    }
+
 
     @OneToMany(fetch = FetchType.EAGER,mappedBy = "user",cascade = CascadeType.ALL)
     public Set<TblAvailability> getAvailabilities() {

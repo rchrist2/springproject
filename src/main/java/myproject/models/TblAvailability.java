@@ -12,6 +12,7 @@ public class TblAvailability {
     private int availabilityId;
     TblUsers user;
     TblDay day;
+    private java.sql.Date date_created;
 
     //TODO change this to a many to many w/ tblDay and tblUsers
     @ManyToOne(fetch = FetchType.EAGER)
@@ -63,6 +64,16 @@ public class TblAvailability {
 
     public void setAssigned(boolean assigned) {
         this.assigned = assigned;
+    }
+
+    @Basic
+    @Column(name = "date_created")
+    public java.sql.Date getDate_created() {
+        return date_created;
+    }
+
+    public void setDate_created(java.sql.Date date_created) {
+        this.date_created = date_created;
     }
 
     @Id

@@ -48,6 +48,7 @@ public class LoginController implements Initializable {
     private ConfigurableApplicationContext springContext;
     public Rectangle2D screenBounds;
     public static String userStore;
+    //public static LoggedUser loggedUserStore;
     //public static TblEmployee employeeStore;
 
     @Autowired

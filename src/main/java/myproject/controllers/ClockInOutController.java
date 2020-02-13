@@ -47,6 +47,7 @@ public class ClockInOutController implements Initializable {
         newAvail.setTimeEnd(java.sql.Time.valueOf("00:00:00"));
         newAvail.setAssigned(true);
         newAvail.setUser(userRepository.findUsername(currentUser));
+        newAvail.setDate_created(java.sql.Date.valueOf(LocalDate.now()));
 
         //gets the day of week as a string (matches capitalized format ex. "Monday" in database)
         String dayOfWeek = String.valueOf(DayOfWeek.from(LocalDate.now())).toLowerCase();

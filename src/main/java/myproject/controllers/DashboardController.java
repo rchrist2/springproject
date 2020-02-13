@@ -85,6 +85,12 @@ public class DashboardController implements Initializable {
                 switchWindow("/view/ClockInOutView.fxml");
                 //buttonNavBar.toFront();
                 break;
+            case "Request Time Off":
+                //titleLabel.setText("Button Placeholder");
+                System.out.println("You clicked the Request Time Off button");
+                switchWindow("/view/TimeOffRequestView.fxml");
+                //buttonNavBar.toFront();
+                break;
             case "Button":
                 //titleLabel.setText("Button Placeholder");
                 System.out.println("You clicked the Button button");
