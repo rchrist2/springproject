@@ -4,7 +4,7 @@ Uses JDK 13, SQL Server, flyway, see pom.xml
 After cloning, import the maven changes and go to exec:java and make a new run configuration using 
 "compile exec:java -f pom.xml" in the Command Line box (this probably isn't needed, the program should also run using Main)
 
-# Updated SQL Scripts 2/13/2020:
+## Updated SQL Scripts 2/13/2020 (edit file to see with correct formatting):
 
 create table tblRoles(
     Role_ID int NOT NULL identity(1,1) PRIMARY KEY,
@@ -31,7 +31,6 @@ create table tblAvailability(
     User_ID int not null FOREIGN KEY REFERENCES  tblUsers(User_ID),
     Day_ID int not null FOREIGN KEY REFERENCES tblDay(Day_ID)
 );
-
 
 CREATE TABLE tblEmployee (
 id int not null identity(1,1) primary key,
