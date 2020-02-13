@@ -62,7 +62,7 @@ public class CalendarController implements Initializable {
 
     private ArrayList<VBox> calendarDays = new ArrayList<>(35);
 
-    private YearMonth currentYearAndMonth;
+    private static YearMonth currentYearAndMonth;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -127,15 +127,14 @@ public class CalendarController implements Initializable {
     public void createCalendar(){
         int rows = 5, columns = 7;
 
-        for (int r = 0; r < columns; r++) {
-            for (int c = 0; c < rows; c++) {
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < columns; c++) {
 
                 VBox vBox = new VBox();
 
                 GridPane.setVgrow(vBox, Priority.ALWAYS);
 
-                calendarGridPane.add(vBox, r, c);
-
+                calendarGridPane.add(vBox, c, r);
                 calendarDays.add(vBox);
             }
         }
@@ -147,27 +146,50 @@ public class CalendarController implements Initializable {
     private void refreshCalendar(YearMonth currentYearMonth){
         int year = currentYearMonth.getYear();
         int month = currentYearMonth.getMonthValue();
+        int offsetDays = 0;
+        String labelStyle = "", dayBoxStyle = "";
+
+        LocalDate localDate = LocalDate.of(year, month, 1);
+        System.out.println(year + ", " + month );
+
+        Label dayLabel = null;
+        VBox employeeHoursBox = null;
 
         //Set the title of the calendar
         titleLabel.setText(currentYearAndMonth.getYear() + " Calendar");
 
-
-        LocalDate localDate = LocalDate.of(year, month, 1);
+        /*
+        Subtracts days of the month until we reach sunday so we get
+        the correct first day of the current month
+         */
+        while (!localDate.getDayOfWeek().toString().equals("SUNDAY") ) {
+            localDate = localDate.minusDays(1);
+            offsetDays++;
+        }
 
         //Goes through each day of the month
         for(VBox dayBox : calendarDays){
 
             //Delete everything inside of each day box
-            if(dayBox.getChildren().size() != 0){
-                dayBox.getChildren().remove(0);
+            if(dayBox.getChildren() != null){
+                dayBox.getChildren().removeAll();
             }
 
+            System.out.println(localDate.getDayOfMonth() + " :::::: " + localDate.getMonth().maxLength());
+
             //Day label
-            Label dayLabel = new Label(String.valueOf(localDate.getDayOfMonth()));
+            dayLabel = new Label(String.valueOf(localDate.getDayOfMonth()));
             dayLabel.setTextAlignment(TextAlignment.LEFT);
+            dayLabel.setStyle("-fx-padding: 0 0 0 5");
 
             //vBox holding each employee hour
-            VBox employeeHoursBox = new VBox();
+            employeeHoursBox = new VBox();
+            employeeHoursBox.setSpacing(5);
+
+            if(offsetDays != 0) {
+                dayLabel.setStyle("-fx-padding: 0 0 0 5; -fx-text-fill: #A9A9A9");
+                offsetDays--;
+            }
 
             //Add the day number and employee vBox into the Day Box
             dayBox.getChildren().addAll(dayLabel, employeeHoursBox);
@@ -180,14 +202,14 @@ public class CalendarController implements Initializable {
     private void handlePreviousMonth(){
         currentYearAndMonth = currentYearAndMonth.minusYears(1);
         titleLabel.setText(currentYearAndMonth.getYear() + " Calendar");
-        //refreshCalendar(currentYearAndMonth);
+        refreshCalendar(currentYearAndMonth);
     }
 
     @FXML
     private void handleNextMonth(){
         currentYearAndMonth = currentYearAndMonth.plusYears(1);
         titleLabel.setText(currentYearAndMonth.getYear() + " Calendar");
-        //refreshCalendar(currentYearAndMonth);
+        refreshCalendar(currentYearAndMonth);
     }
 
 }
