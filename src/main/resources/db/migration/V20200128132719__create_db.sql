@@ -29,10 +29,17 @@ create table tblavailability(
 
 create table tblemployee(
     id int IDENTITY(1, 1) NOT NULL PRIMARY KEY,
-    name varchar(50) NOT NULL,
-    email varchar(50) NOT NULL,
-    address varchar(50) NOT NULL,
-    phone   varchar(50) NOT NULL
+    name varchar(128) NOT NULL,
+    email varchar(128) NOT NULL,
+    address varchar(128) NOT NULL,
+    phone   varchar(128) NOT NULL
+);
+
+CREATE TABLE tblTimeOff(
+    time_off_id int not null identity(1,1) primary key,
+    time_off_date date not null,
+    approved bit NOT NULL,
+    User_ID int not null FOREIGN KEY REFERENCES tblUsers(User_ID)
 );
 
 INSERT INTO tblroles VALUES ('Manager');

@@ -9,16 +9,13 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import myproject.ErrorMessages;
 import myproject.models.LoggedUser;
-import myproject.models.TblEmployee;
 import myproject.models.TblUsers;
 import myproject.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +24,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.YearMonth;
 import java.util.ResourceBundle;
 
 @Component
@@ -48,6 +46,7 @@ public class LoginController implements Initializable {
     private ConfigurableApplicationContext springContext;
     public Rectangle2D screenBounds;
     public static String userStore;
+    public static YearMonth currentYearAndMonth;
     //public static LoggedUser loggedUserStore;
     //public static TblEmployee employeeStore;
 
@@ -72,6 +71,7 @@ public class LoginController implements Initializable {
         if(currentUser != null){
             System.out.println("User successfully logged in");
             userStore = usernameText.getText();
+            YearMonthInstance.getInstance().setCurrentMonthYear();
 
             LoggedUser user = new LoggedUser(currentUser);
 

@@ -2,17 +2,13 @@ package myproject.controllers;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import myproject.ErrorMessages;
 import myproject.models.TblAvailability;
-import myproject.models.TblDay;
 import myproject.models.TblUsers;
 import myproject.repositories.AvailabilityRepository;
 import myproject.repositories.DayRepository;
@@ -21,12 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.YearMonth;
 import java.util.*;
 
@@ -66,8 +59,8 @@ public class CalendarController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        currentYearAndMonth = YearMonth.now();
-        System.out.println("Current Year: " + currentYearAndMonth.getYear() + " Month: " + currentYearAndMonth.getMonth());
+        //currentYearAndMonth = YearMonth.now();
+        //System.out.println("Current Year: " + currentYearAndMonth.getYear() + " Month: " + currentYearAndMonth.getMonth());
 
         createCalendar();
 
@@ -125,6 +118,11 @@ public class CalendarController implements Initializable {
 
     //Create the calender
     public void createCalendar(){
+        calendarDays.clear();
+        calendarGridPane.getChildren().removeAll(calendarDays);
+
+        //currentYearAndMonth = YearMonth.now();
+
         int rows = 5, columns = 7;
 
         for (int r = 0; r < rows; r++) {
@@ -139,7 +137,7 @@ public class CalendarController implements Initializable {
             }
         }
 
-        refreshCalendar(currentYearAndMonth);
+        refreshCalendar(YearMonthInstance.getInstance().getYearMonth());
     }
 
     //Populates the calender with dates
@@ -147,21 +145,21 @@ public class CalendarController implements Initializable {
         int year = currentYearMonth.getYear();
         int month = currentYearMonth.getMonthValue();
         int offsetDays = 0;
-        String labelStyle = "", dayBoxStyle = "";
 
         LocalDate localDate = LocalDate.of(year, month, 1);
         System.out.println(year + ", " + month );
 
-        Label dayLabel = null;
-        VBox employeeHoursBox = null;
+        Label dayLabel;
+        VBox employeeHoursBox;
 
         //Set the title of the calendar
-        titleLabel.setText(currentYearAndMonth.getYear() + " Calendar");
+        titleLabel.setText(monthFormat(YearMonthInstance.getInstance().getYearMonth().getMonth().toString()) + " "
+                + YearMonthInstance.getInstance().getYearMonth().getYear());
 
         /*
         Subtracts days of the month until we reach sunday so we get
         the correct first day of the current month
-         */
+        */
         while (!localDate.getDayOfWeek().toString().equals("SUNDAY") ) {
             localDate = localDate.minusDays(1);
             offsetDays++;
@@ -171,13 +169,15 @@ public class CalendarController implements Initializable {
         for(VBox dayBox : calendarDays){
 
             //Delete everything inside of each day box
-            if(dayBox.getChildren() != null){
-                dayBox.getChildren().removeAll();
+            if(dayBox.getChildren().size() != 0){
+                do {
+                    dayBox.getChildren().remove(0);
+                } while (dayBox.getChildren().size() != 0);
             }
 
             System.out.println(localDate.getDayOfMonth() + " :::::: " + localDate.getMonth().maxLength());
 
-            //Day label
+            //Day label and sets their css
             dayLabel = new Label(String.valueOf(localDate.getDayOfMonth()));
             dayLabel.setTextAlignment(TextAlignment.LEFT);
             dayLabel.setStyle("-fx-padding: 0 0 0 5");
@@ -186,6 +186,7 @@ public class CalendarController implements Initializable {
             employeeHoursBox = new VBox();
             employeeHoursBox.setSpacing(5);
 
+            //Sets the style of the boxes that are not a part of the current month
             if(offsetDays != 0) {
                 dayLabel.setStyle("-fx-padding: 0 0 0 5; -fx-text-fill: #A9A9A9");
                 offsetDays--;
@@ -194,22 +195,38 @@ public class CalendarController implements Initializable {
             //Add the day number and employee vBox into the Day Box
             dayBox.getChildren().addAll(dayLabel, employeeHoursBox);
 
+            //Add 1 to the day
             localDate = localDate.plusDays(1);
         }
     }
 
     @FXML
     private void handlePreviousMonth(){
-        currentYearAndMonth = currentYearAndMonth.minusYears(1);
-        titleLabel.setText(currentYearAndMonth.getYear() + " Calendar");
-        refreshCalendar(currentYearAndMonth);
+
+        //Goes back a month
+        YearMonthInstance.getInstance().prevMonth();
+
+        //Refreshes the calendar
+        refreshCalendar(YearMonthInstance.getInstance().getYearMonth());
     }
 
     @FXML
     private void handleNextMonth(){
-        currentYearAndMonth = currentYearAndMonth.plusYears(1);
-        titleLabel.setText(currentYearAndMonth.getYear() + " Calendar");
-        refreshCalendar(currentYearAndMonth);
+
+        //Goes forward a month
+        YearMonthInstance.getInstance().nextMonth();
+
+        //Refreshes the calendar
+        refreshCalendar(YearMonthInstance.getInstance().getYearMonth());
     }
 
+    /*
+    Returns the month into the correct format "January, February, March..."
+     */
+    private String monthFormat(String word){
+        char[] month = word.toLowerCase().toCharArray();
+        month[0] = Character.toUpperCase(month[0]);
+
+        return String.valueOf(month);
+    }
 }
