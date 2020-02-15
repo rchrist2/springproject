@@ -1,33 +1,22 @@
 package myproject.controllers;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import myproject.ErrorMessages;
-import myproject.models.LoggedUser;
-import myproject.models.TblEmployee;
+import myproject.models.TblUsers;
 import myproject.repositories.EmployeeRepository;
+import myproject.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.net.URL;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 @Component
@@ -41,7 +30,8 @@ public class DashboardController implements Initializable {
     private Button calendarButton, employeeButton, buttonButton;
 
     @FXML
-    private Pane dashboardPane;
+    private Pane dashboardPane,
+            movePane;
 
     @FXML
     private HBox calendarNavBar, employeeManagementNavBar, buttonNavBar;
@@ -52,10 +42,20 @@ public class DashboardController implements Initializable {
     @Autowired
     private EmployeeRepository employeeRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         switchWindow("/view/CalendarView.fxml");
-        //loggedUserLabel.setText(LoggedUser.getInstance().getUserName());
+
+        //Checks for the current logged in user for their role
+        TblUsers currentLoggedUser = userRepository.findUsername(LoginController.userStore);
+
+        //Disables the employee management button for employees
+        if(currentLoggedUser.getRoleId().getRoleId() == 2){
+            employeeButton.setDisable(true);
+        }
     }
 
     //Will change the pane to the button that was clicked
@@ -65,36 +65,29 @@ public class DashboardController implements Initializable {
         //Captures the button that was clicked
         Button clickedButton = (Button)event.getSource();
 
-        //Will check the clicked button and do the action
+        /*
+        Checks which button is pressed and changes the screen
+        to the correct window (ex. Calender button -> CalendarView.Fxml)
+         */
         switch(clickedButton.getText()){
             case "Calendar":
-                //titleLabel.setText("Calendar");
                 System.out.println("You clicked the calendar button");
                 switchWindow("/view/CalendarView.fxml");
-                //calendarNavBar.toFront();
                 break;
             case "Employee Management":
-                //titleLabel.setText("Employee Management");
                 System.out.println("You clicked the Employee Management button");
                 switchWindow("/view/EmployeeManagementView.fxml");
-                //employeeManagementNavBar.toFront();
                 break;
             case "Clock In/Out":
-                //titleLabel.setText("Button Placeholder");
                 System.out.println("You clicked the Clock In/Out button");
                 switchWindow("/view/ClockInOutView.fxml");
-                //buttonNavBar.toFront();
                 break;
-            case "Request Time Off":
-                //titleLabel.setText("Button Placeholder");
+            case "Time Off":
                 System.out.println("You clicked the Request Time Off button");
                 switchWindow("/view/TimeOffRequestView.fxml");
-                //buttonNavBar.toFront();
                 break;
             case "Button":
-                //titleLabel.setText("Button Placeholder");
                 System.out.println("You clicked the Button button");
-                //buttonNavBar.toFront();
                 break;
         }
     }

@@ -66,10 +66,6 @@ public class EmployeeManagementController implements Initializable {
         reloadEmployeeTableView();
         setDataForEmployeeTableView();
         addActionListenersForCrudButtons();
-
-        employeeTableView.getSelectionModel().selectedItemProperty().addListener((obs, old, newv) -> {
-            selectedEmployee = newv;
-        });
     }
 
     private void reloadEmployeeTableView(){

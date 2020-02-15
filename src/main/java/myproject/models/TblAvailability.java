@@ -1,13 +1,14 @@
 package myproject.models;
 
 import javax.persistence.*;
+import java.sql.Time;
 import java.util.Objects;
 
 @Entity
 @Table(name = "tblavailability")
 public class TblAvailability {
-    private java.sql.Time timeBegin;
-    private java.sql.Time timeEnd;
+    private Time timeBegin;
+    private Time timeEnd;
     private boolean assigned;
     private int availabilityId;
     TblUsers user;
@@ -38,21 +39,21 @@ public class TblAvailability {
 
     @Basic
     @Column(name = "time_begin")
-    public java.sql.Time getTimeBegin() {
+    public Time getTimeBegin() {
         return timeBegin;
     }
 
-    public void setTimeBegin(java.sql.Time timeBegin) {
+    public void setTimeBegin(Time timeBegin) {
         this.timeBegin = timeBegin;
     }
 
     @Basic
     @Column(name = "time_end")
-    public java.sql.Time getTimeEnd() {
+    public Time getTimeEnd() {
         return timeEnd;
     }
 
-    public void setTimeEnd(java.sql.Time timeEnd) {
+    public void setTimeEnd(Time timeEnd) {
         this.timeEnd = timeEnd;
     }
 

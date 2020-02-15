@@ -16,6 +16,7 @@ import java.net.URL;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.Month;
 import java.util.ResourceBundle;
 
 @Component
@@ -54,9 +55,14 @@ public class ClockInOutController implements Initializable {
         dayOfWeek = dayOfWeek.substring(0,1).toUpperCase() + dayOfWeek.substring(1).toLowerCase();
         newAvail.setDay(dayRepository.findDay(dayOfWeek));
 
+        System.out.println(newAvail.getUser() + "{\n" +
+                "Time Begin:\t  " + newAvail.getTimeBegin() + "\n" +
+                "Time End:\t    " + newAvail.getTimeEnd() + "\n" +
+                "Assigned:\t    " + newAvail.isAssigned() + "\n" +
+                "Day: \t\t      " + newAvail.getDay());
+
         //save the new availability
         availabilityRepository.save(newAvail);
-
     }
 
     @FXML

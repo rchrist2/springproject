@@ -10,7 +10,7 @@ public class TblUsers {
     private int userId;
     private String username;
     private String password;
-    //private TblRoles roleId;
+    private TblRoles roleId;
     private Set<TblAvailability> availabilities;
     private Set<TblTimeOff> timeOffs;
 
@@ -64,15 +64,15 @@ public class TblUsers {
         this.password = password;
     }
 
-//    @ManyToOne
-//    @JoinColumn(name = "Role_id", referencedColumnName = "Role_ID")
-//    public TblRoles getRoleId() {
-//        return roleId;
-//    }
-//
-//    public void setRoleId(TblRoles roleId) {
-//        this.roleId = roleId;
-//    }
+    @ManyToOne
+    @JoinColumn(name = "Role_id", referencedColumnName = "Role_ID")
+    public TblRoles getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(TblRoles roleId) {
+        this.roleId = roleId;
+    }
 
     @Override
     public boolean equals(Object o) {

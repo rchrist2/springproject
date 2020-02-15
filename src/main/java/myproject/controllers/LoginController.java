@@ -15,7 +15,6 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import myproject.ErrorMessages;
-import myproject.models.LoggedUser;
 import myproject.models.TblUsers;
 import myproject.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,13 +41,12 @@ public class LoginController implements Initializable {
     @FXML
     private Pane welcomeLoginPane;
 
+    private double xOffset= 0, yOffset = 0;
     private UserRepository userRepository;
     private ConfigurableApplicationContext springContext;
     public Rectangle2D screenBounds;
     public static String userStore;
     public static YearMonth currentYearAndMonth;
-    //public static LoggedUser loggedUserStore;
-    //public static TblEmployee employeeStore;
 
     @Autowired
     public LoginController(UserRepository userRepository, ConfigurableApplicationContext springContext) {
@@ -73,8 +71,6 @@ public class LoginController implements Initializable {
             userStore = usernameText.getText();
             YearMonthInstance.getInstance().setCurrentMonthYear();
 
-            LoggedUser user = new LoggedUser(currentUser);
-
             try {
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/Dashboard.fxml"));
                 fxmlLoader.setControllerFactory(springContext::getBean);
@@ -84,6 +80,7 @@ public class LoginController implements Initializable {
                 currentStage.setScene(scene);
                 currentStage.setX((screenBounds.getWidth() - currentStage.getWidth()) / 2);
                 currentStage.setY((screenBounds.getHeight() - currentStage.getHeight()) / 2);
+
                 scene.getStylesheets().add(getClass().getResource("/css/Dashboard.css").toExternalForm());
 
             } catch (IOException e) {
