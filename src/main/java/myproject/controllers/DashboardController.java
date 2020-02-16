@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import myproject.ErrorMessages;
+import myproject.models.Tblusers;
 import myproject.repositories.EmployeeRepository;
 import myproject.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,10 +50,10 @@ public class DashboardController implements Initializable {
         switchWindow("/view/CalendarView.fxml");
 
         //Checks for the current logged in user for their role
-        TblUsers currentLoggedUser = userRepository.findUsername(LoginController.userStore);
+        Tblusers currentLoggedUser = userRepository.findUsername(LoginController.userStore);
 
         //Disables the employee management button for employees
-        if(currentLoggedUser.getRoleId().getRoleId() == 2){
+        if(currentLoggedUser.getEmployee().getRole().getRoleId() == 2){
             employeeButton.setDisable(true);
         }
     }

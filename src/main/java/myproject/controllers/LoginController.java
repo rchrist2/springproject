@@ -15,7 +15,6 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import myproject.ErrorMessages;
-import myproject.models.LoggedUser;
 import myproject.models.Tblusers;
 import myproject.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,8 +71,6 @@ public class LoginController implements Initializable {
             System.out.println("User successfully logged in");
             userStore = usernameText.getText();
             YearMonthInstance.getInstance().setCurrentMonthYear();
-
-            LoggedUser user = new LoggedUser(currentUser);
 
             try {
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/Dashboard.fxml"));

@@ -9,8 +9,8 @@ import java.util.Set;
 @Table(name = "tblschedule")
 public class Tblschedule {
     private int scheduleId;
-    private Object scheduleTimeBegin;
-    private Object scheduleTimeEnd;
+    private java.sql.Time scheduleTimeBegin;
+    private java.sql.Time scheduleTimeEnd;
     private Timestamp scheduleDate;
     private Tbltimeoff timeOff;
     private Set<Tblclock> clocks;
@@ -72,21 +72,21 @@ public class Tblschedule {
 
     @Basic
     @Column(name = "schedule_time_begin")
-    public Object getScheduleTimeBegin() {
+    public java.sql.Time getScheduleTimeBegin() {
         return scheduleTimeBegin;
     }
 
-    public void setScheduleTimeBegin(Object scheduleTimeBegin) {
+    public void setScheduleTimeBegin(java.sql.Time scheduleTimeBegin) {
         this.scheduleTimeBegin = scheduleTimeBegin;
     }
 
     @Basic
     @Column(name = "schedule_time_end")
-    public Object getScheduleTimeEnd() {
+    public java.sql.Time getScheduleTimeEnd() {
         return scheduleTimeEnd;
     }
 
-    public void setScheduleTimeEnd(Object scheduleTimeEnd) {
+    public void setScheduleTimeEnd(java.sql.Time scheduleTimeEnd) {
         this.scheduleTimeEnd = scheduleTimeEnd;
     }
 
@@ -114,5 +114,10 @@ public class Tblschedule {
     @Override
     public int hashCode() {
         return Objects.hash(scheduleId, scheduleTimeBegin, scheduleTimeEnd, scheduleDate);
+    }
+
+    @Override
+    public String toString(){
+        return this.scheduleDate.toString();
     }
 }

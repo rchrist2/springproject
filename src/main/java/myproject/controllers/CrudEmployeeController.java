@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import myproject.ErrorMessages;
+import myproject.models.Tblemployee;
 import myproject.repositories.EmployeeRepository;
 import myproject.services.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,7 @@ public class CrudEmployeeController implements Initializable {
     private EmployeeManagementController employeeManagementController;
     private EmployeeService employeeService;
 
-    private TblEmployee tblEmployee;
+    private Tblemployee tblEmployee;
 
     @Autowired
     public CrudEmployeeController(ConfigurableApplicationContext springContext, EmployeeRepository employeeRepository, EmployeeService employeeService) {
@@ -66,12 +67,12 @@ public class CrudEmployeeController implements Initializable {
         saveButton.setText(buttonLabel);
     }
 
-    public void setEmployee(TblEmployee selectedEmployee){
+    public void setEmployee(Tblemployee selectedEmployee){
         tblEmployee = selectedEmployee;
         setTextFieldsForEdit(tblEmployee);
     }
 
-    private void setTextFieldsForEdit(TblEmployee emp1){
+    private void setTextFieldsForEdit(Tblemployee emp1){
         nameText.setText(emp1.getName());
         emailText.setText(emp1.getEmail());
         addressText.setText(emp1.getAddress());
@@ -80,7 +81,7 @@ public class CrudEmployeeController implements Initializable {
 
     public void handleSaveEmployee(ActionEvent event){
         Button selectedButton = (Button)event.getSource();
-        TblEmployee newEmp = new TblEmployee(nameText.getText(), emailText.getText(), addressText.getText(), phoneText.getText());
+        Tblemployee newEmp = new Tblemployee(/*nameText.getText(), emailText.getText(), addressText.getText(), phoneText.getText()*/);
 
         switch (selectedButton.getText()){
             case "Add":

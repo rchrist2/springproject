@@ -14,6 +14,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import myproject.models.Tblemployee;
 import myproject.repositories.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -35,9 +36,9 @@ public class EmployeeManagementController implements Initializable {
             deleteEmployeeButton;
 
     @FXML
-    private TableView<TblEmployee> employeeTableView;
+    private TableView<Tblemployee> employeeTableView;
 
-    public TableColumn<TblEmployee, String>
+    public TableColumn<Tblemployee, String>
             idColumn,
             nameColumn,
             emailColumn,
@@ -51,10 +52,10 @@ public class EmployeeManagementController implements Initializable {
     @Autowired
     private EmployeeRepository employeeRepository;
 
-    private ObservableList<TblEmployee> listOfEmployees;
-    private FilteredList<TblEmployee> filteredListOfEmployees;
+    private ObservableList<Tblemployee> listOfEmployees;
+    private FilteredList<Tblemployee> filteredListOfEmployees;
 
-    public TblEmployee selectedEmployee;
+    public Tblemployee selectedEmployee;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -90,7 +91,7 @@ public class EmployeeManagementController implements Initializable {
     @FXML
     private void handleCrudButton(ActionEvent event){
         Button clickedButton = (Button)event.getSource();
-        TblEmployee emp = employeeTableView.getSelectionModel().getSelectedItem();
+        Tblemployee emp = employeeTableView.getSelectionModel().getSelectedItem();
 
         switch(clickedButton.getText()){
             case "Add New Employee":

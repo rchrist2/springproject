@@ -11,14 +11,18 @@ import java.util.List;
 
 @Repository
 public interface EmployeeRepository extends CrudRepository<Tblemployee, Integer> {
-/*
+
     //Returns a list of all the employees
     @Query(value = "SELECT * FROM tblemployee", nativeQuery = true)
-    List<TblEmployee> findAllEmployee();
+    List<Tblemployee> findAllEmployee();
+
+    //Returns the user for an employee
+    @Query(value = "SELECT * FROM tblemployee e JOIN tblusers u ON e.id=u.employee_id WHERE username = :username", nativeQuery = true)
+    List<Tblemployee> findUserForEmployee(@Param("username") String user);
 
     @Modifying
     @Query(value = "UPDATE tblemployee SET name = :name, email = :email, address = :address, phone = :phone WHERE id = :id", nativeQuery = true)
     void updateEmployee(@Param("name") String name, @Param("email") String email, @Param("address") String address, @Param("phone") String phone, @Param("id") int id);
-*/
+
 
 }

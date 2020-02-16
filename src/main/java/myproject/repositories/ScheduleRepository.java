@@ -15,5 +15,9 @@ public interface ScheduleRepository extends CrudRepository<Tblschedule, Integer>
             "WHERE Username = :username AND Day_Desc = :dayDesc", nativeQuery = true)
     TblAvailability findTblAvailabilitiesByUserAndDay(@Param("username") String user, @Param("dayDesc") String dayDesc);
     */
+
+    @Query(value = "SELECT * FROM tblschedule s JOIN tblemployee e ON s.employee_id=e.id JOIN " +
+            "tblusers u ON e.id=u.employee_id WHERE Username = :username", nativeQuery = true)
+    Tblschedule findScheduleForUser(@Param("username") String user);
 }
 

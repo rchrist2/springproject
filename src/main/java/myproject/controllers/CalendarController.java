@@ -9,6 +9,10 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 import myproject.ErrorMessages;
+import myproject.models.Tblemployee;
+import myproject.models.Tblschedule;
+import myproject.models.Tblusers;
+import myproject.repositories.EmployeeRepository;
 import myproject.repositories.ScheduleRepository;
 import myproject.repositories.DayRepository;
 import myproject.repositories.UserRepository;
@@ -47,6 +51,9 @@ public class CalendarController implements Initializable {
     private ScheduleRepository scheduleRepository;
 
     @Autowired
+    private EmployeeRepository employeeRepository;
+
+    @Autowired
     private DayRepository dayRepository;
 
     @Autowired
@@ -68,14 +75,17 @@ public class CalendarController implements Initializable {
         System.out.println("Current user is " + currentUser);
 
         //get the current user as an object
-        TblUsers user = userRepository.findUsername(currentUser);
+        Tblusers user = userRepository.findUsername(currentUser);
+
+        //get the user's employee profile
+        Tblemployee userEmp = user.getEmployee();
 
         //make a set of their availabilities
-        Set<TblAvailability> availabilitySet = user.getAvailabilities();
+        Set<Tblschedule> scheduleSet = userEmp.getSchedules();
 
         try {
             //find the day of the week for each availability using function
-            assignBasedOnDay(availabilitySet);
+            assignBasedOnDay(scheduleSet);
         } catch (Exception e) {
                 e.printStackTrace();
 
@@ -89,24 +99,24 @@ public class CalendarController implements Initializable {
 
     }
 
-    public void assignBasedOnDay(Set<TblAvailability> availability){
+    public void assignBasedOnDay(Set<Tblschedule> schedule){
         //format java.sql.Time values to 12-hr clock
         SimpleDateFormat sdfAM = new SimpleDateFormat("hh:mm a");
 
-        //check the day of week for each availability and assign to appropriate label
-        for(TblAvailability a : availability){
-        switch (a.getDay().getDayDesc()) {
+        //check the day of week for each schedule and assign to appropriate label
+        for(Tblschedule s : schedule){
+        switch (s.getDay().getDayDesc()) {
             case "Monday":
-                availabilityLabelMon1.setText(sdfAM.format(a.getTimeBegin()) + " to "
-                        + sdfAM.format(a.getTimeEnd()));
+                availabilityLabelMon1.setText(sdfAM.format(s.getScheduleTimeBegin()) + " to "
+                        + sdfAM.format(s.getScheduleTimeEnd()));
                 continue;
             case "Sunday":
-                availabilityLabelSun1.setText(sdfAM.format(a.getTimeBegin()) + " to "
-                        + sdfAM.format(a.getTimeEnd()));
+                availabilityLabelSun1.setText(sdfAM.format(s.getScheduleTimeBegin()) + " to "
+                        + sdfAM.format(s.getScheduleTimeEnd()));
                 continue;
             case "Saturday":
-                availabilityLabelSat1.setText(sdfAM.format(a.getTimeBegin()) + " to "
-                        + sdfAM.format(a.getTimeEnd()));
+                availabilityLabelSat1.setText(sdfAM.format(s.getScheduleTimeBegin()) + " to "
+                        + sdfAM.format(s.getScheduleTimeEnd()));
                 continue;
             default:
                 //Other days do not have labels yet, so output this temporarily

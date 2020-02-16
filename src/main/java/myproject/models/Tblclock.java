@@ -9,8 +9,8 @@ import java.util.Set;
 @Table(name = "tblclock")
 public class Tblclock {
     private int clockId;
-    private Timestamp punchIn;
-    private Timestamp punchOut;
+    private java.sql.Time punchIn;
+    private java.sql.Time punchOut;
     Tblschedule schedule;
 
     //many clock-ins/outs can be used for one schedule
@@ -37,21 +37,21 @@ public class Tblclock {
 
     @Basic
     @Column(name = "punch_in")
-    public Timestamp getPunchIn() {
+    public java.sql.Time getPunchIn() {
         return punchIn;
     }
 
-    public void setPunchIn(Timestamp punchIn) {
+    public void setPunchIn(java.sql.Time punchIn) {
         this.punchIn = punchIn;
     }
 
     @Basic
     @Column(name = "punch_out")
-    public Timestamp getPunchOut() {
+    public java.sql.Time getPunchOut() {
         return punchOut;
     }
 
-    public void setPunchOut(Timestamp punchOut) {
+    public void setPunchOut(java.sql.Time punchOut) {
         this.punchOut = punchOut;
     }
 
