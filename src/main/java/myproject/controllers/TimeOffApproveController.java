@@ -5,8 +5,6 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -17,10 +15,11 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
+import java.sql.Date;
 import java.util.ResourceBundle;
 
 @Component
-public class TimeOffController implements Initializable {
+public class TimeOffApproveController implements Initializable {
 
     @Autowired
     private ConfigurableApplicationContext springContext;
@@ -31,20 +30,17 @@ public class TimeOffController implements Initializable {
     @Autowired
     private UserRepository userRepository;
 
-    @FXML
-    public Label tableUserLabel;
-
-    @FXML
-    public DatePicker timeOffDatePicker;
-
     /*@FXML
     public TableView<TblTimeOff> timeOffTable;
 
     @FXML
-    public TableColumn<TblTimeOff, java.sql.Date> timeOffDateCol;
+    public TableColumn<TblTimeOff, Date> timeOffDateCol;
 
     @FXML
     public TableColumn<TblTimeOff, String> approveTimeOffCol;
+
+    @FXML
+    public TableColumn<TblTimeOff, String> userTimeOffCol;
 
     private ObservableList<TblTimeOff> listOfTimeOffs;
     private FilteredList<TblTimeOff> filteredListOfTimeOff;
@@ -53,12 +49,10 @@ public class TimeOffController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        //get the current user (String) from LoginController
-        /*String currentUser = LoginController.userStore;
-        tableUserLabel.setText("Time Off Requests for " + currentUser);
+
         //Initialize the observable list and add all the time offs to the list
-        listOfTimeOffs = FXCollections.observableArrayList();
-        listOfTimeOffs.addAll(timeOffRepository.findAllTimeOffByUser(currentUser));
+        /*listOfTimeOffs = FXCollections.observableArrayList();
+        listOfTimeOffs.addAll(timeOffRepository.findAllTimeOff());
 
         reloadTimeOffTableView();
         setDataForTimeOffTableView();
@@ -68,36 +62,29 @@ public class TimeOffController implements Initializable {
         });*/
     }
 
-    /*@FXML
-    public void submitTimeOffRequest(){
-        //get the current user (String) from LoginController
-        String currentUser = LoginController.userStore;
-        TblTimeOff newTimeOff = new TblTimeOff();
-        java.sql.Date newTimeOffDate = java.sql.Date.valueOf(timeOffDatePicker.getValue());
-        newTimeOff.setApproved(false);
-        newTimeOff.setUser(userRepository.findUsername(currentUser));
-        newTimeOff.setTimeOffDate(newTimeOffDate);
+    @FXML
+    private void approveTimeOff(){
 
-        timeOffRepository.save(newTimeOff);
-
-        reloadTimeOffTableView();
     }
 
-    private void setDataForTimeOffTableView(){
+    @FXML
+    private void denyTimeOff(){
+
+    }
+
+    /*private void setDataForTimeOffTableView(){
         timeOffDateCol.setCellValueFactory(new PropertyValueFactory<>("timeOffDate"));
         approveTimeOffCol.setCellValueFactory(new PropertyValueFactory<>("approved"));
+        userTimeOffCol.setCellValueFactory(new PropertyValueFactory<>("user"));
     }
 
     private void reloadTimeOffTableView(){
-        //get the current user (String) from LoginController
-        String currentUser = LoginController.userStore;
         listOfTimeOffs.clear();
 
-        listOfTimeOffs.addAll(timeOffRepository.findAllTimeOffByUser(currentUser));
+        listOfTimeOffs.addAll(timeOffRepository.findAllTimeOff());
 
         filteredListOfTimeOff = new FilteredList<>(listOfTimeOffs);
 
         timeOffTable.setItems(filteredListOfTimeOff);
     }*/
-
 }

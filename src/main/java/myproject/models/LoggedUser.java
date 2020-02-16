@@ -3,9 +3,9 @@ package myproject.models;
 public class LoggedUser {
 
     private static LoggedUser instance;
-    private TblUsers loggedInUser;
+    private Tblusers loggedInUser;
 
-    public LoggedUser(TblUsers loggedInUser) {
+    public LoggedUser(Tblusers loggedInUser) {
         this.loggedInUser = loggedInUser;
     }
 

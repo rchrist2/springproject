@@ -1,22 +1,14 @@
 package myproject.controllers;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
-import javafx.stage.Stage;
-import myproject.ErrorMessages;
-import myproject.models.TblEmployee;
-import myproject.models.TblUsers;
 import myproject.repositories.EmployeeRepository;
 import myproject.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

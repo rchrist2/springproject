@@ -1,11 +1,7 @@
 package myproject.controllers;
 
-import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
-import javafx.scene.layout.GridPane;
-import myproject.models.TblAvailability;
-import myproject.repositories.AvailabilityRepository;
+import myproject.repositories.ScheduleRepository;
 import myproject.repositories.DayRepository;
 import myproject.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +9,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ResourceBundle;
 
 @Component
@@ -25,7 +18,7 @@ public class ClockInOutController implements Initializable {
     private ConfigurableApplicationContext springContext;
 
     @Autowired
-    private AvailabilityRepository availabilityRepository;
+    private ScheduleRepository scheduleRepository;
 
     @Autowired
     private DayRepository dayRepository;
@@ -37,7 +30,7 @@ public class ClockInOutController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
     }
 
-    @FXML
+    /*@FXML
     public void clockIn(){
         //get the current user and create a new availability for them
         String currentUser = LoginController.userStore;
@@ -73,5 +66,5 @@ public class ClockInOutController implements Initializable {
         newAvail2.setTimeEnd(java.sql.Time.valueOf(LocalTime.now()));
 
         availabilityRepository.save(newAvail2);
-    }
+    }*/
 }

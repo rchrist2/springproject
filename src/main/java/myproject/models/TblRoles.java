@@ -2,12 +2,25 @@ package myproject.models;
 
 import javax.persistence.*;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "tblroles")
 public class TblRoles {
     private int roleId;
     private String roleDesc;
+    private Set<Tblemployee> employees;
+
+    //one role can belong to many employees
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "role",cascade = CascadeType.ALL)
+    public Set<Tblemployee> getEmployee() {
+        return employees;
+    }
+
+    public void setEmployee(Set<Tblemployee> employees) {
+        this.employees = employees;
+    }
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

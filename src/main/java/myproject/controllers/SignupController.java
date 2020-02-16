@@ -1,15 +1,12 @@
 package myproject.controllers;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import myproject.ErrorMessages;
-import myproject.models.TblUsers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -20,11 +17,8 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Component;
 
 import javax.mail.*;
-import javax.mail.internet.*;
-import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Date;
 import java.util.Properties;
 import java.util.ResourceBundle;
 

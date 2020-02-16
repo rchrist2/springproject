@@ -8,9 +8,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 import myproject.ErrorMessages;
-import myproject.models.TblAvailability;
-import myproject.models.TblUsers;
-import myproject.repositories.AvailabilityRepository;
+import myproject.repositories.ScheduleRepository;
 import myproject.repositories.DayRepository;
 import myproject.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +43,7 @@ public class CalendarController implements Initializable {
     private ConfigurableApplicationContext springContext;
 
     @Autowired
-    private AvailabilityRepository availabilityRepository;
+    private ScheduleRepository scheduleRepository;
 
     @Autowired
     private DayRepository dayRepository;

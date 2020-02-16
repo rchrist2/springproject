@@ -9,20 +9,22 @@ import java.util.Set;
 public class TblDay {
     private int dayId;
     private String dayDesc;
-    private Set<TblAvailability> availabilities;
+    private Set<Tblschedule> schedules;
 
+    //one day can be used in many schedules
     @OneToMany(fetch = FetchType.EAGER,mappedBy = "day",cascade = CascadeType.ALL)
-    public Set<TblAvailability> getAvailabilities() {
-        return availabilities;
+    public Set<Tblschedule> getSchedules() {
+        return schedules;
     }
 
-    public void setAvailabilities(Set<TblAvailability> availabilities) {
-        this.availabilities = availabilities;
+    public void setSchedules(Set<Tblschedule> schedules) {
+        this.schedules = schedules;
     }
 
 
     @Id
-    @Column(name = "Day_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "day_id")
     public int getDayId() {
         return dayId;
     }
@@ -32,7 +34,7 @@ public class TblDay {
     }
 
     @Basic
-    @Column(name = "Day_Desc")
+    @Column(name = "day_desc")
     public String getDayDesc() {
         return dayDesc;
     }

@@ -16,7 +16,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import myproject.ErrorMessages;
 import myproject.models.LoggedUser;
-import myproject.models.TblUsers;
+import myproject.models.Tblusers;
 import myproject.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -65,7 +65,7 @@ public class LoginController implements Initializable {
     @FXML
     private void signinUser(ActionEvent event){
         //find user and pass in db to login
-        TblUsers currentUser = userRepository.findUserLogin(usernameText.getText(), passwordText.getText());
+        Tblusers currentUser = userRepository.findUserLogin(usernameText.getText(), passwordText.getText());
         System.out.println(currentUser);
 
         if(currentUser != null){
