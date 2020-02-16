@@ -2,6 +2,7 @@ package myproject.controllers;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -51,7 +52,7 @@ public class CalendarController implements Initializable {
     @Autowired
     private UserRepository userRepository;
 
-    private ArrayList<VBox> calendarDays = new ArrayList<>(35);
+    private ArrayList<VBox> calendarDays = new ArrayList<>(42);
 
     private static YearMonth currentYearAndMonth;
 
@@ -121,7 +122,7 @@ public class CalendarController implements Initializable {
 
         //currentYearAndMonth = YearMonth.now();
 
-        int rows = 5, columns = 7;
+        int rows = 6, columns = 7;
 
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < columns; c++) {
@@ -142,7 +143,9 @@ public class CalendarController implements Initializable {
     private void refreshCalendar(YearMonth currentYearMonth){
         int year = currentYearMonth.getYear();
         int month = currentYearMonth.getMonthValue();
-        int offsetDays = 0;
+        int offsetByPrevMonthDays = 0;
+        int maxDaysInMonth = currentYearMonth.lengthOfMonth();
+        int offsetByNextMonthDays = 1;
 
         LocalDate localDate = LocalDate.of(year, month, 1);
         System.out.println(year + ", " + month );
@@ -160,11 +163,12 @@ public class CalendarController implements Initializable {
         */
         while (!localDate.getDayOfWeek().toString().equals("SUNDAY") ) {
             localDate = localDate.minusDays(1);
-            offsetDays++;
+            offsetByPrevMonthDays++;
         }
 
         //Goes through each day of the month
         for(VBox dayBox : calendarDays){
+            String dayLabelStyle = "-fx-padding: 0 0 0 5;";
 
             //Delete everything inside of each day box
             if(dayBox.getChildren().size() != 0){
@@ -173,30 +177,75 @@ public class CalendarController implements Initializable {
                 } while (dayBox.getChildren().size() != 0);
             }
 
-            System.out.println(localDate.getDayOfMonth() + " :::::: " + localDate.getMonth().maxLength());
-
             //Day label and sets their css
             dayLabel = new Label(String.valueOf(localDate.getDayOfMonth()));
             dayLabel.setTextAlignment(TextAlignment.LEFT);
-            dayLabel.setStyle("-fx-padding: 0 0 0 5");
+
+            //Sets the style of the boxes that are not a part of the current month
+            if(offsetByPrevMonthDays != 0) {
+                dayLabelStyle += "-fx-text-fill: #A9A9A9";
+
+                //Offset the days from the next month
+                offsetByNextMonthDays--;
+
+                //Offset the days from the previous months days
+                offsetByPrevMonthDays--;
+            }else {
+
+                //If days exceed max day sin month grey out the day label
+                if (offsetByNextMonthDays > maxDaysInMonth) {
+                    dayLabelStyle += "-fx-text-fill: #A9A9A9";
+                }
+            }
+
+            System.out.println("Current style: " + dayLabelStyle);
+            //Sets the style of the day label
+            dayLabel.setStyle(dayLabelStyle);
 
             //vBox holding each employee hour
             employeeHoursBox = new VBox();
             employeeHoursBox.setSpacing(5);
-
-            //Sets the style of the boxes that are not a part of the current month
-            if(offsetDays != 0) {
-                dayLabel.setStyle("-fx-padding: 0 0 0 5; -fx-text-fill: #A9A9A9");
-                offsetDays--;
-            }
 
             //Add the day number and employee vBox into the Day Box
             dayBox.getChildren().addAll(dayLabel, employeeHoursBox);
 
             //Add 1 to the day
             localDate = localDate.plusDays(1);
+            offsetByNextMonthDays++;
         }
     }
+
+    //Populates the calendar with availabilities
+    private void populateCalendarWithAvalabilities(){
+        ArrayList<Label> employeeScheduleLabel = new ArrayList<>();
+
+        //TODO Get all the employee's schedule for the current month, then add it into the list
+        // (When new Database gets implemented)
+        //.....
+
+
+        //TODO Maybe check the time off and remove it from the list so it doesn't show in the calendar later
+        // (When new Database gets implemented)
+        //...
+
+
+        for (VBox day : calendarDays){
+
+            //Grab the vBox (with the employee hour labels) within the outer vBox container
+            VBox currentDayEmpHoursBox = (VBox) day.getChildren().get(1);
+
+            //Delete everything inside of the employee hours vbox
+            if(currentDayEmpHoursBox.getChildren().size() != 0){
+                do {
+                    currentDayEmpHoursBox.getChildren().remove(0);
+                } while (currentDayEmpHoursBox.getChildren().size() != 0);
+            }
+
+
+
+        }
+    }
+
 
     @FXML
     private void handlePreviousMonth(){
