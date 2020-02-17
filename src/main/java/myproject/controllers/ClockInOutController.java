@@ -43,9 +43,9 @@ public class ClockInOutController implements Initializable {
 
     public ObservableList<Tblschedule> scheduleData = FXCollections.observableArrayList();
 
+
     @FXML
     public ComboBox<Tblschedule> scheduleList;
-
     @FXML
     public Label feedbackLabel;
 
@@ -53,6 +53,8 @@ public class ClockInOutController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         //get the current user and create a new availability for them
         String currentUser = LoginController.userStore;
+
+        //TODO sort with most recent date listed first
         scheduleData.addAll(scheduleRepository.findScheduleForUser(currentUser));
 
         scheduleList.setItems(scheduleData);

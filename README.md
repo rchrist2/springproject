@@ -53,8 +53,8 @@ CREATE TABLE tblemployee (
 
 CREATE TABLE tbltimeoff(
 	time_off_id int not null identity(1,1) primary key,
-	begin_time_off_date datetime not null,
-	end_time_off_date datetime not null,
+	begin_time_off_date time not null,
+	end_time_off_date time not null,
 	approved bit NOT NULL,
 	reason_desc varchar(128) not null,
 	schedule_id int not null FOREIGN KEY REFERENCES tblschedule(schedule_id)

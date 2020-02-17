@@ -10,14 +10,15 @@ import java.util.List;
 
 @Repository
 public interface TimeOffRepository extends CrudRepository<Tbltimeoff, Integer> {
-/*
+
     //Returns a list of all time offs by user
-    @Query(value = "SELECT * FROM tbltimeoff t JOIN tblusers u ON t.User_ID=u.User_ID " +
+    @Query(value = "SELECT * FROM tbltimeoff t JOIN tblschedule s ON t.schedule_id=s.schedule_id" +
+            " JOIN tblemployee e ON e.id=s.employee_id JOIN tblusers u ON u.employee_id=e.id " +
             "WHERE Username = :username", nativeQuery = true)
-    List<TblTimeOff> findAllTimeOffByUser(@Param("username") String user);
+    List<Tbltimeoff> findAllTimeOffByUser(@Param("username") String user);
 
     //Returns a list of all time offs
     @Query(value = "SELECT * FROM tbltimeoff ", nativeQuery = true)
-    List<TblTimeOff> findAllTimeOff();
-*/
+    List<Tbltimeoff> findAllTimeOff();
+
 }

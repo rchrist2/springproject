@@ -8,14 +8,14 @@ import java.util.Objects;
 @Table(name = "tbltimeoff")
 public class Tbltimeoff {
     private int timeOffId;
-    private Timestamp beginTimeOffDate;
-    private Timestamp endTimeOffDate;
+    private java.sql.Time beginTimeOffDate;
+    private java.sql.Time endTimeOffDate;
     private boolean approved;
     private String reasonDesc;
     private Tblschedule schedule;
 
     //one time off request can belong to only one schedule
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "schedule_id", referencedColumnName = "schedule_id")
     public Tblschedule getSchedule() {
         return schedule;
@@ -38,21 +38,21 @@ public class Tbltimeoff {
 
     @Basic
     @Column(name = "begin_time_off_date")
-    public Timestamp getBeginTimeOffDate() {
+    public java.sql.Time getBeginTimeOffDate() {
         return beginTimeOffDate;
     }
 
-    public void setBeginTimeOffDate(Timestamp beginTimeOffDate) {
+    public void setBeginTimeOffDate(java.sql.Time beginTimeOffDate) {
         this.beginTimeOffDate = beginTimeOffDate;
     }
 
     @Basic
     @Column(name = "end_time_off_date")
-    public Timestamp getEndTimeOffDate() {
+    public java.sql.Time getEndTimeOffDate() {
         return endTimeOffDate;
     }
 
-    public void setEndTimeOffDate(Timestamp endTimeOffDate) {
+    public void setEndTimeOffDate(java.sql.Time endTimeOffDate) {
         this.endTimeOffDate = endTimeOffDate;
     }
 
