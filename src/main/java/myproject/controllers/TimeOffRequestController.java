@@ -1,5 +1,6 @@
 package myproject.controllers;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -20,6 +21,9 @@ import org.springframework.stereotype.Component;
 
 import java.net.URL;
 import java.sql.Time;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
@@ -53,13 +57,16 @@ public class TimeOffRequestController implements Initializable {
     public TableColumn<Tbltimeoff, java.sql.Date> scheduleDateCol;
 
     @FXML
-    public TableColumn<Tbltimeoff, java.sql.Time> beginTimeCol;
+    public TableColumn<Tbltimeoff, String> beginTimeCol;
 
     @FXML
-    public TableColumn<Tbltimeoff, java.sql.Time> endTimeCol;
+    public TableColumn<Tbltimeoff, String> endTimeCol;
 
     @FXML
     public TableColumn<Tbltimeoff, String> approveTimeOffCol;
+
+    @FXML
+    public TableColumn<Tbltimeoff, String> reasonTimeOffCol;
 
     @FXML
     public ComboBox<Tblschedule> scheduleList;
@@ -72,6 +79,10 @@ public class TimeOffRequestController implements Initializable {
     public ComboBox<Integer> endHrList;
     @FXML
     public ComboBox<Integer> endMinList;
+    @FXML
+    public ComboBox<String> beginPMList;
+    @FXML
+    public ComboBox<String> endPMList;
 
     @FXML
     public TextArea reasonInput;
@@ -81,11 +92,17 @@ public class TimeOffRequestController implements Initializable {
     private ObservableList<Tbltimeoff> listOfTimeOffs;
     private FilteredList<Tbltimeoff> filteredListOfTimeOff;
 
-    private ObservableList<Integer> hrList = FXCollections.observableArrayList();
+    private ObservableList<Integer> hrList =
+            FXCollections.observableArrayList(IntStream.rangeClosed(1,12).boxed().collect(Collectors.toList()));
     private FilteredList<Integer> filteredHrList;
 
-    private ObservableList<Integer> minList = FXCollections.observableArrayList();
+    private ObservableList<Integer> minList =
+            FXCollections.observableArrayList(IntStream.rangeClosed(0,59).boxed().collect(Collectors.toList()));
     private FilteredList<Integer> filteredMinList;
+
+    private ObservableList<String> pmList =
+            FXCollections.observableArrayList(Arrays.asList("AM","PM"));
+    private FilteredList<String> filteredPMList;
 
     public Tbltimeoff selectedTimeOff;
 
@@ -99,15 +116,13 @@ public class TimeOffRequestController implements Initializable {
         listOfTimeOffs = FXCollections.observableArrayList();
         listOfTimeOffs.addAll(timeOffRepository.findAllTimeOffByUser(currentUser));
 
+        //initialize the schedule dates for the current user
         scheduleData.addAll(scheduleRepository.findScheduleForUser(currentUser));
         scheduleList.setItems(scheduleData);
 
-        //TODO allow user to select AM/PM or just use 24 hour clock
-        List<Integer> hrRange = IntStream.rangeClosed(1,12).boxed().collect(Collectors.toList());
-        List<Integer> minRange = IntStream.rangeClosed(0,59).boxed().collect(Collectors.toList());
-
-        hrList.addAll(hrRange);
-        minList.addAll(minRange);
+        //fill the hour, minute, and AM/PM comboboxes with values
+        beginPMList.setItems(pmList);
+        endPMList.setItems(pmList);
 
         beginHrList.setItems(hrList);
         beginMinList.setItems(minList);
@@ -126,11 +141,29 @@ public class TimeOffRequestController implements Initializable {
     public void submitTimeOffRequest(){
         //get the current user (String) from LoginController
         String currentUser = LoginController.userStore;
+
         Tbltimeoff newTimeOff = new Tbltimeoff();
-        newTimeOff.setBeginTimeOffDate(Time.valueOf(beginHrList.getSelectionModel().getSelectedItem().toString()
-        + ":" + beginMinList.getSelectionModel().getSelectedItem().toString() + ":00"));
-        newTimeOff.setEndTimeOffDate(Time.valueOf(endHrList.getSelectionModel().getSelectedItem().toString()
-                + ":" + endMinList.getSelectionModel().getSelectedItem().toString() + ":00"));
+
+        //convert combobox values to 24 hour clock depending if AM or PM was selected
+        if(beginPMList.getSelectionModel().getSelectedItem().equals("AM"))
+        {
+            newTimeOff.setBeginTimeOffDate(Time.valueOf(beginHrList.getSelectionModel().getSelectedItem().toString()
+                    + ":" + beginMinList.getSelectionModel().getSelectedItem().toString() + ":00"));
+        }
+        else if(beginPMList.getSelectionModel().getSelectedItem().equals("PM")){
+            newTimeOff.setBeginTimeOffDate(Time.valueOf((beginHrList.getSelectionModel().getSelectedItem() + 12)
+                    + ":" + beginMinList.getSelectionModel().getSelectedItem().toString() + ":00"));
+        }
+
+        if(endPMList.getSelectionModel().getSelectedItem().equals("AM")){
+            newTimeOff.setEndTimeOffDate(Time.valueOf(endHrList.getSelectionModel().getSelectedItem().toString()
+                    + ":" + endMinList.getSelectionModel().getSelectedItem().toString() + ":00"));
+        }
+        else if(endPMList.getSelectionModel().getSelectedItem().equals("PM")){
+            newTimeOff.setEndTimeOffDate(Time.valueOf((endHrList.getSelectionModel().getSelectedItem() + 12)
+                    + ":" + endMinList.getSelectionModel().getSelectedItem().toString() + ":00"));
+        }
+
         newTimeOff.setApproved(false);
         newTimeOff.setReasonDesc(reasonInput.getText());
         newTimeOff.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
@@ -141,11 +174,25 @@ public class TimeOffRequestController implements Initializable {
     }
 
     private void setDataForTimeOffTableView(){
-        //TODO Show column time values as AM/PM
         scheduleDateCol.setCellValueFactory(new PropertyValueFactory<>("schedule"));
-        beginTimeCol.setCellValueFactory(new PropertyValueFactory<>("beginTimeOffDate"));
-        endTimeCol.setCellValueFactory(new PropertyValueFactory<>("endTimeOffDate"));
+
+        //using lambda to display with AM and PM
+        beginTimeCol.setCellValueFactory(Tbltimeoff -> {
+            SimpleStringProperty property = new SimpleStringProperty();
+            SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
+            property.setValue(timeFormat.format(Tbltimeoff.getValue().getBeginTimeOffDate()));
+            return property;
+        });
+
+        endTimeCol.setCellValueFactory(Tbltimeoff -> {
+            SimpleStringProperty property = new SimpleStringProperty();
+            SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
+            property.setValue(timeFormat.format(Tbltimeoff.getValue().getEndTimeOffDate()));
+            return property;
+        });
+
         approveTimeOffCol.setCellValueFactory(new PropertyValueFactory<>("approved"));
+        reasonTimeOffCol.setCellValueFactory(new PropertyValueFactory<>("reasonDesc"));
     }
 
     private void reloadTimeOffTableView(){
@@ -155,6 +202,12 @@ public class TimeOffRequestController implements Initializable {
 
         listOfTimeOffs.addAll(timeOffRepository.findAllTimeOffByUser(currentUser));
         filteredListOfTimeOff = new FilteredList<>(listOfTimeOffs);
+
+        /*List<String> pmRange = Arrays.asList("AM","PM");
+        pmList.addAll(pmRange);
+        filteredPMList = new FilteredList<>(pmList);
+        beginPMList.setItems(filteredPMList);
+        endPMList.setItems(filteredPMList);
 
         List<Integer> hrRange = IntStream.rangeClosed(1,12).boxed().collect(Collectors.toList());
         List<Integer> minRange = IntStream.rangeClosed(0,59).boxed().collect(Collectors.toList());
@@ -168,7 +221,7 @@ public class TimeOffRequestController implements Initializable {
         beginHrList.setItems(filteredHrList);
         beginMinList.setItems(filteredMinList);
         endHrList.setItems(filteredHrList);
-        endMinList.setItems(filteredMinList);
+        endMinList.setItems(filteredMinList);*/
 
         timeOffTable.setItems(filteredListOfTimeOff);
 

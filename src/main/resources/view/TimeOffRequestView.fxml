@@ -46,6 +46,7 @@
             <TableColumn fx:id="beginTimeCol" prefWidth="99.0" text="Begin Time" />
             <TableColumn fx:id="endTimeCol" prefWidth="99.0" text="End Time" />
           <TableColumn fx:id="approveTimeOffCol" prefWidth="82.99998474121094" text="Approved" />
+            <TableColumn fx:id="reasonTimeOffCol" prefWidth="82.99998474121094" text="Reason" />
         </columns>
       </TableView>
       <Label fx:id="tableUserLabel" layoutX="101.0" layoutY="352.0" text="Time Off Requests for User">
@@ -65,18 +66,20 @@
       <ComboBox fx:id="scheduleList" layoutX="439.0" layoutY="161.0" prefWidth="150.0" promptText="Select Schedule" />
       <ComboBox fx:id="beginHrList" layoutX="439.0" layoutY="203.0" prefHeight="25.0" prefWidth="57.0" promptText="hh" />
       <ComboBox fx:id="beginMinList" layoutX="504.0" layoutY="203.0" prefHeight="25.0" prefWidth="63.0" promptText="mm" />
-      <Label layoutX="575.0" layoutY="205.0" text="to">
+      <Label layoutX="671.0" layoutY="205.0" text="to">
          <font>
             <Font name="System Italic" size="15.0" />
          </font>
       </Label>
-      <ComboBox fx:id="endMinList" layoutX="661.0" layoutY="203.0" prefHeight="25.0" prefWidth="63.0" promptText="mm" />
-      <ComboBox fx:id="endHrList" layoutX="596.0" layoutY="203.0" prefHeight="25.0" prefWidth="57.0" promptText="hh" />
+      <ComboBox fx:id="endMinList" layoutX="765.0" layoutY="203.0" prefHeight="25.0" prefWidth="63.0" promptText="mm" />
+      <ComboBox fx:id="endHrList" layoutX="700.0" layoutY="203.0" prefHeight="25.0" prefWidth="57.0" promptText="hh" />
       <TextArea fx:id="reasonInput" layoutX="440.0" layoutY="254.0" prefHeight="43.0" prefWidth="284.0" />
       <Label layoutX="310.0" layoutY="262.0" text="Explain Reason:">
          <font>
             <Font name="System Italic" size="18.0" />
          </font>
       </Label>
+      <ComboBox fx:id="beginPMList" layoutX="574.0" layoutY="203.0" prefHeight="25.0" prefWidth="81.0" promptText="am/pm" />
+      <ComboBox fx:id="endPMList" layoutX="834.0" layoutY="203.0" prefHeight="25.0" prefWidth="81.0" promptText="am/pm" />
    </children>
 </AnchorPane>

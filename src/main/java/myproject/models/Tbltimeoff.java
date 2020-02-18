@@ -2,6 +2,7 @@ package myproject.models;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Objects;
 
 @Entity
@@ -92,4 +93,5 @@ public class Tbltimeoff {
     public int hashCode() {
         return Objects.hash(timeOffId, beginTimeOffDate, endTimeOffDate, approved, reasonDesc);
     }
+
 }
