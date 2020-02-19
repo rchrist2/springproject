@@ -17,6 +17,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Component;
 
 import javax.mail.*;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Properties;
@@ -75,13 +76,16 @@ public class SignupController implements Initializable {
 
     //maybe move this to a different class
     @Bean
-    public JavaMailSender getJavaMailSender() {
+    public JavaMailSender getJavaMailSender() throws IOException {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost("smtp.gmail.com");
         mailSender.setPort(587);
 
         //used to take properties from .properties file for username/password
+        FileInputStream input = null;
         Properties props1 = new Properties();
+        input = new FileInputStream("src/main/resources/application.properties");
+        props1.load(input );
 
         //this is set here and in application.properties
         mailSender.setUsername(props1.getProperty("spring.mail.username"));

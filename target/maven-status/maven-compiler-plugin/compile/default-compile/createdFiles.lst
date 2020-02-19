@@ -1,5 +1,4 @@
 myproject\models\TblDay.class
-myproject\controllers\YearMonthInstance.class
 myproject\models\TblRoles.class
 myproject\controllers\ClockInOutController.class
 myproject\controllers\DashboardController.class
