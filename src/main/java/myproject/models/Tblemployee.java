@@ -12,9 +12,22 @@ public class Tblemployee {
     private String email;
     private String address;
     private String phone;
-    private Set<Tblschedule> schedules;
     private TblRoles role;
+
+    private Set<Tblschedule> schedules;
     private Tblusers user;
+
+    public Tblemployee() {
+    }
+
+    public Tblemployee(String name, String email, String address, String phone, TblRoles role) {
+        this.name = name;
+        this.email = email;
+        this.address = address;
+        this.phone = phone;
+        this.role = role;
+        this.schedules = null;
+    }
 
     //one employee can only have one user account
     @OneToOne(mappedBy = "employee")
@@ -46,6 +59,18 @@ public class Tblemployee {
     public void setSchedules(Set<Tblschedule> schedules) {
         this.schedules = schedules;
     }
+
+/*    //add schedule to this employee
+    public void addSchedule(Tblschedule schedule){
+        schedules.add(schedule);
+        schedule.setEmployee(this);
+    }
+
+    //remove schedule from this employee
+    public void removeSchedule(Tblschedule schedule){
+        schedules.remove(schedule);
+        schedule.setEmployee(null);
+    }*/
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

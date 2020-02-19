@@ -1,4 +1,4 @@
-package myproject.controllers;
+package myproject.models;
 
 import java.time.YearMonth;
 

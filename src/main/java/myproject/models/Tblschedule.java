@@ -1,21 +1,41 @@
 package myproject.models;
 
 import javax.persistence.*;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Objects;
 import java.util.Set;
+import java.sql.Time;
 
 @Entity
 @Table(name = "tblschedule")
 public class Tblschedule {
     private int scheduleId;
-    private java.sql.Time scheduleTimeBegin;
-    private java.sql.Time scheduleTimeEnd;
-    private Timestamp scheduleDate;
+    private Time scheduleTimeBegin;
+    private Time scheduleTimeEnd;
+    private Date scheduleDate;
     private Tbltimeoff timeOff;
     private Set<Tblclock> clocks;
+
     Tblemployee employee;
     TblDay day;
+
+    public Tblschedule() {
+    }
+
+    public Tblschedule(Time scheduleTimeBegin, Time scheduleTimeEnd, Date scheduleDate, Tblemployee employee, TblDay day) {
+        this.scheduleTimeBegin = scheduleTimeBegin;
+        this.scheduleTimeEnd = scheduleTimeEnd;
+        this.scheduleDate = scheduleDate;
+        this.employee = employee;
+        this.day = day;
+    }
+
+    public Tblschedule(Time scheduleTimeBegin, Time scheduleTimeEnd, TblDay day) {
+        this.scheduleTimeBegin = scheduleTimeBegin;
+        this.scheduleTimeEnd = scheduleTimeEnd;
+        this.day = day;
+    }
 
     //a schedule can only have one time off request
     @OneToOne(mappedBy = "schedule")
@@ -72,31 +92,31 @@ public class Tblschedule {
 
     @Basic
     @Column(name = "schedule_time_begin")
-    public java.sql.Time getScheduleTimeBegin() {
+    public Time getScheduleTimeBegin() {
         return scheduleTimeBegin;
     }
 
-    public void setScheduleTimeBegin(java.sql.Time scheduleTimeBegin) {
+    public void setScheduleTimeBegin(Time scheduleTimeBegin) {
         this.scheduleTimeBegin = scheduleTimeBegin;
     }
 
     @Basic
     @Column(name = "schedule_time_end")
-    public java.sql.Time getScheduleTimeEnd() {
+    public Time getScheduleTimeEnd() {
         return scheduleTimeEnd;
     }
 
-    public void setScheduleTimeEnd(java.sql.Time scheduleTimeEnd) {
+    public void setScheduleTimeEnd(Time scheduleTimeEnd) {
         this.scheduleTimeEnd = scheduleTimeEnd;
     }
 
     @Basic
     @Column(name = "schedule_date")
-    public Timestamp getScheduleDate() {
+    public Date getScheduleDate() {
         return scheduleDate;
     }
 
-    public void setScheduleDate(Timestamp scheduleDate) {
+    public void setScheduleDate(Date scheduleDate) {
         this.scheduleDate = scheduleDate;
     }
 
@@ -117,7 +137,11 @@ public class Tblschedule {
     }
 
     @Override
-    public String toString(){
-        return this.scheduleDate.toString();
+    public String toString() {
+        return "Tblschedule{" +
+                "scheduleTimeBegin=" + scheduleTimeBegin +
+                ", scheduleTimeEnd=" + scheduleTimeEnd +
+                ", Day=" + day.getDayDesc() +
+                '}';
     }
 }

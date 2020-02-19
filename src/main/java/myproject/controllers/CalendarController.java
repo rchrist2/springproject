@@ -2,16 +2,17 @@ package myproject.controllers;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import myproject.ErrorMessages;
 import myproject.models.Tblemployee;
 import myproject.models.Tblschedule;
 import myproject.models.Tblusers;
+import myproject.models.YearMonthInstance;
 import myproject.repositories.EmployeeRepository;
 import myproject.repositories.ScheduleRepository;
 import myproject.repositories.DayRepository;
@@ -24,6 +25,7 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Component
@@ -99,6 +101,9 @@ public class CalendarController implements Initializable {
 
     }
 
+    /*
+    TODO I was able to make the schedules wor
+     */
     public void assignBasedOnDay(Set<Tblschedule> schedule){
         //format java.sql.Time values to 12-hr clock
         SimpleDateFormat sdfAM = new SimpleDateFormat("hh:mm a");
@@ -157,6 +162,9 @@ public class CalendarController implements Initializable {
         int maxDaysInMonth = currentYearMonth.lengthOfMonth();
         int offsetByNextMonthDays = 1;
 
+        //Stores all the schedules in a list to be taken out later
+        List<Tblschedule> allSchedules = scheduleRepository.findAll();
+
         LocalDate localDate = LocalDate.of(year, month, 1);
         System.out.println(year + ", " + month );
 
@@ -208,13 +216,39 @@ public class CalendarController implements Initializable {
                 }
             }
 
-            System.out.println("Current style: " + dayLabelStyle);
             //Sets the style of the day label
             dayLabel.setStyle(dayLabelStyle);
 
             //vBox holding each employee hour
             employeeHoursBox = new VBox();
             employeeHoursBox.setSpacing(5);
+
+
+
+            //=======Experimental=======
+
+            String day = localDate.getDayOfWeek().toString();
+
+            String strDateFormat = "HH:mm a";
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(strDateFormat);
+
+            System.out.println("Current Day: " + day);
+            for (Tblschedule tblschedule : allSchedules) {
+                if (tblschedule.getDay().getDayDesc().toLowerCase().equals(day.toLowerCase())){
+
+                    Label employeeWorkDayLabel = new Label();
+                    employeeWorkDayLabel.setTextAlignment(TextAlignment.LEFT);
+                    employeeWorkDayLabel.setFont(Font.font("System", 10));
+                    employeeWorkDayLabel.setText(tblschedule.getEmployee().getName() + "\t" + (tblschedule.getScheduleTimeBegin()).toLocalTime().format(dateTimeFormatter) + " - "
+                            + (tblschedule.getScheduleTimeEnd()).toLocalTime().format(dateTimeFormatter));
+
+                    employeeHoursBox.getChildren().add(employeeWorkDayLabel);
+
+                }
+            }
+
+            //=======Experimental=======
+
 
             //Add the day number and employee vBox into the Day Box
             dayBox.getChildren().addAll(dayLabel, employeeHoursBox);
@@ -224,38 +258,6 @@ public class CalendarController implements Initializable {
             offsetByNextMonthDays++;
         }
     }
-
-    //Populates the calendar with availabilities
-    private void populateCalendarWithAvalabilities(){
-        ArrayList<Label> employeeScheduleLabel = new ArrayList<>();
-
-        //TODO Get all the employee's schedule for the current month, then add it into the list
-        // (When new Database gets implemented)
-        //.....
-
-
-        //TODO Maybe check the time off and remove it from the list so it doesn't show in the calendar later
-        // (When new Database gets implemented)
-        //...
-
-
-        for (VBox day : calendarDays){
-
-            //Grab the vBox (with the employee hour labels) within the outer vBox container
-            VBox currentDayEmpHoursBox = (VBox) day.getChildren().get(1);
-
-            //Delete everything inside of the employee hours vbox
-            if(currentDayEmpHoursBox.getChildren().size() != 0){
-                do {
-                    currentDayEmpHoursBox.getChildren().remove(0);
-                } while (currentDayEmpHoursBox.getChildren().size() != 0);
-            }
-
-
-
-        }
-    }
-
 
     @FXML
     private void handlePreviousMonth(){

@@ -23,13 +23,18 @@
             </Pane>
             <TableView fx:id="employeeTableView" prefHeight="545.0" prefWidth="985.0" stylesheets="@../css/Dashboard.css">
                <columns>
-                  <TableColumn fx:id="idColumn" prefWidth="75.0" text="ID" />
-                  <TableColumn fx:id="nameColumn" prefWidth="193.0" text="Name" />
-                  <TableColumn fx:id="emailColumn" prefWidth="195.0" text="Email" />
-                  <TableColumn fx:id="addressColumn" prefWidth="249.0" text="Address" />
-                  <TableColumn fx:id="phoneColumn" prefWidth="164.0" text="Phone" />
-                  <TableColumn fx:id="roleColumn" prefWidth="77.0" text="Role" />
+                  <TableColumn fx:id="nameColumn" prefWidth="106.0" text="Name" />
+                  <TableColumn fx:id="emailColumn" prefWidth="148.0" text="Email" />
+                  <TableColumn fx:id="addressColumn" prefWidth="160.0" text="Address" />
+                  <TableColumn fx:id="phoneColumn" prefWidth="90.0" text="Phone" />
+                  <TableColumn fx:id="roleColumn" prefWidth="63.0" text="Role" />
+                  <TableColumn fx:id="startTimeColumn" prefWidth="79.0" text="Start Time" />
+                  <TableColumn fx:id="endTimeColumn" text="End Time" />
+                  <TableColumn fx:id="daysColumn" prefWidth="248.0" text="Days" />
                </columns>
+               <columnResizePolicy>
+                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+               </columnResizePolicy>
             </TableView>
          </children>
          <padding>

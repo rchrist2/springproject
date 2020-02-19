@@ -1,39 +1,64 @@
 package myproject.controllers;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import myproject.ErrorMessages;
+import myproject.models.TblRoles;
 import myproject.models.Tblemployee;
+import myproject.models.Tblschedule;
+import myproject.repositories.DayRepository;
 import myproject.repositories.EmployeeRepository;
+import myproject.repositories.RoleRepository;
+import myproject.repositories.ScheduleRepository;
 import myproject.services.EmployeeService;
+import myproject.services.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
+import java.sql.Date;
+import java.sql.Time;
+import java.time.LocalDate;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 @Component
 public class CrudEmployeeController implements Initializable {
 
     @FXML
     private Button saveButton,
-            cancelButton;
+            cancelButton,
+            deleteDayButton,
+            addDaysButton;
 
     @FXML
     private TextField nameText,
             emailText,
             addressText,
-            phoneText;
+            phoneText,
+            startTimeText,
+            endTimeText;
 
     @FXML
-    private ComboBox<Integer> roleComboBox;
+    private VBox timePerDayVBox;
+
+    @FXML
+    private ListView<String> daysToWorkListView;
+
+    @FXML
+    private ComboBox<String>
+            roleComboBox,
+            daysToWorkComboBox,
+            startCombo,
+            endCombo;
 
     @FXML
     private Label crudEmployeeLabel;
@@ -42,14 +67,26 @@ public class CrudEmployeeController implements Initializable {
     private EmployeeRepository employeeRepository;
     private EmployeeManagementController employeeManagementController;
     private EmployeeService employeeService;
+    private RoleRepository roleRepository;
+    private ScheduleRepository scheduleRepository;
+    private DayRepository dayRepository;
+    private ScheduleService scheduleService;
 
-    private Tblemployee tblEmployee;
+    private ObservableList<String> listOfDaysObs, listOfRoleObs, listOfAMandPM, possibleTimes;
+
+    //The employee returned from the EmployeeManagementController
+    private Tblemployee selectedEmployee;
 
     @Autowired
-    public CrudEmployeeController(ConfigurableApplicationContext springContext, EmployeeRepository employeeRepository, EmployeeService employeeService) {
+    public CrudEmployeeController(ConfigurableApplicationContext springContext, EmployeeRepository employeeRepository, EmployeeService employeeService, RoleRepository roleRepository,
+                                  ScheduleRepository scheduleRepository, DayRepository dayRepository, ScheduleService scheduleService) {
         this.springContext = springContext;
         this.employeeRepository = employeeRepository;
         this.employeeService = employeeService;
+        this.roleRepository = roleRepository;
+        this.scheduleRepository = scheduleRepository;
+        this.dayRepository = dayRepository;
+        this.scheduleService = scheduleService;
     }
 
     public void setController(EmployeeManagementController employeeManagementController) {
@@ -58,7 +95,37 @@ public class CrudEmployeeController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        listOfDaysObs = FXCollections.observableArrayList();
+        listOfRoleObs = FXCollections.observableArrayList();
+        listOfAMandPM = FXCollections.observableArrayList("AM", "PM");
 
+        listOfDaysObs.setAll(dayRepository.findAllDays());
+        listOfRoleObs.setAll(roleRepository.findAllRoleDesc());
+
+        daysToWorkComboBox.setItems(listOfDaysObs);
+        roleComboBox.setItems(listOfRoleObs);
+        startCombo.setItems(listOfAMandPM);
+        endCombo.setItems(listOfAMandPM);
+
+        daysToWorkListView.getSelectionModel().selectedItemProperty().addListener((obs, oldv, newv) -> {
+            if(daysToWorkListView.getSelectionModel().getSelectedItem() != null)
+                deleteDayButton.setDisable(false);
+        });
+
+        daysToWorkComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldv, newv) -> {
+            if(daysToWorkComboBox.getSelectionModel().getSelectedItem() != null)
+                addDaysButton.setDisable(false);
+            else
+                addDaysButton.setDisable(true);
+        });
+
+        possibleTimes = FXCollections.observableArrayList(
+                "01:00:00", "02:00:00", "03:00:00", "04:00:00",
+                "05:00:00", "06:00:00", "07:00:00", "08:00:00",
+                "09:00:00", "10:00:00", "11:00:00", "12:00:00",
+                "13:00:00", "14:00:00", "15:00:00", "16:00:00",
+                "17:00:00", "18:00:00", "19:00:00", "20:00:00",
+                "21:00:00", "22:00:00", "23:00:00", "24:00:00");
 
     }
 
@@ -68,8 +135,8 @@ public class CrudEmployeeController implements Initializable {
     }
 
     public void setEmployee(Tblemployee selectedEmployee){
-        tblEmployee = selectedEmployee;
-        setTextFieldsForEdit(tblEmployee);
+        this.selectedEmployee = selectedEmployee;
+        setTextFieldsForEdit(this.selectedEmployee);
     }
 
     private void setTextFieldsForEdit(Tblemployee emp1){
@@ -81,12 +148,23 @@ public class CrudEmployeeController implements Initializable {
 
     public void handleSaveEmployee(ActionEvent event){
         Button selectedButton = (Button)event.getSource();
-        Tblemployee newEmp = new Tblemployee(/*nameText.getText(), emailText.getText(), addressText.getText(), phoneText.getText()*/);
+        TblRoles selectedRole = roleRepository.findRole(roleComboBox.getSelectionModel().getSelectedIndex() + 1);
+        Tblemployee newEmp = new Tblemployee(nameText.getText(), emailText.getText(), addressText.getText(), phoneText.getText(), selectedRole);
 
         switch (selectedButton.getText()){
             case "Add":
                 try {
                     employeeRepository.save(newEmp);
+
+                    //Save the chosen days for the new employee
+                    for (String days : daysToWorkListView.getItems()) {
+
+                        //TODO Make sure to change the time to the textfield.get() || Create a time formatter for the textfields
+                        Tblschedule newSchedTest = new Tblschedule(Time.valueOf("08:00:00"), Time.valueOf("12:00:00"), Date.valueOf(LocalDate.now()), newEmp, dayRepository.findDay(days));
+
+                        //Save the schedule to the employee
+                        scheduleRepository.save(newSchedTest);
+                    }
 
                     Stage stage = (Stage)saveButton.getScene().getWindow();
                     ErrorMessages.showInformationMessage("Successful", "Employee Success", "Added " + nameText.getText() + " successfully");
@@ -101,11 +179,18 @@ public class CrudEmployeeController implements Initializable {
 
                 Stage stage = (Stage)saveButton.getScene().getWindow();
                 try {
-                    employeeService.updateEmployee(nameText.getText(),
-                            emailText.getText(),
-                            addressText.getText(),
-                            phoneText.getText(),
-                            tblEmployee.getId());
+                        employeeService.updateEmployee(
+                                nameText.getText(),
+                                emailText.getText(),
+                                addressText.getText(),
+                                phoneText.getText(),
+                                selectedEmployee.getId()
+                        );
+
+
+
+
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -114,6 +199,43 @@ public class CrudEmployeeController implements Initializable {
                 stage.close();
                 break;
         }
+    }
+
+    @FXML
+    private void addDaysToList(){
+        String selectedDay = daysToWorkComboBox.getSelectionModel().getSelectedItem();
+        daysToWorkComboBox.getItems().remove(selectedDay);
+
+        HBox hoursForEachDayHBox = new HBox();
+        // Value Factory:
+        SpinnerValueFactory<String> beginTimesToChoose =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(possibleTimes);
+
+        SpinnerValueFactory<String> endTimesToChoose =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(possibleTimes);
+
+            final Spinner<String> beginTimes = new Spinner<>();
+            beginTimes.setValueFactory(beginTimesToChoose);
+
+        final Spinner<String> endTimes = new Spinner<>();
+        endTimes.setValueFactory(endTimesToChoose);
+
+        hoursForEachDayHBox.getChildren().addAll(beginTimes, endTimes);
+
+        timePerDayVBox.getChildren().add(hoursForEachDayHBox);
+        daysToWorkListView.getItems().add(selectedDay);
+
+        daysToWorkComboBox.setValue(null);
+        addDaysButton.setDisable(true);
+    }
+
+    @FXML
+    private void deleteDayFromList(){
+        String selectedDay = daysToWorkListView.getSelectionModel().getSelectedItem();
+        daysToWorkComboBox.getItems().add(selectedDay);
+
+        daysToWorkListView.getItems().remove(selectedDay);
+        deleteDayButton.setDisable(true);
     }
 
     @FXML

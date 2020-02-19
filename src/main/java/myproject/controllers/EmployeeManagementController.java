@@ -1,5 +1,6 @@
 package myproject.controllers;
 
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -15,6 +16,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import myproject.models.Tblemployee;
+import myproject.models.Tblschedule;
 import myproject.repositories.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -39,12 +41,16 @@ public class EmployeeManagementController implements Initializable {
     private TableView<Tblemployee> employeeTableView;
 
     public TableColumn<Tblemployee, String>
-            idColumn,
             nameColumn,
             emailColumn,
             addressColumn,
             phoneColumn,
-            roleColumn;
+            roleColumn,
+            startTimeColumn,
+            endTimeColumn,
+            daysColumn;;
+
+    //public TableColumn<Tblschedule, String>
 
     @Autowired
     private ConfigurableApplicationContext springContext;
@@ -54,8 +60,6 @@ public class EmployeeManagementController implements Initializable {
 
     private ObservableList<Tblemployee> listOfEmployees;
     private FilteredList<Tblemployee> filteredListOfEmployees;
-
-    public Tblemployee selectedEmployee;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -79,12 +83,21 @@ public class EmployeeManagementController implements Initializable {
     }
 
     private void setDataForEmployeeTableView(){
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+//        nameColumn.setCellValueFactory(name -> new ReadOnlyStringWrapper(String.valueOf(name.getValue().getEmployee().getName())));
+//        emailColumn.setCellValueFactory(email -> new ReadOnlyStringWrapper(String.valueOf(email.getValue().getEmployee().getEmail())));
+//        addressColumn.setCellValueFactory(address -> new ReadOnlyStringWrapper(String.valueOf(address.getValue().getEmployee().getAddress())));
+//        phoneColumn.setCellValueFactory(phone -> new ReadOnlyStringWrapper(String.valueOf(phone.getValue().getEmployee().getPhone())));
+//        roleColumn.setCellValueFactory(role -> new ReadOnlyStringWrapper(String.valueOf(role.getValue().getEmployee().getRole().getRoleDesc())));
+
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
         addressColumn.setCellValueFactory(new PropertyValueFactory<>("address"));
         phoneColumn.setCellValueFactory(new PropertyValueFactory<>("phone"));
-        //roleColumn.setCellValueFactory(new PropertyValueFactory<>("role"));
+        roleColumn.setCellValueFactory(new PropertyValueFactory<>("role"));
+/*
+        startTimeColumn.setCellValueFactory(new PropertyValueFactory<>("schedule_time_begin"));
+        endTimeColumn.setCellValueFactory(new PropertyValueFactory<>("schedule_time_end"));
+        daysColumn.setCellValueFactory(days -> new ReadOnlyStringWrapper(days.getValue().getDay().getDayDesc()));*/
     }
 
     @SuppressWarnings("Duplicates")
