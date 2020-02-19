@@ -7,11 +7,11 @@ myproject\controllers\EmployeeManagementController.class
 myproject\models\Tblclock.class
 myproject\models\Tblemployee.class
 myproject\models\Tbltimeoff.class
-myproject\controllers\TimeOffController.class
 myproject\controllers\CalendarController.class
 myproject\controllers\WelcomeController.class
 myproject\repositories\ClockRepository.class
 myproject\ConnectionClass.class
+myproject\controllers\TimeOffRequestController.class
 myproject\controllers\CrudEmployeeController.class
 myproject\repositories\DayRepository.class
 myproject\repositories\ScheduleRepository.class

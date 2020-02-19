@@ -8,7 +8,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="750.0" prefWidth="985.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.TimeOffController">
+<AnchorPane prefHeight="750.0" prefWidth="985.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.TimeOffRequestController">
    <children>
       <Pane prefHeight="115.0" prefWidth="985.0" style="-fx-background-color: linear-gradient(to right, #39a7c3 , white); -fx-border-color: transparent transparent derive(black, 10%) transparent;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -35,26 +35,51 @@
             </VBox>
          </children>
       </Pane>
-      <Label layoutX="302.0" layoutY="209.0" text="Select Date:">
+      <Label layoutX="340.0" layoutY="202.0" text="Select Time:">
          <font>
             <Font name="System Italic" size="18.0" />
          </font>
       </Label>
-      <DatePicker fx:id="timeOffDatePicker" layoutX="406.0" layoutY="210.0" />
-      <TableView fx:id="timeOffTable" layoutX="93.0" layoutY="320.0" prefHeight="411.0" prefWidth="808.0">
+      <TableView fx:id="timeOffTable" layoutX="96.0" layoutY="387.0" prefHeight="350.0" prefWidth="808.0">
         <columns>
-          <TableColumn fx:id="timeOffDateCol" prefWidth="99.0" text="Time Off Date" />
+          <TableColumn fx:id="scheduleDateCol" prefWidth="99.0" text="Schedule Date" />
+            <TableColumn fx:id="beginTimeCol" prefWidth="99.0" text="Begin Time" />
+            <TableColumn fx:id="endTimeCol" prefWidth="99.0" text="End Time" />
           <TableColumn fx:id="approveTimeOffCol" prefWidth="82.99998474121094" text="Approved" />
+            <TableColumn fx:id="reasonTimeOffCol" prefWidth="82.99998474121094" text="Reason" />
         </columns>
       </TableView>
-      <Label fx:id="tableUserLabel" layoutX="98.0" layoutY="285.0" text="Time Off Requests for User">
+      <Label fx:id="tableUserLabel" layoutX="101.0" layoutY="352.0" text="Time Off Requests for User">
          <font>
             <Font size="15.0" />
          </font>
       </Label>
-      <Button layoutX="589.0" layoutY="210.0" mnemonicParsing="false" onAction="#submitTimeOffRequest" style="-fx-background-color: #39a7c3;" text="Submit Request" textFill="WHITE">
+      <Button layoutX="621.0" layoutY="317.0" mnemonicParsing="false" onAction="#submitTimeOffRequest" style="-fx-background-color: #39a7c3;" text="Submit Request" textFill="WHITE">
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor></Button>
+      <Label layoutX="309.0" layoutY="160.0" text="Select Schedule:">
+         <font>
+            <Font name="System Italic" size="18.0" />
+         </font>
+      </Label>
+      <ComboBox fx:id="scheduleList" layoutX="439.0" layoutY="161.0" prefWidth="150.0" promptText="Select Schedule" />
+      <ComboBox fx:id="beginHrList" layoutX="439.0" layoutY="203.0" prefHeight="25.0" prefWidth="57.0" promptText="hh" />
+      <ComboBox fx:id="beginMinList" layoutX="504.0" layoutY="203.0" prefHeight="25.0" prefWidth="63.0" promptText="mm" />
+      <Label layoutX="671.0" layoutY="205.0" text="to">
+         <font>
+            <Font name="System Italic" size="15.0" />
+         </font>
+      </Label>
+      <ComboBox fx:id="endMinList" layoutX="765.0" layoutY="203.0" prefHeight="25.0" prefWidth="63.0" promptText="mm" />
+      <ComboBox fx:id="endHrList" layoutX="700.0" layoutY="203.0" prefHeight="25.0" prefWidth="57.0" promptText="hh" />
+      <TextArea fx:id="reasonInput" layoutX="440.0" layoutY="254.0" prefHeight="43.0" prefWidth="284.0" />
+      <Label layoutX="310.0" layoutY="262.0" text="Explain Reason:">
+         <font>
+            <Font name="System Italic" size="18.0" />
+         </font>
+      </Label>
+      <ComboBox fx:id="beginPMList" layoutX="574.0" layoutY="203.0" prefHeight="25.0" prefWidth="81.0" promptText="am/pm" />
+      <ComboBox fx:id="endPMList" layoutX="834.0" layoutY="203.0" prefHeight="25.0" prefWidth="81.0" promptText="am/pm" />
    </children>
 </AnchorPane>
