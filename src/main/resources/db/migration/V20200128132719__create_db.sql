@@ -22,7 +22,7 @@ create table tblschedule(
     schedule_time_begin time NOT NULL,
     schedule_time_end time NOT NULL,
     schedule_date datetime NOT NULL,
-    employee_id int not null FOREIGN KEY REFERENCES tblemployee(id),
+    employee_id int not null FOREIGN KEY REFERENCES tblemployee(id) on delete cascade,
     day_id int not null FOREIGN KEY REFERENCES tblday(day_id)
 );
 

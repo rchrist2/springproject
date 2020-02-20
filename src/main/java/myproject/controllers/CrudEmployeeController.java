@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -27,6 +28,8 @@ import java.net.URL;
 import java.sql.Date;
 import java.sql.Time;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
 
@@ -74,6 +77,8 @@ public class CrudEmployeeController implements Initializable {
 
     private ObservableList<String> listOfDaysObs, listOfRoleObs, listOfAMandPM, possibleTimes;
 
+    private List<String> listOfDayHours = new ArrayList<>();
+
     //The employee returned from the EmployeeManagementController
     private Tblemployee selectedEmployee;
 
@@ -104,8 +109,8 @@ public class CrudEmployeeController implements Initializable {
 
         daysToWorkComboBox.setItems(listOfDaysObs);
         roleComboBox.setItems(listOfRoleObs);
-        startCombo.setItems(listOfAMandPM);
-        endCombo.setItems(listOfAMandPM);
+        //startCombo.setItems(listOfAMandPM);
+        //endCombo.setItems(listOfAMandPM);
 
         daysToWorkListView.getSelectionModel().selectedItemProperty().addListener((obs, oldv, newv) -> {
             if(daysToWorkListView.getSelectionModel().getSelectedItem() != null)
@@ -147,6 +152,8 @@ public class CrudEmployeeController implements Initializable {
     }
 
     public void handleSaveEmployee(ActionEvent event){
+        int listHoursIndex = 0;
+
         Button selectedButton = (Button)event.getSource();
         TblRoles selectedRole = roleRepository.findRole(roleComboBox.getSelectionModel().getSelectedIndex() + 1);
         Tblemployee newEmp = new Tblemployee(nameText.getText(), emailText.getText(), addressText.getText(), phoneText.getText(), selectedRole);
@@ -156,14 +163,39 @@ public class CrudEmployeeController implements Initializable {
                 try {
                     employeeRepository.save(newEmp);
 
+
+                    /*
+                        Grab all of the times in the Vbox that contains the times
+                     */
+                    // (This is for testing purposes) List<String> timesOfSelectedDays = new ArrayList<>();
+                    for (Node node : timePerDayVBox.getChildren()) {
+                        //Converts the node to a Hbox because theres Hbox's in the VBox
+                        HBox timesComboBoxHbox = (HBox) node;
+
+                        for (Node node1 : timesComboBoxHbox.getChildren()) {
+                            //Convert the node into a combobox
+                            ComboBox nodeToCombo = (ComboBox) node1;
+
+                            //Add the times to the list
+                            listOfDayHours.add(nodeToCombo.getSelectionModel().getSelectedItem().toString());
+                        }
+                    }
+
+
                     //Save the chosen days for the new employee
                     for (String days : daysToWorkListView.getItems()) {
 
-                        //TODO Make sure to change the time to the textfield.get() || Create a time formatter for the textfields
-                        Tblschedule newSchedTest = new Tblschedule(Time.valueOf("08:00:00"), Time.valueOf("12:00:00"), Date.valueOf(LocalDate.now()), newEmp, dayRepository.findDay(days));
+                               //TODO Make sure to change the time to the textfield.get() || Create a time formatter for the textfields
+                        //Tblschedule newSchedTest = new Tblschedule(Time.valueOf("08:00:00"), Time.valueOf("12:00:00"), Date.valueOf(LocalDate.now()), newEmp, dayRepository.findDay(days));
+
+                        String beginTime = listOfDayHours.get(listHoursIndex++);
+                        String endTime = listOfDayHours.get(listHoursIndex);
+
+                        Tblschedule testing = new Tblschedule(Time.valueOf(beginTime), Time.valueOf(endTime),
+                                Date.valueOf(LocalDate.now()), newEmp, dayRepository.findDay(days));
 
                         //Save the schedule to the employee
-                        scheduleRepository.save(newSchedTest);
+                        scheduleRepository.save(testing);
                     }
 
                     Stage stage = (Stage)saveButton.getScene().getWindow();
@@ -174,6 +206,7 @@ public class CrudEmployeeController implements Initializable {
                     e.printStackTrace();
                     System.out.println("Adding Employee Error");
                 }
+
                 break;
             case "Save":
 
@@ -207,18 +240,12 @@ public class CrudEmployeeController implements Initializable {
         daysToWorkComboBox.getItems().remove(selectedDay);
 
         HBox hoursForEachDayHBox = new HBox();
-        // Value Factory:
-        SpinnerValueFactory<String> beginTimesToChoose =
-                new SpinnerValueFactory.ListSpinnerValueFactory<>(possibleTimes);
+        hoursForEachDayHBox.setSpacing(20);
 
-        SpinnerValueFactory<String> endTimesToChoose =
-                new SpinnerValueFactory.ListSpinnerValueFactory<>(possibleTimes);
+        ComboBox<String> beginTimes = new ComboBox<>(possibleTimes);
+        ComboBox<String> endTimes = new ComboBox<>(possibleTimes);
 
-            final Spinner<String> beginTimes = new Spinner<>();
-            beginTimes.setValueFactory(beginTimesToChoose);
-
-        final Spinner<String> endTimes = new Spinner<>();
-        endTimes.setValueFactory(endTimesToChoose);
+        //sfslkdflsakjf
 
         hoursForEachDayHBox.getChildren().addAll(beginTimes, endTimes);
 
