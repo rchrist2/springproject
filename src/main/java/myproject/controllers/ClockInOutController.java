@@ -41,7 +41,7 @@ public class ClockInOutController implements Initializable {
     @Autowired
     private UserRepository userRepository;
 
-    public ObservableList<Tblschedule> scheduleData = FXCollections.observableArrayList();
+    public ObservableList<Tblschedule> scheduleData;
 
 
     @FXML
@@ -55,6 +55,7 @@ public class ClockInOutController implements Initializable {
         String currentUser = LoginController.userStore;
 
         //TODO sort with most recent date listed first
+        scheduleData = FXCollections.observableArrayList();
         scheduleData.addAll(scheduleRepository.findScheduleForUser(currentUser));
 
         scheduleList.setItems(scheduleData);

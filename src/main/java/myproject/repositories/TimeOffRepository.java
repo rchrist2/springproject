@@ -1,5 +1,6 @@
 package myproject.repositories;
 
+import myproject.models.Tblschedule;
 import myproject.models.Tbltimeoff;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;

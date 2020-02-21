@@ -4,7 +4,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -88,7 +87,7 @@ public class DashboardController implements Initializable {
                 break;
             case "Time Off":
                 System.out.println("You clicked the Request Time Off button");
-                switchWindow("/view/TimeOffRequestView.fxml");
+                switchWindow("/view/TimeOffView.fxml");
                 break;
             case "Button":
                 System.out.println("You clicked the Button button");
