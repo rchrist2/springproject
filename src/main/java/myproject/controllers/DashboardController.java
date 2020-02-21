@@ -4,6 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -56,6 +57,9 @@ public class DashboardController implements Initializable {
         if(currentLoggedUser.getEmployee().getRole().getRoleId() == 2){
             employeeButton.setDisable(true);
         }
+
+        loggedUserLabel.setText(LoginController.userStore);
+
     }
 
     //Will change the pane to the button that was clicked

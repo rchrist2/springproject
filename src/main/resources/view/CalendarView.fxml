@@ -12,78 +12,83 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="750.0" prefWidth="985.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.CalendarController">
+<AnchorPane prefHeight="754.0" prefWidth="985.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.CalendarController">
    <children>
-      <GridPane fx:id="calendarGridPane" gridLinesVisible="true" layoutX="9.0" layoutY="33.0" prefHeight="604.0" prefWidth="979.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0">
-         <columnConstraints>
-            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-         </columnConstraints>
-         <rowConstraints>
-            <RowConstraints minHeight="100.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="100.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="100.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="100.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="100.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="100.0" prefHeight="30.0" vgrow="SOMETIMES" />
-         </rowConstraints>
+      <AnchorPane layoutX="4.5" layoutY="115.0" prefHeight="635.0" prefWidth="985.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="115.0">
          <children>
-            <Label fx:id="availabilityLabelMon1" prefHeight="95.0" prefWidth="123.0" wrapText="true" GridPane.columnIndex="1">
-               <opaqueInsets>
-                  <Insets />
-               </opaqueInsets></Label>
-            <Label fx:id="availabilityLabelSun1" prefHeight="99.0" prefWidth="123.0" wrapText="true">
-               <opaqueInsets>
-                  <Insets />
-               </opaqueInsets>
+            <GridPane fx:id="calendarGridPane" gridLinesVisible="true" layoutX="6.0" layoutY="26.0" prefHeight="607.0" prefWidth="974.0">
+               <columnConstraints>
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="100.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="100.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="100.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="100.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="100.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="100.0" prefHeight="30.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <Label fx:id="availabilityLabelMon1" prefHeight="95.0" prefWidth="123.0" wrapText="true" GridPane.columnIndex="1">
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </Label>
+                  <Label fx:id="availabilityLabelSun1" prefHeight="99.0" prefWidth="123.0" wrapText="true">
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </Label>
+                  <Label fx:id="availabilityLabelSat1" prefHeight="97.0" prefWidth="125.0" wrapText="true" GridPane.columnIndex="6">
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </Label>
+               </children>
+            </GridPane>
+            <Label alignment="CENTER" layoutX="9.5" prefHeight="24.0" prefWidth="141.0" text="Sunday">
+               <font>
+                  <Font name="System Italic" size="18.0" />
+               </font>
             </Label>
-            <Label fx:id="availabilityLabelSat1" prefHeight="97.0" prefWidth="125.0" wrapText="true" GridPane.columnIndex="6">
-               <opaqueInsets>
-                  <Insets />
-               </opaqueInsets>
+            <Label alignment="CENTER" layoutX="152.5" prefHeight="24.0" prefWidth="141.0" text="Monday">
+               <font>
+                  <Font name="System Italic" size="18.0" />
+               </font>
+            </Label>
+            <Label alignment="CENTER" layoutX="294.5" prefHeight="24.0" prefWidth="141.0" text="Tuesday">
+               <font>
+                  <Font name="System Italic" size="18.0" />
+               </font>
+            </Label>
+            <Label alignment="CENTER" layoutX="435.5" prefHeight="24.0" prefWidth="141.0" text="Wednesday">
+               <font>
+                  <Font name="System Italic" size="18.0" />
+               </font>
+            </Label>
+            <Label alignment="CENTER" layoutX="576.5" prefHeight="24.0" prefWidth="141.0" text="Thursday">
+               <font>
+                  <Font name="System Italic" size="18.0" />
+               </font>
+            </Label>
+            <Label alignment="CENTER" layoutX="717.5" prefHeight="24.0" prefWidth="141.0" text="Friday">
+               <font>
+                  <Font name="System Italic" size="18.0" />
+               </font>
+            </Label>
+            <Label alignment="CENTER" layoutX="858.5" prefHeight="27.0" prefWidth="126.0" text="Saturday">
+               <font>
+                  <Font name="System Italic" size="18.0" />
+               </font>
             </Label>
          </children>
-      </GridPane>
-      <Label alignment="CENTER" layoutX="14.0" layoutY="115.0" prefHeight="24.0" prefWidth="141.0" text="Sunday">
-         <font>
-            <Font name="System Italic" size="18.0" />
-         </font>
-      </Label>
-      <Label alignment="CENTER" layoutX="157.0" layoutY="115.0" prefHeight="24.0" prefWidth="141.0" text="Monday">
-         <font>
-            <Font name="System Italic" size="18.0" />
-         </font>
-      </Label>
-      <Label alignment="CENTER" layoutX="299.0" layoutY="115.0" prefHeight="24.0" prefWidth="141.0" text="Tuesday">
-         <font>
-            <Font name="System Italic" size="18.0" />
-         </font>
-      </Label>
-      <Label alignment="CENTER" layoutX="440.0" layoutY="115.0" prefHeight="24.0" prefWidth="141.0" text="Wednesday">
-         <font>
-            <Font name="System Italic" size="18.0" />
-         </font>
-      </Label>
-      <Label alignment="CENTER" layoutX="581.0" layoutY="115.0" prefHeight="24.0" prefWidth="141.0" text="Thursday">
-         <font>
-            <Font name="System Italic" size="18.0" />
-         </font>
-      </Label>
-      <Label alignment="CENTER" layoutX="722.0" layoutY="115.0" prefHeight="24.0" prefWidth="141.0" text="Friday">
-         <font>
-            <Font name="System Italic" size="18.0" />
-         </font>
-      </Label>
-      <Label alignment="CENTER" layoutX="863.0" layoutY="115.0" prefHeight="27.0" prefWidth="126.0" text="Saturday">
-         <font>
-            <Font name="System Italic" size="18.0" />
-         </font>
-      </Label>
+      </AnchorPane>
       <Pane prefHeight="115.0" prefWidth="985.0" style="-fx-background-color: linear-gradient(to right, #39a7c3 , white); -fx-border-color: transparent transparent derive(black, 10%) transparent;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <VBox prefHeight="115.0" prefWidth="984.0">
@@ -99,9 +104,9 @@
                         <Button fx:id="nextMonthButton" mnemonicParsing="false" onAction="#handleNextMonth" prefHeight="40.0" prefWidth="80.0" style="-fx-background-color: #39a7c3; -fx-border-color: black; -fx-background-radius: 20 20 20 20; -fx-border-radius: 20 20 20 20;" text="&gt;&gt;&gt;&gt;" />
                      </children>
                   </HBox>
-                  <Pane prefWidth="984.0">
+                  <Pane prefWidth="980.0">
                      <children>
-                        <HBox fx:id="employeeManagementNavBar" alignment="BOTTOM_RIGHT" prefHeight="40.0" prefWidth="980.0" spacing="15.0" style="-fx-background-color: linear-gradient(to right, #39a7c3 , white); -fx-border-color: transparent transparent derive(black, 0) transparent;">
+                        <HBox fx:id="employeeManagementNavBar" alignment="BOTTOM_RIGHT" prefHeight="40.0" prefWidth="985.0" spacing="15.0" style="-fx-background-color: linear-gradient(to right, #39a7c3 , white); -fx-border-color: transparent transparent derive(black, 0) transparent;">
                            <padding>
                               <Insets bottom="5.0" left="5.0" right="15.0" />
                            </padding>

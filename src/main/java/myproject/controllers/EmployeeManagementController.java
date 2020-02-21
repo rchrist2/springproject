@@ -19,6 +19,7 @@ import myproject.models.Tblemployee;
 import myproject.models.Tblschedule;
 import myproject.repositories.EmployeeRepository;
 import myproject.repositories.ScheduleRepository;
+import myproject.services.EmployeeService;
 import myproject.services.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -40,6 +41,9 @@ public class EmployeeManagementController implements Initializable {
             deleteEmployeeButton;
 
     @FXML
+    private TextField searchText;
+
+    @FXML
     private TableView<Tblemployee> employeeTableView;
 
     public TableColumn<Tblemployee, String>
@@ -48,9 +52,8 @@ public class EmployeeManagementController implements Initializable {
             addressColumn,
             phoneColumn,
             roleColumn,
-            startTimeColumn,
-            endTimeColumn,
-            daysColumn;;
+            hoursColumn,
+            daysColumn;
 
     @Autowired
     private ConfigurableApplicationContext springContext;
@@ -64,6 +67,9 @@ public class EmployeeManagementController implements Initializable {
     @Autowired
     private ScheduleService scheduleService;
 
+    @Autowired
+    private EmployeeService employeeService;
+
     private ObservableList<Tblemployee> listOfEmployees;
     private FilteredList<Tblemployee> filteredListOfEmployees;
 
@@ -76,8 +82,19 @@ public class EmployeeManagementController implements Initializable {
         reloadEmployeeTableView();
         setDataForEmployeeTableView();
         addActionListenersForCrudButtons();
+
+        //Filters the employee management view list
+        searchText.setOnKeyReleased(event -> {
+            filteredListOfEmployees.setPredicate(emp -> emp.getName().toLowerCase().contains(searchText.getText().toLowerCase())
+                    || emp.getEmail().toLowerCase().contains(searchText.getText().toLowerCase())
+                    || emp.getAddress().toLowerCase().contains(searchText.getText().toLowerCase())
+                    || emp.getPhone().contains(searchText.getText())
+                    || emp.employeeSchedule().toLowerCase().contains(searchText.getText().toLowerCase())
+                    || emp.getRole().getRoleDesc().toLowerCase().contains(searchText.getText().toLowerCase()));
+        });
     }
 
+    //Reloads (refreshes) the employee tableview
     private void reloadEmployeeTableView(){
         listOfEmployees.clear();
 
@@ -88,24 +105,28 @@ public class EmployeeManagementController implements Initializable {
         employeeTableView.setItems(filteredListOfEmployees);
     }
 
+    //Sets the data for each of the columns in the table view
     private void setDataForEmployeeTableView(){
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
         addressColumn.setCellValueFactory(new PropertyValueFactory<>("address"));
         phoneColumn.setCellValueFactory(new PropertyValueFactory<>("phone"));
-        roleColumn.setCellValueFactory(new PropertyValueFactory<>("role"));
-/*
-        startTimeColumn.setCellValueFactory(new PropertyValueFactory<>("schedule_time_begin"));
-        endTimeColumn.setCellValueFactory(new PropertyValueFactory<>("schedule_time_end"));
-        daysColumn.setCellValueFactory(days -> new ReadOnlyStringWrapper(days.getValue().getDay().getDayDesc()));*/
+        roleColumn.setCellValueFactory(role -> new ReadOnlyStringWrapper(role.getValue().getRole().getRoleDesc()));
+
+        hoursColumn.setCellValueFactory(hours -> new ReadOnlyStringWrapper(hours.getValue().employeeHours()));
+        daysColumn.setCellValueFactory(days -> new ReadOnlyStringWrapper(days.getValue().employeeSchedule()));
     }
 
     @SuppressWarnings("Duplicates")
     @FXML
     private void handleCrudButton(ActionEvent event){
+        //Grab the button that was clicked
         Button clickedButton = (Button)event.getSource();
+
+        //Hold the selected data of the employee
         Tblemployee emp = employeeTableView.getSelectionModel().getSelectedItem();
 
+        //Grabs the text of the button that was clicked
         switch(clickedButton.getText()){
             case "Add New Employee":
                 System.out.println("Add a Employee");
@@ -166,9 +187,14 @@ public class EmployeeManagementController implements Initializable {
                 Optional<ButtonType> choice = alert.showAndWait();
                 if(choice.get() == ButtonType.OK) {
                     if (emp != null) {
-                        //scheduleService.deleteSchedule(emp.getId());
 
-                        employeeRepository.delete(employeeRepository.findEmployeeById(emp.getId()));
+                        /*
+                          ON DELETE CASCADE works in a way we can't apply, so we have to delete
+                          each row one by one
+                        */
+                        scheduleService.deleteSchedule(emp.getId());
+
+                        employeeService.deleteEmployee(emp.getId());
                     }
 
                     reloadEmployeeTableView();
@@ -181,6 +207,7 @@ public class EmployeeManagementController implements Initializable {
         }
     }
 
+    //This will enable/disable the edit and delete buttons if a employee was chosen from the table view
     private void addActionListenersForCrudButtons(){
         employeeTableView.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
             if(newValue != null){
@@ -190,6 +217,7 @@ public class EmployeeManagementController implements Initializable {
         });
     }
 
+    //Resets the buttons back to its default value (disable = true)
     private void resetButtons(){
         editEmployeeButton.setDisable(true);
         deleteEmployeeButton.setDisable(true);

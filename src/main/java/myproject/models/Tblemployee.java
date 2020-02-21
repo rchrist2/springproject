@@ -1,6 +1,9 @@
 package myproject.models;
 
 import javax.persistence.*;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -60,17 +63,30 @@ public class Tblemployee {
         this.schedules = schedules;
     }
 
-/*    //add schedule to this employee
-    public void addSchedule(Tblschedule schedule){
-        schedules.add(schedule);
-        schedule.setEmployee(this);
+    //Returns the list of days the employee works for the tableview
+    public String employeeSchedule(){
+        List<String> listOfDays = new ArrayList<>();
+
+        for (Tblschedule schedule : this.schedules) {
+            System.out.println(schedule);
+            listOfDays.add(schedule.getDay().getDayDesc());
+        }
+
+        return String.join("\n", listOfDays);
     }
 
-    //remove schedule from this employee
-    public void removeSchedule(Tblschedule schedule){
-        schedules.remove(schedule);
-        schedule.setEmployee(null);
-    }*/
+    public String employeeHours(){
+        List<String> listOfHours = new ArrayList<>();
+
+        String strDateFormat = "HH:mm a";
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(strDateFormat);
+
+        for (Tblschedule hours : this.schedules) {
+            listOfHours.add(hours.getScheduleTimeBegin().toLocalTime().format(timeFormatter) + " - " + hours.getScheduleTimeEnd().toLocalTime().format(timeFormatter));
+        }
+
+        return String.join("\n", listOfHours);
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

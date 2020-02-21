@@ -16,4 +16,9 @@ public class EmployeeService {
     public void updateEmployee(String name, String email, String address, String phone, int id){
         employeeRepository.updateEmployee(name, email, address, phone, id);
     }
+
+    @Transactional
+    public void deleteEmployee(int empId){
+        employeeRepository.deleteEmployee(empId);
+    }
 }

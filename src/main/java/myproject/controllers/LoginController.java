@@ -47,6 +47,10 @@ public class LoginController implements Initializable {
     public Rectangle2D screenBounds;
     public static String userStore;
     public static YearMonth currentYearAndMonth;
+
+    public double xOffset = 0, yOffset = 0;
+
+
     //public static LoggedUser loggedUserStore;
     //public static TblEmployee employeeStore;
 
@@ -82,6 +86,17 @@ public class LoginController implements Initializable {
                 currentStage.setScene(scene);
                 currentStage.setX((screenBounds.getWidth() - currentStage.getWidth()) / 2);
                 currentStage.setY((screenBounds.getHeight() - currentStage.getHeight()) / 2);
+
+                parent.setOnMousePressed((moveEvent -> {
+                    xOffset = moveEvent.getSceneX();
+                    yOffset = moveEvent.getSceneY();
+                }));
+
+                parent.setOnMouseDragged((moveEvent) -> {
+                    currentStage.setX(moveEvent.getScreenX() - xOffset);
+                    currentStage.setY(moveEvent.getScreenY() - yOffset);
+                });
+
                 scene.getStylesheets().add(getClass().getResource("/css/Dashboard.css").toExternalForm());
 
             } catch (IOException e) {

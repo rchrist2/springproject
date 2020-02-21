@@ -8,75 +8,77 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
-<AnchorPane prefHeight="750.0" prefWidth="1170.0" style="-fx-border-color: black;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.DashboardController">
+<AnchorPane prefHeight="780.0" prefWidth="1170.0" style="-fx-background-color: linear-gradient(to right, #2596b3, white); -fx-border-color: black;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.DashboardController">
    <children>
-      <Pane fx:id="dashboardPane" layoutX="185.0" layoutY="2.0" prefHeight="750.0" prefWidth="985.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-      <VBox layoutX="1.0" layoutY="1.0" style="-fx-background-color: linear-gradient(to right, #2596b3, #39a7c3); -fx-border-color: transparent derive(black, 10%) transparent transparent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="985.0" AnchorPane.topAnchor="0.0">
+      <AnchorPane layoutX="2.0" prefHeight="756.0" prefWidth="1168.0" style="-fx-border-color: black; -fx-border-color: derive(black, 10%) transparent transparent transparent;" AnchorPane.bottomAnchor="-1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
-            <VBox prefHeight="138.0" prefWidth="170.0">
+            <VBox layoutX="4.0" layoutY="2.0" prefHeight="750.0" prefWidth="177.0" style="-fx-background-color: linear-gradient(to right, #2596b3, #39a7c3); -fx-border-color: transparent derive(black, 10%) transparent transparent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="3.0" AnchorPane.rightAnchor="985.0" AnchorPane.topAnchor="0.0">
                <children>
-                  <Pane fx:id="movePane" prefHeight="30.0" prefWidth="200.0" style="-fx-background-color: lightblue;" />
-                  <Label text="Welcome back:">
-                     <font>
-                        <Font size="24.0" />
-                     </font>
-                  </Label>
-                  <Label fx:id="loggedUserLabel" text="Label">
-                     <font>
-                        <Font size="18.0" />
-                     </font>
-                  </Label>
+                  <VBox prefHeight="138.0" prefWidth="170.0">
+                     <children>
+                        <Label text="Welcome back:">
+                           <font>
+                              <Font size="24.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="loggedUserLabel" text="Label">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </VBox>
+                  <VBox alignment="TOP_RIGHT" fillWidth="false" prefHeight="610.0" prefWidth="176.0" spacing="10.0">
+                     <children>
+                        <Button fx:id="calendarButton" alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#handleNavigationButton" prefHeight="40.0" prefWidth="130.0" styleClass="dashboardButton" stylesheets="@../css/Dashboard.css" text="Calendar" textAlignment="RIGHT" underline="true">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="5.0" top="10.0" />
+                           </padding>
+                        </Button>
+                        <Button fx:id="employeeButton" alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#handleNavigationButton" prefHeight="40.0" prefWidth="177.0" styleClass="dashboardButton" stylesheets="@../css/Dashboard.css" text="Employee Management" textAlignment="RIGHT" underline="true" wrapText="true">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="5.0" top="10.0" />
+                           </padding>
+                        </Button>
+                        <Button fx:id="clockInOutButton" alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#handleNavigationButton" prefHeight="40.0" prefWidth="120.0" styleClass="dashboardButton" stylesheets="@../css/Dashboard.css" text="Clock In/Out" textAlignment="RIGHT" underline="true">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="5.0" top="10.0" />
+                           </padding>
+                        </Button>
+                        <Button fx:id="timeOffButton" alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#handleNavigationButton" prefHeight="40.0" prefWidth="141.0" styleClass="dashboardButton" stylesheets="@../css/Dashboard.css" text="Time Off" textAlignment="RIGHT" underline="true">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="5.0" top="10.0" />
+                           </padding>
+                        </Button>
+                        <Button fx:id="buttonButton1" alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#handleNavigationButton" prefHeight="40.0" prefWidth="100.0" styleClass="dashboardButton" stylesheets="@../css/Dashboard.css" text="Button" textAlignment="RIGHT" underline="true">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="5.0" top="10.0" />
+                           </padding>
+                        </Button>
+                     </children>
+                     <padding>
+                        <Insets top="44.0" />
+                     </padding>
+                  </VBox>
                </children>
-            </VBox>
-            <VBox alignment="TOP_RIGHT" fillWidth="false" prefHeight="609.0" prefWidth="182.0" spacing="10.0">
-               <children>
-                  <Button fx:id="calendarButton" alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#handleNavigationButton" prefHeight="40.0" prefWidth="130.0" styleClass="dashboardButton" stylesheets="@../css/Dashboard.css" text="Calendar" textAlignment="RIGHT" underline="true">
-                     <font>
-                        <Font name="System Bold" size="14.0" />
-                     </font>
-                     <padding>
-                        <Insets bottom="10.0" left="10.0" right="5.0" top="10.0" />
-                     </padding>
-                  </Button>
-                  <Button fx:id="employeeButton" alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#handleNavigationButton" prefHeight="40.0" prefWidth="177.0" styleClass="dashboardButton" stylesheets="@../css/Dashboard.css" text="Employee Management" textAlignment="RIGHT" underline="true" wrapText="true">
-                     <font>
-                        <Font name="System Bold" size="14.0" />
-                     </font>
-                     <padding>
-                        <Insets bottom="10.0" left="10.0" right="5.0" top="10.0" />
-                     </padding>
-                  </Button>
-                  <Button fx:id="clockInOutButton" alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#handleNavigationButton" prefHeight="40.0" prefWidth="120.0" styleClass="dashboardButton" stylesheets="@../css/Dashboard.css" text="Clock In/Out" textAlignment="RIGHT" underline="true">
-                     <font>
-                        <Font name="System Bold" size="14.0" />
-                     </font>
-                     <padding>
-                        <Insets bottom="10.0" left="10.0" right="5.0" top="10.0" />
-                     </padding>
-                  </Button>
-                  <Button fx:id="timeOffButton" alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#handleNavigationButton" prefHeight="40.0" prefWidth="141.0" styleClass="dashboardButton" stylesheets="@../css/Dashboard.css" text="Time Off" textAlignment="RIGHT" underline="true">
-                     <font>
-                        <Font name="System Bold" size="14.0" />
-                     </font>
-                     <padding>
-                        <Insets bottom="10.0" left="10.0" right="5.0" top="10.0" />
-                     </padding>
-                  </Button>
-                  <Button fx:id="buttonButton1" alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#handleNavigationButton" prefHeight="40.0" prefWidth="100.0" styleClass="dashboardButton" stylesheets="@../css/Dashboard.css" text="Button" textAlignment="RIGHT" underline="true">
-                     <font>
-                        <Font name="System Bold" size="14.0" />
-                     </font>
-                     <padding>
-                        <Insets bottom="10.0" left="10.0" right="5.0" top="10.0" />
-                     </padding>
-                  </Button>
-               </children>
-               <padding>
-                  <Insets top="44.0" />
-               </padding>
             </VBox>
          </children>
-      </VBox>
+      </AnchorPane>
+      <Pane fx:id="dashboardPane" prefHeight="754.0" prefWidth="985.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="182.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0" />
    </children>
 </AnchorPane>

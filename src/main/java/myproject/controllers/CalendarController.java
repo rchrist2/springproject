@@ -2,6 +2,7 @@ package myproject.controllers;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -67,9 +68,8 @@ public class CalendarController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        //currentYearAndMonth = YearMonth.now();
-        //System.out.println("Current Year: " + currentYearAndMonth.getYear() + " Month: " + currentYearAndMonth.getMonth());
 
+        //Creates the calendar
         createCalendar();
 
         //get the current user (String) from LoginController
@@ -158,7 +158,7 @@ public class CalendarController implements Initializable {
     private void refreshCalendar(YearMonth currentYearMonth){
         int year = currentYearMonth.getYear();
         int month = currentYearMonth.getMonthValue();
-        int offsetByPrevMonthDays = 0;
+        int offsetByPrevMonthDays = 1;
         int maxDaysInMonth = currentYearMonth.lengthOfMonth();
         int offsetByNextMonthDays = 1;
 
@@ -200,17 +200,26 @@ public class CalendarController implements Initializable {
             dayLabel.setTextAlignment(TextAlignment.LEFT);
 
             //Sets the style of the boxes that are not a part of the current month
-            if(offsetByPrevMonthDays != 0) {
+            if(offsetByPrevMonthDays != 1) {
                 dayLabelStyle += "-fx-text-fill: #A9A9A9";
+
+                if(dayBox.getChildren().size() != 0){
+                    do {
+                        dayBox.getChildren().remove(0);
+                    } while (dayBox.getChildren().size() != 0);
+                }
+
 
                 //Offset the days from the next month
                 offsetByNextMonthDays--;
 
                 //Offset the days from the previous months days
                 offsetByPrevMonthDays--;
+
+                System.out.println(offsetByPrevMonthDays + " " + offsetByNextMonthDays);
             }else {
 
-                //If days exceed max day sin month grey out the day label
+                //If days exceed max days in month grey out the day label
                 if (offsetByNextMonthDays > maxDaysInMonth) {
                     dayLabelStyle += "-fx-text-fill: #A9A9A9";
                 }
@@ -222,10 +231,8 @@ public class CalendarController implements Initializable {
             //vBox holding each employee hour
             employeeHoursBox = new VBox();
             employeeHoursBox.setSpacing(5);
+            employeeHoursBox.setStyle("-fx-padding: 0 5 2 5");
 
-
-
-            //=======Experimental=======
 
             String day = localDate.getDayOfWeek().toString();
 
@@ -233,8 +240,13 @@ public class CalendarController implements Initializable {
             DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(strDateFormat);
 
             System.out.println("Current Day: " + day);
+
+            //Creating the labels for the employee's schedule
             for (Tblschedule tblschedule : allSchedules) {
-                if (tblschedule.getDay().getDayDesc().toLowerCase().equals(day.toLowerCase())){
+                if (tblschedule.getDay().getDayDesc().toLowerCase().equals(day.toLowerCase())
+                        && offsetByNextMonthDays <= maxDaysInMonth){
+
+                    System.out.println("IOn " + offsetByNextMonthDays);
 
                     Label employeeWorkDayLabel = new Label();
                     employeeWorkDayLabel.setTextAlignment(TextAlignment.LEFT);
@@ -246,9 +258,6 @@ public class CalendarController implements Initializable {
 
                 }
             }
-
-            //=======Experimental=======
-
 
             //Add the day number and employee vBox into the Day Box
             dayBox.getChildren().addAll(dayLabel, employeeHoursBox);
