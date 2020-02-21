@@ -18,6 +18,8 @@ import javafx.stage.StageStyle;
 import myproject.models.Tblemployee;
 import myproject.models.Tblschedule;
 import myproject.repositories.EmployeeRepository;
+import myproject.repositories.ScheduleRepository;
+import myproject.services.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
@@ -50,13 +52,17 @@ public class EmployeeManagementController implements Initializable {
             endTimeColumn,
             daysColumn;;
 
-    //public TableColumn<Tblschedule, String>
-
     @Autowired
     private ConfigurableApplicationContext springContext;
 
     @Autowired
     private EmployeeRepository employeeRepository;
+
+    @Autowired
+    private ScheduleRepository scheduleRepository;
+
+    @Autowired
+    private ScheduleService scheduleService;
 
     private ObservableList<Tblemployee> listOfEmployees;
     private FilteredList<Tblemployee> filteredListOfEmployees;
@@ -83,12 +89,6 @@ public class EmployeeManagementController implements Initializable {
     }
 
     private void setDataForEmployeeTableView(){
-//        nameColumn.setCellValueFactory(name -> new ReadOnlyStringWrapper(String.valueOf(name.getValue().getEmployee().getName())));
-//        emailColumn.setCellValueFactory(email -> new ReadOnlyStringWrapper(String.valueOf(email.getValue().getEmployee().getEmail())));
-//        addressColumn.setCellValueFactory(address -> new ReadOnlyStringWrapper(String.valueOf(address.getValue().getEmployee().getAddress())));
-//        phoneColumn.setCellValueFactory(phone -> new ReadOnlyStringWrapper(String.valueOf(phone.getValue().getEmployee().getPhone())));
-//        roleColumn.setCellValueFactory(role -> new ReadOnlyStringWrapper(String.valueOf(role.getValue().getEmployee().getRole().getRoleDesc())));
-
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
         addressColumn.setCellValueFactory(new PropertyValueFactory<>("address"));
@@ -161,11 +161,14 @@ public class EmployeeManagementController implements Initializable {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.setTitle("Delete Employee");
                 alert.setHeaderText("Are you sure?");
+                alert.setContentText("You are about to delete: " + emp.getName());
 
                 Optional<ButtonType> choice = alert.showAndWait();
                 if(choice.get() == ButtonType.OK) {
                     if (emp != null) {
-                        employeeRepository.delete(emp);
+                        //scheduleService.deleteSchedule(emp.getId());
+
+                        employeeRepository.delete(employeeRepository.findEmployeeById(emp.getId()));
                     }
 
                     reloadEmployeeTableView();

@@ -10,12 +10,11 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="445.0" prefWidth="546.0" style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.CrudEmployeeController">
+<AnchorPane prefHeight="445.0" prefWidth="597.0" style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.CrudEmployeeController">
     <padding>
         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
     </padding>
@@ -61,7 +60,7 @@
                             <children>
                         <VBox prefHeight="143.0" prefWidth="144.0" spacing="10.0" GridPane.rowIndex="6" GridPane.rowSpan="2">
                            <children>
-                              <Label text="Days to work" />
+                              <Label text="Days to work:" />
                               <ComboBox fx:id="daysToWorkComboBox" prefHeight="25.0" prefWidth="133.0" />
                               <HBox prefHeight="100.0" prefWidth="200.0" spacing="14.0">
                                  <children>
@@ -71,11 +70,11 @@
                               </HBox>
                            </children>
                         </VBox>
-                                <Label text="Name" />
-                                <Label text="Email" GridPane.columnIndex="1" />
-                                <Label text="Address" GridPane.rowIndex="2" />
-                                <Label text="Phone Number" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                <Label text="Role" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                                <Label text="Name:" />
+                                <Label text="Email:" GridPane.columnIndex="1" />
+                                <Label text="Address:" GridPane.rowIndex="2" />
+                                <Label text="Phone Number:" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                <Label text="Role:" GridPane.columnIndex="2" GridPane.rowIndex="2">
                            <GridPane.margin>
                               <Insets left="10.0" />
                            </GridPane.margin></Label>
@@ -83,26 +82,26 @@
                                 <TextField fx:id="emailText" prefHeight="25.0" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                 <TextField fx:id="addressText" prefHeight="25.0" prefWidth="133.0" GridPane.columnSpan="2" GridPane.rowIndex="3" />
                                 <TextField fx:id="phoneText" prefHeight="25.0" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                                <ComboBox fx:id="roleComboBox" prefHeight="25.0" prefWidth="64.0" GridPane.columnIndex="2" GridPane.rowIndex="3">
+                                <ComboBox fx:id="roleComboBox" prefHeight="31.0" prefWidth="83.0" GridPane.columnIndex="2" GridPane.rowIndex="3">
                            <GridPane.margin>
                               <Insets left="10.0" />
                            </GridPane.margin></ComboBox>
-                        <Label text="Start Time:" GridPane.columnIndex="2" GridPane.rowIndex="5">
+                        <Label text="Start Time:" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="5">
                            <GridPane.margin>
-                              <Insets left="10.0" />
+                              <Insets left="101.0" />
                            </GridPane.margin>
                         </Label>
-                        <Label text="End Time:" GridPane.columnIndex="3" GridPane.rowIndex="5">
+                        <Label text="End Time:" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="5">
                            <GridPane.margin>
-                              <Insets left="10.0" />
+                              <Insets left="212.0" />
                            </GridPane.margin>
                         </Label>
-                        <TextField fx:id="startTimeText" layoutX="10.0" layoutY="185.0" prefWidth="70.0" promptText="8:00 AM..." GridPane.columnIndex="3" GridPane.rowIndex="1">
+                        <TextField fx:id="startTimeText" layoutX="10.0" layoutY="185.0" prefHeight="31.0" prefWidth="100.0" promptText="8:00 AM..." GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.rowIndex="1">
                            <GridPane.margin>
                               <Insets left="10.0" />
                            </GridPane.margin>
                         </TextField>
-                        <TextField fx:id="endTimeText" prefWidth="70.0" promptText="5:00 PM..." GridPane.columnIndex="3" GridPane.rowIndex="3">
+                        <TextField fx:id="endTimeText" prefWidth="100.0" promptText="5:00 PM..." GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.rowIndex="3">
                            <GridPane.margin>
                               <Insets left="10.0" />
                            </GridPane.margin>
@@ -115,14 +114,12 @@
                            <GridPane.margin>
                               <Insets />
                            </GridPane.margin></Button>
-                        <ListView fx:id="daysToWorkListView" prefHeight="180.0" prefWidth="137.0" GridPane.columnIndex="1" GridPane.rowIndex="6" GridPane.rowSpan="3" />
-                        <ComboBox fx:id="startCombo" prefHeight="25.0" prefWidth="62.0" GridPane.columnIndex="4" GridPane.rowIndex="1" />
-                        <ComboBox fx:id="endCombo" layoutX="446.0" layoutY="41.0" prefHeight="25.0" prefWidth="62.0" GridPane.columnIndex="4" GridPane.rowIndex="3" />
-                        <Pane prefHeight="175.0" prefWidth="155.0" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="6" GridPane.rowSpan="3">
+                        <HBox prefHeight="183.0" prefWidth="323.0" spacing="20.0" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="6" GridPane.rowSpan="3">
                            <children>
-                              <VBox fx:id="timePerDayVBox" prefHeight="175.0" prefWidth="155.0" spacing="1.0" />
+                              <ListView fx:id="daysToWorkListView" prefHeight="183.0" prefWidth="81.0" stylesheets="@../css/CrudEmployee.css" />
+                              <VBox fx:id="timePerDayVBox" prefHeight="183.0" prefWidth="222.0" spacing="1.0" />
                            </children>
-                        </Pane>
+                        </HBox>
                             </children>
                             <VBox.margin>
                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

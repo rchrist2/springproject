@@ -18,4 +18,9 @@ public class ScheduleService {
         scheduleRepository.updateSchedule(begin, end, employeeId);
     }
 
+    @Transactional
+    public void deleteSchedule(int employeeId){
+        scheduleRepository.deleteEmployeeSchedule(employeeId);
+    }
+
 }
