@@ -26,7 +26,7 @@
          <children>
             <VBox prefHeight="115.0" prefWidth="985.0">
                <children>
-                  <Label fx:id="titleLabel" alignment="CENTER" prefHeight="75.0" prefWidth="985.0" text="Request Time Off">
+                  <Label fx:id="titleLabel" alignment="CENTER" prefHeight="75.0" prefWidth="985.0" text="Time Off">
                      <font>
                         <Font name="System Bold Italic" size="36.0" />
                      </font>
@@ -49,7 +49,7 @@
       </Pane>
       <AnchorPane layoutY="115.0" prefHeight="638.0" prefWidth="985.0" style="-fx-background-color: white;">
          <children>
-            <TableView fx:id="timeOffTable" layoutX="67.0" layoutY="247.0" prefHeight="350.0" prefWidth="808.0">
+            <TableView fx:id="timeOffTable" layoutX="66.0" layoutY="263.0" prefHeight="339.0" prefWidth="808.0">
               <columns>
                 <TableColumn fx:id="scheduleDateCol" prefWidth="99.0" text="Schedule Date" />
                   <TableColumn fx:id="beginTimeCol" prefWidth="99.0" text="Begin Time" />
@@ -59,7 +59,7 @@
                   <TableColumn fx:id="userCol" prefWidth="82.99998474121094" text="User" visible="false" />
               </columns>
             </TableView>
-            <Label fx:id="tableUserLabel" layoutX="67.0" layoutY="215.0" text="Time Off Requests for User">
+            <Label fx:id="tableUserLabel" layoutX="66.0" layoutY="231.0" text="Time Off Requests for User">
                <font>
                   <Font size="15.0" />
                </font>
@@ -99,17 +99,27 @@
                   </Label>
                </children>
             </Pane>
-            <Pane fx:id="optionsPane" layoutX="511.0" layoutY="213.0" prefHeight="25.0" prefWidth="100.0" />
-            <Pane fx:id="optionsPane2" layoutX="625.0" layoutY="213.0" prefHeight="25.0" prefWidth="100.0">
+            <Pane fx:id="optionsPane" layoutX="430.0" layoutY="229.0" prefHeight="25.0" prefWidth="100.0" />
+            <Pane fx:id="optionsPane2" layoutX="533.0" layoutY="229.0" prefHeight="25.0" prefWidth="100.0">
                <padding>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </padding>
             </Pane>
-            <Pane fx:id="optionsPane3" layoutX="759.0" layoutY="213.0" prefHeight="25.0" prefWidth="100.0">
+            <Pane fx:id="optionsPane3" layoutX="656.0" layoutY="229.0" prefHeight="25.0" prefWidth="78.0">
                <padding>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </padding>
             </Pane>
+            <Pane fx:id="optionsPane4" layoutX="726.0" layoutY="229.0" prefHeight="25.0" prefWidth="100.0">
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </Pane>
+            <Button fx:id="timeOffDeleteButton" disable="true" layoutX="814.0" layoutY="229.0" mnemonicParsing="false" onAction="#deleteTimeOff" style="-fx-background-color: red;" text="Delete" textFill="WHITE">
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </Button>
          </children>
       </AnchorPane>
    </children>

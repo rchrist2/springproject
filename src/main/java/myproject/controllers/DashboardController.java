@@ -89,6 +89,10 @@ public class DashboardController implements Initializable {
                 System.out.println("You clicked the Request Time Off button");
                 switchWindow("/view/TimeOffView.fxml");
                 break;
+            case "Return to Sign In":
+                System.out.println("You clicked the Return to Sign In button");
+                //switchWindow("/view/welcome.fxml");
+                break;
             case "Button":
                 System.out.println("You clicked the Button button");
                 break;

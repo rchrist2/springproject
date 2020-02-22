@@ -3,6 +3,7 @@ package myproject.models;
 import javax.persistence.*;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Objects;
 import java.util.Set;
 import java.sql.Time;
@@ -138,10 +139,9 @@ public class Tblschedule {
 
     @Override
     public String toString() {
-        return "Tblschedule{" +
-                "scheduleTimeBegin=" + scheduleTimeBegin +
-                ", scheduleTimeEnd=" + scheduleTimeEnd +
-                ", Day=" + day.getDayDesc() +
-                '}';
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+        SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
+        return day.getDayDesc() + ", " + dateFormat.format(scheduleDate) + " "
+                + timeFormat.format(scheduleTimeBegin) + " to " + timeFormat.format(scheduleTimeEnd);
     }
 }

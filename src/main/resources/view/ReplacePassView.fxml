@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="signupAnchor" prefHeight="450.0" prefWidth="325.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.ReplacePassController">
+   <children>
+      <TextField fx:id="newPassInput" layoutX="62.0" layoutY="197.0" prefHeight="28.0" prefWidth="194.0" promptText="Enter new password" AnchorPane.bottomAnchor="225.0" AnchorPane.leftAnchor="62.0" AnchorPane.rightAnchor="69.0" AnchorPane.topAnchor="197.0" />
+      <Button fx:id="replacePassButton" layoutX="70.0" layoutY="306.0" onAction="#replacePass" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #de1c00;" text="Submit" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="80.0">
+         <font>
+            <Font name="System Bold Italic" size="18.0" />
+         </font>
+      </Button>
+      <Label layoutX="52.0" layoutY="373.0" prefHeight="53.0" prefWidth="163.0" text="Already have an account?" AnchorPane.bottomAnchor="24.0" AnchorPane.leftAnchor="52.0" AnchorPane.rightAnchor="110.0" AnchorPane.topAnchor="373.0" />
+      <Hyperlink fx:id="signinLink" layoutX="196.0" layoutY="386.0" onAction="#changeToSignin" prefHeight="28.0" prefWidth="79.0" text="SIGN IN" AnchorPane.bottomAnchor="36.0" AnchorPane.leftAnchor="196.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="386.0">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Hyperlink>
+      <Label alignment="CENTER" layoutX="60.0" layoutY="38.0" prefHeight="77.0" prefWidth="194.0" text="Reset Password" textAlignment="CENTER" underline="true" AnchorPane.bottomAnchor="335.0" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="71.0" AnchorPane.topAnchor="38.0">
+         <font>
+            <Font name="System Bold Italic" size="18.0" />
+         </font>
+      </Label>
+      <Label layoutX="86.0" layoutY="102.0" prefHeight="40.0" prefWidth="153.0" text="Enter new password below" wrapText="true" />
+      <Pane fx:id="paneLoadTextfield" layoutX="60.0" layoutY="252.0" prefHeight="40.0" prefWidth="196.0" />
+      <Pane fx:id="paneLoadButton" layoutX="70.0" layoutY="306.0" prefHeight="40.0" prefWidth="174.0" visible="false" />
+      <TextField fx:id="newPassConfirmInput" layoutX="62.0" layoutY="241.0" prefHeight="28.0" prefWidth="194.0" promptText="Re-enter new password" />
+   </children>
+</AnchorPane>

@@ -123,7 +123,7 @@ public class LoginController implements Initializable {
     private void changeToSignup(){
         //open the sign up page
         try{
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/signup.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/ForgotPassView.fxml"));
             fxmlLoader.setControllerFactory(springContext::getBean);
             Pane pane = fxmlLoader.load();
 

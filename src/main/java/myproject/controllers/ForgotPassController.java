@@ -10,6 +10,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 import myproject.ErrorMessages;
+import myproject.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -27,7 +28,7 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 
 @Component
-public class SignupController implements Initializable {
+public class ForgotPassController implements Initializable {
 
     public AnchorPane signupAnchor;
     public TextField signupUsernameText;
@@ -35,8 +36,13 @@ public class SignupController implements Initializable {
     public Pane paneLoadButton;
     public Button signupButton;
 
+    public static String forgotPassUser;
+
     @Autowired
     private ConfigurableApplicationContext springContext;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Qualifier("getJavaMailSender")
     @Autowired
@@ -69,47 +75,64 @@ public class SignupController implements Initializable {
         /*Label lb1 = new Label("Sending email...");
         paneLoadTextfield.getChildren().add(lb1);*/
 
-        String userEmail = signupUsernameText.getText();
-        String resetCode = getAlphaNumericString(5);
+        if(userRepository.findUsername(signupUsernameText.getText()) != null) {
+            String userEmail = signupUsernameText.getText();
+            forgotPassUser = userEmail;
 
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(userEmail);
-        message.setSubject("Test from Spring Boot");
-        message.setText(resetCode);
-        emailSender.send(message);
+            String resetCode = getAlphaNumericString(5);
 
-        //maybe change this to a pop-up message or label
-        System.out.println("Email sent");
-        ErrorMessages.showInformationMessage("Success", "Successfully sent email", "Email sent");
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(userEmail);
+            message.setSubject("Test from Spring Boot");
+            message.setText(resetCode);
+            emailSender.send(message);
 
-        //paneLoadTextfield.getChildren().remove(lb1);
+            //maybe change this to a pop-up message or label
+            System.out.println("Email sent");
+            ErrorMessages.showInformationMessage("Success", "Successfully sent email", "Email sent");
 
-        TextField tf1 = new TextField();
-        Button button = new Button();
+            //paneLoadTextfield.getChildren().remove(lb1);
 
-        paneLoadTextfield.getChildren().add(tf1);
-        paneLoadButton.setVisible(true);
-        paneLoadButton.getChildren().add(button);
-        signupButton.setVisible(false);
+            TextField tf1 = new TextField();
+            Button button = new Button();
 
-        tf1.setPrefWidth(signupUsernameText.getPrefWidth());
-        tf1.setPrefHeight(signupUsernameText.getPrefHeight());
-        tf1.setPromptText("Enter code sent to email");
+            paneLoadTextfield.getChildren().add(tf1);
+            paneLoadButton.setVisible(true);
+            paneLoadButton.getChildren().add(button);
+            signupButton.setVisible(false);
 
-        button.setPrefSize(paneLoadButton.getPrefWidth(), paneLoadButton.getPrefHeight());
-        button.setText("Submit Code");
-        button.setStyle("-fx-background-color: #de1c00; " +
-                "-fx-font-style: italic; -fx-font-weight: bold; -fx-font-size: 18; -fx-font: System");
+            tf1.setPrefWidth(signupUsernameText.getPrefWidth());
+            tf1.setPrefHeight(signupUsernameText.getPrefHeight());
+            tf1.setPromptText("Enter code sent to email");
 
-        button.setOnAction(event -> {
-            if(tf1.getText().equals(resetCode)){
-                System.out.println("code matches");
-            }
-            else{
-                System.out.println("code does not match");
-            }
-            ;
-        });
+            button.setPrefSize(paneLoadButton.getPrefWidth(), paneLoadButton.getPrefHeight());
+            button.setText("Submit Code");
+            button.setStyle("-fx-background-color: #de1c00; " +
+                    "-fx-font-style: italic; -fx-font-weight: bold; -fx-font-size: 18; -fx-font: System");
+
+            button.setOnAction(event -> {
+                if (tf1.getText().equals(resetCode)) {
+                    //open replace password page
+                    try {
+                        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/ReplacePassView.fxml"));
+                        fxmlLoader.setControllerFactory(springContext::getBean);
+                        Pane pane = fxmlLoader.load();
+
+                        signupAnchor.getChildren().setAll(pane);
+                    } catch (IOException io) {
+                        io.printStackTrace();
+                    }
+                } else {
+                    ErrorMessages.showErrorMessage("Code mismatch", "Code does not match",
+                            "Please re-enter code");
+                }
+                ;
+            });
+        }
+        else{
+            ErrorMessages.showErrorMessage("User does not exist","No user exists with this email",
+                    "Please enter a valid email address");
+        }
 
     }
 

@@ -1,4 +1,3 @@
-C:\Users\rache\IdeaProjects\4375spring\src\main\java\myproject\controllers\SignupController.java
 C:\Users\rache\IdeaProjects\4375spring\src\main\java\myproject\controllers\TimeOffController.java
 C:\Users\rache\IdeaProjects\4375spring\src\main\java\myproject\repositories\RoleRepository.java
 C:\Users\rache\IdeaProjects\4375spring\src\main\java\myproject\controllers\ClockInOutController.java
@@ -12,6 +11,7 @@ C:\Users\rache\IdeaProjects\4375spring\src\main\java\myproject\models\YearMonthI
 C:\Users\rache\IdeaProjects\4375spring\src\main\java\myproject\controllers\DashboardController.java
 C:\Users\rache\IdeaProjects\4375spring\src\main\java\myproject\repositories\UserRepository.java
 C:\Users\rache\IdeaProjects\4375spring\src\main\java\myproject\ConnectionClass.java
+C:\Users\rache\IdeaProjects\4375spring\src\main\java\myproject\controllers\ReplacePassController.java
 C:\Users\rache\IdeaProjects\4375spring\src\main\java\myproject\models\TimeClass.java
 C:\Users\rache\IdeaProjects\4375spring\src\main\java\myproject\models\Tblemployee.java
 C:\Users\rache\IdeaProjects\4375spring\src\main\java\myproject\ErrorMessages.java
@@ -21,6 +21,7 @@ C:\Users\rache\IdeaProjects\4375spring\src\main\java\myproject\repositories\Empl
 C:\Users\rache\IdeaProjects\4375spring\src\main\java\myproject\services\EmployeeService.java
 C:\Users\rache\IdeaProjects\4375spring\src\main\java\myproject\models\Tbltimeoff.java
 C:\Users\rache\IdeaProjects\4375spring\src\main\java\myproject\controllers\LoginController.java
+C:\Users\rache\IdeaProjects\4375spring\src\main\java\myproject\controllers\ForgotPassController.java
 C:\Users\rache\IdeaProjects\4375spring\src\main\java\myproject\controllers\WelcomeController.java
 C:\Users\rache\IdeaProjects\4375spring\src\main\java\myproject\models\TblDay.java
 C:\Users\rache\IdeaProjects\4375spring\src\main\java\myproject\repositories\ScheduleRepository.java
