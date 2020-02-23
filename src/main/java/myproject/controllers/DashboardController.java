@@ -4,10 +4,17 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
 import myproject.ErrorMessages;
 import myproject.models.Tblusers;
 import myproject.repositories.EmployeeRepository;
@@ -16,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -36,6 +44,9 @@ public class DashboardController implements Initializable {
     @FXML
     private HBox calendarNavBar, employeeManagementNavBar, buttonNavBar;
 
+    @FXML
+    private AnchorPane dashboardAnchorPane;
+
     @Autowired
     private ConfigurableApplicationContext springContext;
 
@@ -45,8 +56,13 @@ public class DashboardController implements Initializable {
     @Autowired
     private UserRepository userRepository;
 
+    public Rectangle2D screenBounds;
+    private double xOffset = 0, yOffset = 0;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        screenBounds = Screen.getPrimary().getVisualBounds();
+
         switchWindow("/view/CalendarView.fxml");
 
         //Checks for the current logged in user for their role
@@ -89,9 +105,35 @@ public class DashboardController implements Initializable {
                 System.out.println("You clicked the Request Time Off button");
                 switchWindow("/view/TimeOffView.fxml");
                 break;
-            case "Return to Sign In":
+            case "Logout":
                 System.out.println("You clicked the Return to Sign In button");
-                //switchWindow("/view/welcome.fxml");
+
+                try {
+                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/welcome.fxml"));
+                    fxmlLoader.setControllerFactory(springContext::getBean);
+                    Parent parent = fxmlLoader.load();
+                    Scene scene = new Scene(parent);
+
+                    Stage newStage = (Stage)dashboardAnchorPane.getScene().getWindow();
+                    newStage.setScene(scene);
+
+                    newStage.setX((screenBounds.getWidth() - newStage.getWidth()) / 2);
+                    newStage.setY((screenBounds.getHeight() - newStage.getHeight()) / 2);
+
+                    parent.setOnMousePressed((moveEvent -> {
+                        xOffset = moveEvent.getSceneX();
+                        yOffset = moveEvent.getSceneY();
+                    }));
+
+                    parent.setOnMouseDragged((moveEvent) -> {
+                        newStage.setX(moveEvent.getScreenX() - xOffset);
+                        newStage.setY(moveEvent.getScreenY() - yOffset);
+                    });
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
                 break;
             case "Button":
                 System.out.println("You clicked the Button button");

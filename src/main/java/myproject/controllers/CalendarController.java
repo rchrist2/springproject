@@ -102,7 +102,7 @@ public class CalendarController implements Initializable {
     }
 
     /*
-    TODO I was able to make the schedules wor
+    TODO I was able to make the schedules work
      */
     public void assignBasedOnDay(Set<Tblschedule> schedule){
         //format java.sql.Time values to 12-hr clock
@@ -244,6 +244,7 @@ public class CalendarController implements Initializable {
             //Creating the labels for the employee's schedule
             for (Tblschedule tblschedule : allSchedules) {
                 if (tblschedule.getDay().getDayDesc().toLowerCase().equals(day.toLowerCase())
+                        && offsetByPrevMonthDays <= 1
                         && offsetByNextMonthDays <= maxDaysInMonth){
 
                     System.out.println("IOn " + offsetByNextMonthDays);
