@@ -99,23 +99,28 @@
                   </Label>
                </children>
             </Pane>
-            <Pane fx:id="optionsPane" layoutX="430.0" layoutY="229.0" prefHeight="25.0" prefWidth="100.0" />
-            <Pane fx:id="optionsPane2" layoutX="533.0" layoutY="229.0" prefHeight="25.0" prefWidth="100.0">
+            <Pane fx:id="optionsPane" layoutX="381.0" layoutY="229.0" prefHeight="25.0" prefWidth="100.0" />
+            <Pane fx:id="optionsPane2" layoutX="484.0" layoutY="229.0" prefHeight="25.0" prefWidth="100.0">
                <padding>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </padding>
             </Pane>
-            <Pane fx:id="optionsPane3" layoutX="656.0" layoutY="229.0" prefHeight="25.0" prefWidth="78.0">
+            <Pane fx:id="optionsPane3" layoutX="607.0" layoutY="229.0" prefHeight="25.0" prefWidth="78.0">
                <padding>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </padding>
             </Pane>
-            <Pane fx:id="optionsPane4" layoutX="726.0" layoutY="229.0" prefHeight="25.0" prefWidth="100.0">
+            <Pane fx:id="optionsPane4" layoutX="677.0" layoutY="229.0" prefHeight="25.0" prefWidth="100.0">
                <padding>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </padding>
             </Pane>
             <Button fx:id="timeOffDeleteButton" disable="true" layoutX="814.0" layoutY="229.0" mnemonicParsing="false" onAction="#deleteTimeOff" style="-fx-background-color: red;" text="Delete" textFill="WHITE">
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </Button>
+            <Button fx:id="timeOffEditButton" disable="true" layoutX="765.0" layoutY="229.0" mnemonicParsing="false" onAction="#editTimeOff" style="-fx-background-color: #39a7c3;" text="Edit" textFill="WHITE">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>

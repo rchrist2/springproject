@@ -6,11 +6,17 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import myproject.ErrorMessages;
 import myproject.models.Tblschedule;
 import myproject.models.Tbltimeoff;
@@ -23,6 +29,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.domain.Range;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.net.URL;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
@@ -71,6 +78,9 @@ public class TimeOffController implements Initializable {
 
     @FXML
     private Button timeOffDeleteButton;
+
+    @FXML
+    private Button timeOffEditButton;
 
     @FXML
     public TableView<Tbltimeoff> timeOffTable;
@@ -126,6 +136,8 @@ public class TimeOffController implements Initializable {
 
     public Tbltimeoff selectedTimeOff;
 
+    public static String selectedUser;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         //get the current user (String) from LoginController
@@ -159,9 +171,11 @@ public class TimeOffController implements Initializable {
         reloadTimeOffTableView();
         setDataForTimeOffTableView();
         addActionListenersForCrudButtons(timeOffDeleteButton);
+        addActionListenersForCrudButtons(timeOffEditButton);
 
         timeOffTable.getSelectionModel().selectedItemProperty().addListener((obs, old, newv) -> {
             selectedTimeOff = newv;
+            selectedUser = selectedTimeOff.getSchedule().getEmployee().getUser().getUsername();
         });
 
         //if the user is the owner or manager, they can see buttons to approve requests
@@ -207,7 +221,7 @@ public class TimeOffController implements Initializable {
             disapproveRequest.setDisable(true);
             addActionListenersForCrudButtons(disapproveRequest);
             disapproveRequest.setPrefSize(submitRequestButton.getPrefWidth(), submitRequestButton.getPrefHeight());
-            disapproveRequest.setText("Disapprove");
+            disapproveRequest.setText("Deny");
             disapproveRequest.setStyle("-fx-text-fill:white; -fx-background-color: #39a7c3;");
             disapproveRequest.setOnAction(event ->{
                 Tbltimeoff tfApprove = selectedTimeOff;
@@ -229,7 +243,7 @@ public class TimeOffController implements Initializable {
 
             //set up other buttons for showing all users or current user
             showThisUser.setPrefSize(submitRequestButton.getPrefWidth(), submitRequestButton.getPrefHeight());
-            showThisUser.setText("Show Current User");
+            showThisUser.setText("Current User");
             showThisUser.setStyle("-fx-text-fill:white; -fx-background-color: #39a7c3;");
             showThisUser.setOnAction(event ->{
                 reloadTimeOffTableView();
@@ -238,7 +252,7 @@ public class TimeOffController implements Initializable {
             });
 
             showAllUser.setPrefSize(submitRequestButton.getPrefWidth(), submitRequestButton.getPrefHeight());
-            showAllUser.setText("Show All Users");
+            showAllUser.setText("All Users");
             showAllUser.setStyle("-fx-text-fill:white; -fx-background-color: #39a7c3;");
             showAllUser.setOnAction(event -> {
                 //use function to reload table showing all users
@@ -295,6 +309,41 @@ public class TimeOffController implements Initializable {
                     "Start time begins after end time or end time begins before start time");
         }*/
         }
+
+    @FXML
+    private void editTimeOff(){
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/CrudTimeOff.fxml"));
+            fxmlLoader.setControllerFactory(springContext::getBean);
+            Parent parent = fxmlLoader.load();
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initStyle(StageStyle.UNDECORATED);
+            stage.setTitle("Edit Time Off Request");
+
+            CrudTimeOffController crudTimeOffController = fxmlLoader.getController();
+            crudTimeOffController.setLabel("Edit Time Off for "
+                    + selectedTimeOff.getSchedule().getEmployee().getUser().getUsername());
+            crudTimeOffController.setTimeOff(selectedTimeOff);
+            crudTimeOffController.setController(this);
+
+            stage.setScene(new Scene(parent));
+
+            stage.showAndWait();
+            //reload table w/ all users if the user column is visible (only visible if all users are shown)
+            if(userCol.isVisible()){
+                reloadTimeOffTableViewAllUsers();
+                setDataForTimeOffTableView();
+            }
+            else{
+                reloadTimeOffTableView();
+                setDataForTimeOffTableView();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @FXML
     private void deleteTimeOff(){
