@@ -52,23 +52,17 @@ public class TimeOffController implements Initializable {
     @Autowired
     private ScheduleRepository scheduleRepository;
 
-    @Autowired
-    private EmployeeRepository employeeRepository;
-
-    @FXML
-    private Pane formPane;
-
     @FXML
     private Pane optionsPane;
 
     @FXML
     private Pane optionsPane2;
 
-    @FXML
+    /*@FXML
     private Pane optionsPane3;
 
     @FXML
-    private Pane optionsPane4;
+    private Pane optionsPane4;*/
 
     @FXML
     public Label tableUserLabel;
@@ -136,8 +130,6 @@ public class TimeOffController implements Initializable {
 
     public Tbltimeoff selectedTimeOff;
 
-    public static String selectedUser;
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         //get the current user (String) from LoginController
@@ -168,6 +160,7 @@ public class TimeOffController implements Initializable {
         endHrList.setItems(hrList);
         //endMinList.setItems(minList);
 
+        //reload table, set column data, and add listeners to buttons
         reloadTimeOffTableView();
         setDataForTimeOffTableView();
         addActionListenersForCrudButtons(timeOffDeleteButton);
@@ -175,10 +168,9 @@ public class TimeOffController implements Initializable {
 
         timeOffTable.getSelectionModel().selectedItemProperty().addListener((obs, old, newv) -> {
             selectedTimeOff = newv;
-            selectedUser = selectedTimeOff.getSchedule().getEmployee().getUser().getUsername();
         });
 
-        //if the user is the owner or manager, they can see buttons to approve requests
+        //if the user is the owner or manager, they can see buttons to approve requests or show all users
         if(userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Manager")
         || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Owner")){
             //declare variables
@@ -190,10 +182,10 @@ public class TimeOffController implements Initializable {
             //add buttons to panes
             optionsPane.getChildren().add(showAllUser);
             optionsPane2.getChildren().add(showThisUser);
-            optionsPane3.getChildren().add(approveRequest);
-            optionsPane4.getChildren().add(disapproveRequest);
+            /*optionsPane3.getChildren().add(approveRequest);
+            optionsPane4.getChildren().add(disapproveRequest);*/
 
-            //set style and action for approving
+           /* //set style and action for approving
             approveRequest.setDisable(true);
             addActionListenersForCrudButtons(approveRequest);
             approveRequest.setPrefSize(submitRequestButton.getPrefWidth(), submitRequestButton.getPrefHeight());
@@ -239,7 +231,7 @@ public class TimeOffController implements Initializable {
                     setDataForTimeOffTableView();
                 }
 
-            });
+            });*/
 
             //set up other buttons for showing all users or current user
             showThisUser.setPrefSize(submitRequestButton.getPrefWidth(), submitRequestButton.getPrefHeight());
@@ -273,12 +265,6 @@ public class TimeOffController implements Initializable {
 
         Tbltimeoff newTimeOff = new Tbltimeoff();
 
-        //WIP verifying valid time
-        /*if(!(beginHrList.getSelectionModel().getSelectedItem() > endHrList.getSelectionModel().getSelectedItem() &&
-                beginPMList.getSelectionModel().getSelectedItem().equals("PM"))
-        && !(endHrList.getSelectionModel().getSelectedItem() < beginHrList.getSelectionModel().getSelectedItem() &&
-                beginPMList.getSelectionModel().getSelectedItem().equals("AM"))) {*/
-
             //convert combobox values to 24 hour clock depending if AM or PM was selected
             if (beginPMList.getSelectionModel().getSelectedItem().equals("AM")) {
                 newTimeOff.setBeginTimeOffDate(Time.valueOf(beginHrList.getSelectionModel().getSelectedItem().toString()
@@ -300,14 +286,17 @@ public class TimeOffController implements Initializable {
             newTimeOff.setReasonDesc(reasonInput.getText());
             newTimeOff.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
 
-            timeOffRepository.save(newTimeOff);
+            if(newTimeOff.getBeginTimeOffDate().before(newTimeOff.getEndTimeOffDate())
+            && newTimeOff.getEndTimeOffDate().after(newTimeOff.getBeginTimeOffDate())){
+                timeOffRepository.save(newTimeOff);
+            }
+            else{
+                ErrorMessages.showErrorMessage("Invalid time values","Time range for time" +
+                        " off request is invalid","Please edit time range for this " +
+                        "time off request");
+            }
 
             reloadTimeOffTableView();
-
-            /*else{
-            ErrorMessages.showErrorMessage("Invalid hour range","Please check hour range",
-                    "Start time begins after end time or end time begins before start time");
-        }*/
         }
 
     @FXML
@@ -334,10 +323,12 @@ public class TimeOffController implements Initializable {
             if(userCol.isVisible()){
                 reloadTimeOffTableViewAllUsers();
                 setDataForTimeOffTableView();
+                resetButtons();
             }
             else{
                 reloadTimeOffTableView();
                 setDataForTimeOffTableView();
+                resetButtons();
             }
 
         } catch (IOException e) {
@@ -372,10 +363,12 @@ public class TimeOffController implements Initializable {
         if(userCol.isVisible()){
             reloadTimeOffTableViewAllUsers();
             setDataForTimeOffTableView();
+            resetButtons();
         }
         else{
             reloadTimeOffTableView();
             setDataForTimeOffTableView();
+            resetButtons();
         }
     }
 
@@ -416,6 +409,8 @@ public class TimeOffController implements Initializable {
         timeOffTable.setItems(filteredListOfTimeOff);
         tableUserLabel.setText("Time Off Requests for All Users");
         setDataForTimeOffTableView();
+
+        //selectedUser = "null";
     }
 
     private void reloadTimeOffTableView(){
@@ -435,6 +430,8 @@ public class TimeOffController implements Initializable {
         //set this back to current user in case All Users were shown
         tableUserLabel.setText("Time Off Requests for " + currentUser);
 
+        //selectedUser = "null";
+
     }
 
     private void addActionListenersForCrudButtons(Button button){
@@ -443,6 +440,11 @@ public class TimeOffController implements Initializable {
                 button.setDisable(false);
             }
         });
+    }
+
+    private void resetButtons(){
+        timeOffEditButton.setDisable(true);
+        timeOffDeleteButton.setDisable(true);
     }
 
 }

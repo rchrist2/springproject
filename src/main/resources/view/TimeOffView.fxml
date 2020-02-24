@@ -99,23 +99,13 @@
                   </Label>
                </children>
             </Pane>
-            <Pane fx:id="optionsPane" layoutX="381.0" layoutY="229.0" prefHeight="25.0" prefWidth="100.0" />
-            <Pane fx:id="optionsPane2" layoutX="484.0" layoutY="229.0" prefHeight="25.0" prefWidth="100.0">
+            <Pane fx:id="optionsPane" layoutX="605.0" layoutY="229.0" prefHeight="25.0" prefWidth="70.0" />
+            <Pane fx:id="optionsPane2" layoutX="675.0" layoutY="229.0" prefHeight="25.0" prefWidth="70.0">
                <padding>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </padding>
             </Pane>
-            <Pane fx:id="optionsPane3" layoutX="607.0" layoutY="229.0" prefHeight="25.0" prefWidth="78.0">
-               <padding>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </padding>
-            </Pane>
-            <Pane fx:id="optionsPane4" layoutX="677.0" layoutY="229.0" prefHeight="25.0" prefWidth="100.0">
-               <padding>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </padding>
-            </Pane>
-            <Button fx:id="timeOffDeleteButton" disable="true" layoutX="814.0" layoutY="229.0" mnemonicParsing="false" onAction="#deleteTimeOff" style="-fx-background-color: red;" text="Delete" textFill="WHITE">
+            <Button fx:id="timeOffDeleteButton" disable="true" layoutX="811.0" layoutY="229.0" mnemonicParsing="false" onAction="#deleteTimeOff" style="-fx-background-color: red;" text="Delete" textFill="WHITE">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>

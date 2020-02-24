@@ -82,36 +82,24 @@ public class CrudTimeOffController implements Initializable {
     private TimeOffController timeOffController;
     private ScheduleService scheduleService;
 
-    //The employee returned from the EmployeeManagementController
+    //The time off returned from the TimeOffController
     private Tbltimeoff selectedTimeOff;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle){
-        //get the current user (String) from LoginController
-        String currentUser = LoginController.userStore;
-
+        //initialize drop down menus
         approveData = FXCollections.observableArrayList(Arrays.asList("Approve","Deny"));
         approveList.setItems(approveData);
 
-        //initialize the schedule dates for the current user
-        scheduleData = FXCollections.observableArrayList();
-        scheduleData.addAll(scheduleRepository.findScheduleForUser(TimeOffController.selectedUser));
-        scheduleList.setItems(scheduleData);
-
         hrList = FXCollections.observableArrayList();
-        //minList = FXCollections.observableArrayList();
-
         hrList.addAll(IntStream.rangeClosed(1,12).boxed().collect(Collectors.toList()));
-        //minList.addAll(IntStream.rangeClosed(0,59).boxed().collect(Collectors.toList()));
 
-        //fill the hour, minute, and AM/PM comboboxes with values
+        //fill the hour, minute, and AM/PM drop-downs with values
         beginPMList.setItems(pmList);
         endPMList.setItems(pmList);
 
         beginHrList.setItems(hrList);
-        //beginMinList.setItems(minList);
         endHrList.setItems(hrList);
-        //endMinList.setItems(minList);
     }
 
     @Autowired
@@ -136,9 +124,45 @@ public class CrudTimeOffController implements Initializable {
     }
 
     private void setFieldsForEdit(Tbltimeoff tf1){
-        //TODO set AM/PM list
+        //use Calendar class to find if time has AM or PM
+        Calendar begPM=Calendar.getInstance();
+        begPM.setTime(tf1.getBeginTimeOffDate());
+
+        Calendar endPM=Calendar.getInstance();
+        endPM.setTime(tf1.getEndTimeOffDate());
+
+        //if time has AM or PM, assign appropriate value in AM/PM drop-downs
+        if(begPM.get(Calendar.AM_PM) == Calendar.AM
+        && endPM.get(Calendar.AM_PM) == Calendar.AM){
+            beginPMList.getSelectionModel().select(0);
+            endPMList.getSelectionModel().select(0);
+        }
+        else if(begPM.get(Calendar.AM_PM) == Calendar.AM
+                && endPM.get(Calendar.AM_PM) == Calendar.PM){
+            beginPMList.getSelectionModel().select(0);
+            endPMList.getSelectionModel().select(1);
+        }
+        else if(begPM.get(Calendar.AM_PM) == Calendar.PM
+                && endPM.get(Calendar.AM_PM) == Calendar.AM){
+            beginPMList.getSelectionModel().select(1);
+            endPMList.getSelectionModel().select(0);
+        }
+        else if(begPM.get(Calendar.AM_PM) == Calendar.PM
+                && endPM.get(Calendar.AM_PM) == Calendar.PM){
+            beginPMList.getSelectionModel().select(1);
+            endPMList.getSelectionModel().select(1);
+        }
+
+        //initialize the schedule dates for the current user
+        //not done in initialize() method due to nullpointerexception
+        scheduleData = FXCollections.observableArrayList();
+        scheduleData.addAll(scheduleRepository.findScheduleForUser(selectedTimeOff.getSchedule().getEmployee().getUser().getUsername()));
+        scheduleList.setItems(scheduleData);
+
+        //get the schedule for this time off request and select it in drop-down
         scheduleList.getSelectionModel().select(selectedTimeOff.getSchedule());
 
+        //use Calendar class to extract only hour from time
         Calendar calendarBeg=Calendar.getInstance();
         calendarBeg.setTime(tf1.getBeginTimeOffDate());
         int beginHour = calendarBeg.get(Calendar.HOUR);
@@ -147,18 +171,18 @@ public class CrudTimeOffController implements Initializable {
         calendarEnd.setTime(tf1.getEndTimeOffDate());
         int endHour = calendarEnd.get(Calendar.HOUR);
 
+        //assigns via array index, so subtract 1 to display correct hour value
         beginHrList.getSelectionModel().select(beginHour-1);
         endHrList.getSelectionModel().select(endHour-1);
 
+        //find whether time is approved or not, and set appropriate drop-down value
         String approveSelect = "null";
-
         if(tf1.isApproved()){
             approveSelect = "Approve";
         }
         else if(!tf1.isApproved()){
             approveSelect = "Deny";
         }
-
         approveList.getSelectionModel().select(approveSelect);
 
         reasonInput.setText(tf1.getReasonDesc());
@@ -166,11 +190,9 @@ public class CrudTimeOffController implements Initializable {
     }
 
     public void handleSave(ActionEvent event){
-        //get the current user (String) from LoginController
-        String currentUser = LoginController.userStore;
-
         Tbltimeoff tf = selectedTimeOff;
 
+        //save the time off with approved/denied based on selection in drop-down
         Boolean isApproved = tf.isApproved();
         if(approveList.getSelectionModel().getSelectedItem().equals("Approve")) {
             isApproved = true;
