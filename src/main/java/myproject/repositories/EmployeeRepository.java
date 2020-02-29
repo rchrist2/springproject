@@ -17,6 +17,12 @@ public interface EmployeeRepository extends CrudRepository<Tblemployee, Integer>
     @Query(value = "SELECT * FROM tblemployee", nativeQuery = true)
     List<Tblemployee> findAllEmployee();
 
+    @Query(value = "SELECT * FROM tblemployee WHERE name = :name", nativeQuery = true)
+    Tblemployee findEmployeeByName(@Param("name") int empName);
+
+    @Query(value = "SELECT name FROM tblemployee", nativeQuery = true)
+    List<Tblemployee> findAllEmployeeByName();
+
     //Returns the user for an employee
     @Query(value = "SELECT * FROM tblemployee e JOIN tblusers u ON e.id=u.employee_id WHERE username = :username", nativeQuery = true)
     List<Tblemployee> findUserForEmployee(@Param("username") String user);

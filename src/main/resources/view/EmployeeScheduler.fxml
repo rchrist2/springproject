@@ -17,9 +17,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="754.0" prefWidth="985.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.EmployeeScheduler">
+<AnchorPane prefHeight="754.0" prefWidth="985.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.EmployeeSchedulerController">
    <children>
-      <Pane prefHeight="115.0" prefWidth="985.0" style="-fx-background-color: linear-gradient(to right, #39a7c3 , white); -fx-border-color: transparent transparent derive(black, 10%) transparent;">
+      <Pane prefHeight="115.0" prefWidth="985.0" style="-fx-background-color: linear-gradient(to right, #39a7c3 , white); -fx-border-color: transparent transparent derive(black, 10%) transparent;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <VBox prefHeight="115.0" prefWidth="985.0">
                <children>
@@ -44,78 +44,89 @@
             </VBox>
          </children>
       </Pane>
-      <TableView layoutX="14.0" layoutY="216.0" prefHeight="302.0" prefWidth="955.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0">
-        <columns>
-          <TableColumn prefWidth="155.0" text="Name" />
-          <TableColumn prefWidth="144.0" text="Start Time" />
-            <TableColumn prefWidth="152.0" text="End Time" />
-            <TableColumn prefWidth="435.0" text="Days" />
-        </columns>
-      </TableView>
-      <ListView layoutX="15.0" layoutY="177.0" prefHeight="200.0" prefWidth="151.0" />
-      <GridPane layoutX="324.0" layoutY="165.0" prefHeight="224.0" prefWidth="371.0" vgap="5.0">
-        <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="94.0" minWidth="10.0" prefWidth="89.0" />
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="78.0" minWidth="8.0" prefWidth="13.0" />
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="148.0" minWidth="10.0" prefWidth="105.0" />
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="133.0" minWidth="10.0" prefWidth="19.0" />
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="134.0" minWidth="10.0" prefWidth="104.0" />
-        </columnConstraints>
-        <rowConstraints>
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        </rowConstraints>
+      <AnchorPane layoutY="115.0" prefHeight="638.0" prefWidth="985.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="115.0">
          <children>
-            <Label text="Days:" underline="true">
+            <TableView layoutX="18.0" layoutY="320.0" prefHeight="302.0" prefWidth="937.0" AnchorPane.bottomAnchor="18.0" AnchorPane.leftAnchor="18.0" AnchorPane.rightAnchor="18.0">
+              <columns>
+                <TableColumn prefWidth="155.0" text="Name" />
+                <TableColumn prefWidth="144.0" text="Start Time" />
+                  <TableColumn prefWidth="152.0" text="End Time" />
+                  <TableColumn prefWidth="435.0" text="Days" />
+              </columns>
+            </TableView>
+            <GridPane fx:id="scheduleGridPane" disable="true" layoutX="308.0" layoutY="44.0" prefHeight="224.0" prefWidth="371.0" vgap="5.0">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="97.0" minWidth="10.0" prefWidth="97.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="78.0" minWidth="8.0" prefWidth="19.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="148.0" minWidth="10.0" prefWidth="105.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="133.0" minWidth="10.0" prefWidth="19.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="134.0" minWidth="10.0" prefWidth="104.0" />
+              </columnConstraints>
+              <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="TOP" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <Label text="Days:" underline="true">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Label>
+                  <Label text="Start time" underline="true" GridPane.columnIndex="2">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Label>
+                  <Label text="End Time" underline="true" GridPane.columnIndex="4">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Label>
+                  <Spinner fx:id="sundayStartSpinner" disable="true" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                  <Spinner fx:id="sundayEndSpinner" disable="true" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+                  <Spinner fx:id="mondayStartSpinner" disable="true" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                  <Spinner fx:id="tuesdayStartSpinner" disable="true" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                  <Spinner fx:id="wednesdayStartSpinner" disable="true" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+                  <Spinner fx:id="thursdayStartSpinner" disable="true" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+                  <Spinner fx:id="fridayStartSpinner" disable="true" GridPane.columnIndex="2" GridPane.rowIndex="6" />
+                  <Spinner fx:id="saturdayStartSpinner" disable="true" GridPane.columnIndex="2" GridPane.rowIndex="7" />
+                  <Spinner fx:id="mondayEndSpinner" disable="true" GridPane.columnIndex="4" GridPane.rowIndex="2" />
+                  <Spinner fx:id="tuesdayEndSpinner" disable="true" GridPane.columnIndex="4" GridPane.rowIndex="3" />
+                  <Spinner fx:id="wednesdayEndSpinner" disable="true" GridPane.columnIndex="4" GridPane.rowIndex="4" />
+                  <Spinner fx:id="thursdayEndSpinner" disable="true" GridPane.columnIndex="4" GridPane.rowIndex="5" />
+                  <Spinner fx:id="fridayEndSpinner" disable="true" GridPane.columnIndex="4" GridPane.rowIndex="6" />
+                  <Spinner fx:id="saturdayEndSpinner" disable="true" GridPane.columnIndex="4" GridPane.rowIndex="7" />
+                  <CheckBox fx:id="sundayCheck" mnemonicParsing="false" text="Sunday" GridPane.rowIndex="1" />
+                  <CheckBox fx:id="mondayCheck" mnemonicParsing="false" text="Monday" GridPane.rowIndex="2" />
+                  <CheckBox fx:id="tuesdayCheck" mnemonicParsing="false" text="Tuesday" GridPane.rowIndex="3" />
+                  <CheckBox fx:id="wednesdayCheck" mnemonicParsing="false" text="Wednesday" GridPane.rowIndex="4" />
+                  <CheckBox fx:id="thursdayCheck" mnemonicParsing="false" text="Thursday" GridPane.rowIndex="5" />
+                  <CheckBox fx:id="fridayCheck" mnemonicParsing="false" text="Friday" GridPane.rowIndex="6" />
+                  <CheckBox fx:id="saturdayCheck" mnemonicParsing="false" text="Saturday" GridPane.rowIndex="7" />
+               </children>
+            </GridPane>
+            <Button fx:id="scheduleButton" disable="true" layoutX="827.0" layoutY="213.0" mnemonicParsing="false" onAction="#handleAddSchedule" prefHeight="55.0" prefWidth="140.0" style="-fx-background-color: #39a7c3;" text="Add Schedule" />
+            <Label fx:id="employeeLabel" disable="true" layoutX="308.0" layoutY="7.0" prefHeight="40.0" prefWidth="371.0" text="[Schedule]">
                <font>
-                  <Font name="System Bold" size="12.0" />
+                  <Font name="System Bold" size="16.0" />
                </font>
             </Label>
-            <Label text="Start time" underline="true" GridPane.columnIndex="2">
+            <ListView fx:id="employeeListView" layoutX="18.0" layoutY="44.0" prefHeight="224.0" prefWidth="140.0" AnchorPane.leftAnchor="18.0" />
+            <Button fx:id="selectButton" layoutX="170.0" layoutY="44.0" mnemonicParsing="false" onAction="#handleSelectedEmployee" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #39a7c3;" text="Select" />
+            <Label fx:id="listOfEmployeeLabel" layoutX="18.0" layoutY="14.0" prefHeight="17.0" prefWidth="140.0" text="List of Employees">
                <font>
-                  <Font name="System Bold" size="12.0" />
+                  <Font name="System Bold" size="16.0" />
                </font>
             </Label>
-            <Label text="End Time" underline="true" GridPane.columnIndex="4">
-               <font>
-                  <Font name="System Bold" size="12.0" />
-               </font>
-            </Label>
-            <Spinner GridPane.columnIndex="2" GridPane.rowIndex="1" />
-            <Spinner GridPane.columnIndex="4" GridPane.rowIndex="1" />
-            <Spinner GridPane.columnIndex="2" GridPane.rowIndex="2" />
-            <Spinner GridPane.columnIndex="2" GridPane.rowIndex="3" />
-            <Spinner GridPane.columnIndex="2" GridPane.rowIndex="4" />
-            <Spinner GridPane.columnIndex="2" GridPane.rowIndex="5" />
-            <Spinner GridPane.columnIndex="2" GridPane.rowIndex="6" />
-            <Spinner GridPane.columnIndex="2" GridPane.rowIndex="7" />
-            <Spinner GridPane.columnIndex="4" GridPane.rowIndex="2" />
-            <Spinner GridPane.columnIndex="4" GridPane.rowIndex="3" />
-            <Spinner GridPane.columnIndex="4" GridPane.rowIndex="4" />
-            <Spinner GridPane.columnIndex="4" GridPane.rowIndex="5" />
-            <Spinner GridPane.columnIndex="4" GridPane.rowIndex="6" />
-            <Spinner GridPane.columnIndex="4" GridPane.rowIndex="7" />
-            <CheckBox mnemonicParsing="false" text="Sunday" GridPane.rowIndex="1" />
-            <CheckBox mnemonicParsing="false" text="Monday" GridPane.rowIndex="2" />
-            <CheckBox mnemonicParsing="false" text="Tuesday" GridPane.rowIndex="3" />
-            <CheckBox mnemonicParsing="false" text="Wednesday" GridPane.rowIndex="4" />
-            <CheckBox mnemonicParsing="false" text="Thursday" GridPane.rowIndex="5" />
-            <CheckBox mnemonicParsing="false" text="Friday" GridPane.rowIndex="6" />
-            <CheckBox mnemonicParsing="false" text="Saturday" GridPane.rowIndex="7" />
+            <Label fx:id="employeeSelectError" layoutX="170.0" layoutY="76.0" prefHeight="17.0" prefWidth="124.0" text="[Error placeholder]" visible="false" />
+            <Button fx:id="resetButton" disable="true" layoutX="170.0" layoutY="81.0" mnemonicParsing="false" onAction="#handleResetEmployee" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #9bd3e1;" text="Reset" />
          </children>
-      </GridPane>
-      <Button layoutX="733.0" layoutY="334.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="140.0" text="Add Schedule" />
-      <Label layoutX="324.0" layoutY="121.0" prefHeight="40.0" prefWidth="337.0" text="[Employee name placeholder]">
-         <font>
-            <Font size="16.0" />
-         </font>
-      </Label>
-      <Button layoutX="179.0" layoutY="257.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="71.0" text="Select" />
+      </AnchorPane>
    </children>
 </AnchorPane>

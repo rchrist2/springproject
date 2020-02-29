@@ -31,5 +31,11 @@
         <property name="applicationName" value="DataGrip" />
       </driver-properties>
     </data-source>
+    <data-source source="LOCAL" name="Server from Neuralog" uuid="65b1d5d7-7123-4f36-9c0b-1dc8bb6c52a2">
+      <driver-ref>sqlserver.ms</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.microsoft.sqlserver.jdbc.SQLServerDriver</jdbc-driver>
+      <jdbc-url>jdbc:sqlserver://10.209.12.218:1433;database=4375db</jdbc-url>
+    </data-source>
   </component>
 </project>

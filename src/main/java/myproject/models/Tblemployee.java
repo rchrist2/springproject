@@ -155,4 +155,9 @@ public class Tblemployee {
     public int hashCode() {
         return Objects.hash(id, name, email, address, phone);
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }
