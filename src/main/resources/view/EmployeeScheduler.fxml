@@ -46,14 +46,6 @@
       </Pane>
       <AnchorPane layoutY="115.0" prefHeight="638.0" prefWidth="985.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="115.0">
          <children>
-            <TableView layoutX="18.0" layoutY="320.0" prefHeight="302.0" prefWidth="937.0" AnchorPane.bottomAnchor="18.0" AnchorPane.leftAnchor="18.0" AnchorPane.rightAnchor="18.0">
-              <columns>
-                <TableColumn prefWidth="155.0" text="Name" />
-                <TableColumn prefWidth="144.0" text="Start Time" />
-                  <TableColumn prefWidth="152.0" text="End Time" />
-                  <TableColumn prefWidth="435.0" text="Days" />
-              </columns>
-            </TableView>
             <GridPane fx:id="scheduleGridPane" disable="true" layoutX="308.0" layoutY="44.0" prefHeight="224.0" prefWidth="371.0" vgap="5.0">
               <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="97.0" minWidth="10.0" prefWidth="97.0" />
@@ -126,6 +118,17 @@
             </Label>
             <Label fx:id="employeeSelectError" layoutX="170.0" layoutY="76.0" prefHeight="17.0" prefWidth="124.0" text="[Error placeholder]" visible="false" />
             <Button fx:id="resetButton" disable="true" layoutX="170.0" layoutY="81.0" mnemonicParsing="false" onAction="#handleResetEmployee" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #9bd3e1;" text="Reset" />
+            <TableView fx:id="scheduleTableView" layoutX="18.0" layoutY="320.0" prefHeight="302.0" prefWidth="937.0" AnchorPane.bottomAnchor="18.0" AnchorPane.leftAnchor="18.0" AnchorPane.rightAnchor="18.0">
+              <columns>
+                <TableColumn fx:id="nameColumn" prefWidth="300.0" text="Name" />
+                <TableColumn prefWidth="700.0" text="Schedule">
+                     <columns>
+                        <TableColumn fx:id="startTimeColumn" maxWidth="150.0" prefWidth="150.0" text="Start Time" />
+                        <TableColumn fx:id="endTimeColumn" maxWidth="150.0" prefWidth="150.0" text="End Time" />
+                        <TableColumn fx:id="dayColumn" maxWidth="500.0" prefWidth="345.0" text="Days" />
+                     </columns></TableColumn>
+              </columns>
+            </TableView>
          </children>
       </AnchorPane>
    </children>

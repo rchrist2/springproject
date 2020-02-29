@@ -75,16 +75,28 @@ public class Tblemployee {
         return String.join("\n", listOfDays);
     }
 
-    public String employeeHours(){
+    public String employeeStartHours(){
         List<String> listOfHours = new ArrayList<>();
 
         String strDateFormat = "HH:mm a";
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(strDateFormat);
 
         for (Tblschedule hours : this.schedules) {
-            listOfHours.add(hours.getScheduleTimeBegin().toLocalTime().format(timeFormatter) + " - " + hours.getScheduleTimeEnd().toLocalTime().format(timeFormatter));
+            listOfHours.add(hours.getScheduleTimeBegin().toLocalTime().format(timeFormatter));
         }
 
+        return String.join("\n", listOfHours);
+    }
+
+    public String employeeEndHours(){
+        List<String> listOfHours = new ArrayList<>();
+
+        String strDateFormat = "HH:mm a";
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(strDateFormat);
+
+        for(Tblschedule hours : this.schedules) {
+            listOfHours.add(hours.getScheduleTimeEnd().toLocalTime().format(timeFormatter));
+        }
         return String.join("\n", listOfHours);
     }
 

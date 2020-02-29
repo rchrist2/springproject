@@ -220,10 +220,6 @@ public class CrudEmployeeController implements Initializable {
                                 selectedEmployee.getId()
                         );
 
-
-
-
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

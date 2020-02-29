@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
+import java.sql.Date;
 import java.sql.Time;
 
 @Component
@@ -23,4 +24,8 @@ public class ScheduleService {
         scheduleRepository.deleteEmployeeSchedule(employeeId);
     }
 
+    @Transactional
+    public void insertSchedule(Time startTime, Time startEnd, Date todayDate, int empId, int dayId){
+        scheduleRepository.insertEmployeeSchedule(startTime, startEnd, todayDate, empId, dayId);
+    }
 }

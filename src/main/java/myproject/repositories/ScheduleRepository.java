@@ -8,6 +8,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Date;
 import java.sql.Time;
 import java.util.List;
 
@@ -35,5 +36,9 @@ public interface ScheduleRepository extends CrudRepository<Tblschedule, Integer>
     @Modifying
     @Query(value = "DELETE FROM tblschedule WHERE employee_id = :empId", nativeQuery = true)
     void deleteEmployeeSchedule(@Param("empId") int employeeId);
+
+    @Modifying
+    @Query(value = "INSERT INTO tblschedule VALUES (:startTime, :endTime, :scheduleDate, :empId, :dayId)", nativeQuery = true)
+    void insertEmployeeSchedule(@Param("startTime") Time startTime, @Param("endTime") Time endTime, @Param("scheduleDate") Date scheduleDate, @Param("empId") int empId, @Param("dayId") int day);
 }
 

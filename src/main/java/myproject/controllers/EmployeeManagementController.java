@@ -113,7 +113,7 @@ public class EmployeeManagementController implements Initializable {
         phoneColumn.setCellValueFactory(new PropertyValueFactory<>("phone"));
         roleColumn.setCellValueFactory(role -> new ReadOnlyStringWrapper(role.getValue().getRole().getRoleDesc()));
 
-        hoursColumn.setCellValueFactory(hours -> new ReadOnlyStringWrapper(hours.getValue().employeeHours()));
+        //hoursColumn.setCellValueFactory(hours -> new ReadOnlyStringWrapper(hours.getValue().employeeHours()));
         daysColumn.setCellValueFactory(days -> new ReadOnlyStringWrapper(days.getValue().employeeSchedule()));
     }
 

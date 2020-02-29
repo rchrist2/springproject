@@ -1,22 +1,30 @@
 package myproject.controllers;
 
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import myproject.ErrorMessages;
 import myproject.models.Tblemployee;
 import myproject.models.Tblschedule;
+import myproject.repositories.DayRepository;
 import myproject.repositories.EmployeeRepository;
+import myproject.repositories.ScheduleRepository;
+import myproject.services.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
+import java.sql.Date;
 import java.sql.Time;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -58,10 +66,32 @@ public class EmployeeSchedulerController implements Initializable {
     @FXML
     private GridPane scheduleGridPane;
 
+    @FXML
+    private TableColumn<Tblemployee, String> nameColumn,
+                                        startTimeColumn,
+                                        endTimeColumn,
+                                        dayColumn;
+
+    @FXML
+    private TableView<Tblemployee> scheduleTableView;
+
     @Autowired
     private EmployeeRepository employeeRepository;
 
+    @Autowired
+    private ScheduleRepository scheduleRepository;
+
+    @Autowired
+    private ScheduleService scheduleService;
+
+    @Autowired
+    private DayRepository dayRepository;
+
     private ObservableList<Tblemployee> listOfEmployees;
+    private ObservableList<Tblemployee> listOfSchedules;
+
+    private FilteredList<Tblemployee> filteredEmployeeList;
+
     private Tblemployee selectedEmployee;
     private ObservableList<String> times = FXCollections.observableArrayList(
             "01:00:00", "02:00:00", "03:00:00", "04:00:00",
@@ -76,13 +106,16 @@ public class EmployeeSchedulerController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         listOfEmployees = FXCollections.observableArrayList();
+        listOfSchedules = FXCollections.observableArrayList();
 
-        listOfEmployees.setAll(employeeRepository.findAllEmployee());
+        listOfEmployees.setAll(employeeRepository.findAllEmployeesWithoutSchedule());
 
         employeeListView.setItems(listOfEmployees);
 
         addListenersToCheckBoxes();
         addTimesToSpinner();
+        setCellData();
+        loadDataToTable();
     }
 
     @FXML
@@ -130,7 +163,7 @@ public class EmployeeSchedulerController implements Initializable {
         List<String> listOfTimes = new ArrayList<>();
         List<String> listOfDays = new ArrayList<>();
         String errorString = "";
-        boolean noErrors = false;
+        boolean errors = false;
 
         scheduleGridPane.setDisable(true);
 
@@ -141,7 +174,7 @@ public class EmployeeSchedulerController implements Initializable {
                 listOfTimes.add(sundayEndSpinner.getValue());
             } else{
 
-                noErrors = true;
+                errors = true;
                 errorString += "- Sunday\n";
             }
 
@@ -155,7 +188,7 @@ public class EmployeeSchedulerController implements Initializable {
                 listOfTimes.add(mondayEndSpinner.getValue());
             } else {
 
-                noErrors = true;
+                errors = true;
                 errorString += "- Monday\n";
             }
 
@@ -169,7 +202,7 @@ public class EmployeeSchedulerController implements Initializable {
                 listOfTimes.add(tuesdayEndSpinner.getValue());
             } else{
 
-                noErrors = true;
+                errors = true;
                 errorString += "- Tuesday\n";
             }
 
@@ -183,7 +216,7 @@ public class EmployeeSchedulerController implements Initializable {
                 listOfTimes.add(wednesdayEndSpinner.getValue());
             } else{
 
-                noErrors = true;
+                errors = true;
                 errorString += "- Wednesday\n";
             }
 
@@ -197,7 +230,7 @@ public class EmployeeSchedulerController implements Initializable {
                 listOfTimes.add(thursdayEndSpinner.getValue());
             } else{
 
-                noErrors = true;
+                errors = true;
                 errorString += "- Thursday\n";
             }
 
@@ -209,9 +242,9 @@ public class EmployeeSchedulerController implements Initializable {
             if(spinnerValidation(fridayStartSpinner.getValue(), fridayEndSpinner.getValue())) {
                 listOfTimes.add(fridayStartSpinner.getValue());
                 listOfTimes.add(fridayEndSpinner.getValue());
-            } else{
+            } else {
 
-                noErrors = true;
+                errors = true;
                 errorString += "- Friday\n";
             }
 
@@ -225,14 +258,14 @@ public class EmployeeSchedulerController implements Initializable {
                 listOfTimes.add(saturdayEndSpinner.getValue());
             } else{
 
-                noErrors = true;
+                errors = true;
                 errorString += "- Saturday\n";
             }
 
             listOfDays.add("Saturday");
         }
 
-        if(noErrors){
+        if(errors){
             ErrorMessages.showErrorMessage("Missing Time Error", "No Time Provided",
                     "Please check the times on the following days:\n" + errorString);
         }
@@ -241,16 +274,53 @@ public class EmployeeSchedulerController implements Initializable {
 
         resetButton.setDisable(true);
         selectButton.setDisable(false);
+        scheduleButton.setDisable(true);
         employeeListView.setDisable(false);
         listOfEmployeeLabel.setDisable(false);
 
         int timeIndex = 0;
 
-        for (String day : listOfDays){
+        //Debugging to check if schedule is done correctly
+        /*for (String day : listOfDays){
             System.out.println(selectedEmployee.getName() + " - " + day + ": "
                     + listOfTimes.get(timeIndex++) + " - " + listOfTimes.get(timeIndex++));
+        }*/
+
+        if(!errors) {
+            for (String day : listOfDays) {
+                scheduleService.insertSchedule(Time.valueOf(listOfTimes.get(timeIndex++)), Time.valueOf(listOfTimes.get(timeIndex++)),
+                        Date.valueOf(LocalDate.now()), selectedEmployee.getId(), dayRepository.findDay(day).getDayId());
+            }
+
+            ErrorMessages.showInformationMessage("Successful", "Saved Schedule", selectedEmployee + "'s schedule was saved successfully");
+            loadDataToTable();
         }
+
+
     }
+
+    @FXML
+    private void setCellData(){
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        startTimeColumn.setCellValueFactory(startTime -> new ReadOnlyStringWrapper(startTime.getValue().employeeStartHours()));
+        endTimeColumn.setCellValueFactory(startTime -> new ReadOnlyStringWrapper(startTime.getValue().employeeEndHours()));
+
+        dayColumn.setCellValueFactory(day -> new ReadOnlyStringWrapper(day.getValue().employeeSchedule()));
+    }
+
+    @FXML
+    private void loadDataToTable(){
+        listOfSchedules.clear();
+        listOfEmployees.clear();
+
+        listOfSchedules.addAll(employeeRepository.findAllEmployee());
+        listOfEmployees.addAll(employeeRepository.findAllEmployeesWithoutSchedule());
+
+        filteredEmployeeList = new FilteredList<>(listOfSchedules);
+
+        scheduleTableView.setItems(filteredEmployeeList);
+    }
+
 
     private boolean spinnerValidation(String start, String end){
         return start != null && end != null;
@@ -329,22 +399,54 @@ public class EmployeeSchedulerController implements Initializable {
     }
 
     private void addTimesToSpinner(){
-        SpinnerValueFactory<String> spinnerValueTimes =
+        SpinnerValueFactory<String> sundayStartTimes =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(times);
+        SpinnerValueFactory<String> sundayEndTimes =
                 new SpinnerValueFactory.ListSpinnerValueFactory<>(times);
 
-        sundayStartSpinner.setValueFactory(spinnerValueTimes);
-        sundayEndSpinner.setValueFactory(spinnerValueTimes);
-        mondayStartSpinner.setValueFactory(spinnerValueTimes);
-        mondayEndSpinner.setValueFactory(spinnerValueTimes);
-        tuesdayStartSpinner.setValueFactory(spinnerValueTimes);
-        tuesdayEndSpinner.setValueFactory(spinnerValueTimes);
-        wednesdayStartSpinner.setValueFactory(spinnerValueTimes);
-        wednesdayEndSpinner.setValueFactory(spinnerValueTimes);
-        thursdayStartSpinner.setValueFactory(spinnerValueTimes);
-        thursdayEndSpinner.setValueFactory(spinnerValueTimes);
-        fridayStartSpinner.setValueFactory(spinnerValueTimes);
-        fridayEndSpinner.setValueFactory(spinnerValueTimes);
-        saturdayStartSpinner.setValueFactory(spinnerValueTimes);
-        saturdayEndSpinner.setValueFactory(spinnerValueTimes);
+        SpinnerValueFactory<String> mondayStartTimes =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(times);
+        SpinnerValueFactory<String> mondayEndTimes =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(times);
+
+        SpinnerValueFactory<String> tuesdayStartTimes =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(times);
+        SpinnerValueFactory<String> tuesdayEndTimes =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(times);
+
+        SpinnerValueFactory<String> wednesdayStartTimes =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(times);
+        SpinnerValueFactory<String> wednesdayEndTimes =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(times);
+
+        SpinnerValueFactory<String> thursdayStartTimes =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(times);
+        SpinnerValueFactory<String> thursdayEndTimes =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(times);
+
+        SpinnerValueFactory<String> fridayStartTimes =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(times);
+        SpinnerValueFactory<String> fridayEndTimes =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(times);
+
+        SpinnerValueFactory<String> saturdayStartTimes =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(times);
+        SpinnerValueFactory<String> saturdayEndTimes =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(times);
+
+        sundayStartSpinner.setValueFactory(sundayStartTimes);
+        sundayEndSpinner.setValueFactory(sundayEndTimes);
+        mondayStartSpinner.setValueFactory(mondayStartTimes);
+        mondayEndSpinner.setValueFactory(mondayEndTimes);
+        tuesdayStartSpinner.setValueFactory(tuesdayStartTimes);
+        tuesdayEndSpinner.setValueFactory(tuesdayEndTimes);
+        wednesdayStartSpinner.setValueFactory(wednesdayStartTimes);
+        wednesdayEndSpinner.setValueFactory(wednesdayEndTimes);
+        thursdayStartSpinner.setValueFactory(thursdayStartTimes);
+        thursdayEndSpinner.setValueFactory(thursdayEndTimes);
+        fridayStartSpinner.setValueFactory(fridayStartTimes);
+        fridayEndSpinner.setValueFactory(fridayEndTimes);
+        saturdayStartSpinner.setValueFactory(saturdayStartTimes);
+        saturdayEndSpinner.setValueFactory(saturdayEndTimes);
     }
 }
