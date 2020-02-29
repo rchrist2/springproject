@@ -97,6 +97,10 @@ public class DashboardController implements Initializable {
                 System.out.println("You clicked the Employee Management button");
                 switchWindow("/view/EmployeeManagementView.fxml");
                 break;
+            case "Employee Scheduler":
+                System.out.println("You clicked the Employee Scheduler button");
+                switchWindow("/view/EmployeeScheduler.fxml");
+                break;
             case "Clock In/Out":
                 System.out.println("You clicked the Clock In/Out button");
                 switchWindow("/view/ClockInOutView.fxml");
