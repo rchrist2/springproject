@@ -1,6 +1,7 @@
 package myproject.models;
 
 import javax.persistence.*;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Objects;
 import java.util.Set;
@@ -11,6 +12,7 @@ public class Tblclock {
     private int clockId;
     private java.sql.Time punchIn;
     private java.sql.Time punchOut;
+    private Timestamp date_created;
     Tblschedule schedule;
 
     //many clock-ins/outs can be used for one schedule
@@ -55,6 +57,16 @@ public class Tblclock {
         this.punchOut = punchOut;
     }
 
+    @Basic
+    @Column(name = "date_created")
+    public Timestamp getDate_created() {
+        return date_created;
+    }
+
+    public void setDate_created(Timestamp date_created) {
+        this.date_created = date_created;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -62,7 +74,8 @@ public class Tblclock {
         Tblclock tblclock = (Tblclock) o;
         return clockId == tblclock.clockId &&
                 Objects.equals(punchIn, tblclock.punchIn) &&
-                Objects.equals(punchOut, tblclock.punchOut);
+                Objects.equals(punchOut, tblclock.punchOut) &&
+                Objects.equals(date_created, tblclock.date_created);
     }
 
     @Override

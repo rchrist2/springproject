@@ -45,25 +45,32 @@ public class ReplacePassController implements Initializable {
         String replacePassUser = ForgotPassController.forgotPassUser;
         Tblusers replacePassUserAcc = userRepository.findUsername(replacePassUser);
 
-        if(newPassInput.getText().equals(newPassConfirmInput.getText())) {
-            replacePassUserAcc.setPassword(newPassInput.getText());
-            userRepository.save(replacePassUserAcc);
+        if(!(newPassInput.getText().isEmpty() || newPassConfirmInput.getText().isEmpty()))
+        {
+            if(newPassInput.getText().equals(newPassConfirmInput.getText())) {
+                replacePassUserAcc.setPassword(newPassInput.getText());
+                userRepository.save(replacePassUserAcc);
 
-            ErrorMessages.showInformationMessage("Password reset","Password has been successfully reset",
-                    "You will be redirected to sign-in");
-            try {
-                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/signin.fxml"));
-                fxmlLoader.setControllerFactory(springContext::getBean);
-                Pane pane = fxmlLoader.load();
+                ErrorMessages.showInformationMessage("Password reset","Password has been successfully reset",
+                        "You will be redirected to sign-in");
+                try {
+                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/signin.fxml"));
+                    fxmlLoader.setControllerFactory(springContext::getBean);
+                    Pane pane = fxmlLoader.load();
 
-                signupAnchor.getChildren().setAll(pane);
-            } catch (IOException io) {
-                io.printStackTrace();
+                    signupAnchor.getChildren().setAll(pane);
+                } catch (IOException io) {
+                    io.printStackTrace();
+                }
+            }
+            else{
+                ErrorMessages.showErrorMessage("Password mismatch","Passwords do not match",
+                        "Please re-enter password");
             }
         }
         else{
-            ErrorMessages.showErrorMessage("Password mismatch","Passwords do not mathc",
-                    "Please re-enter password");
+            ErrorMessages.showErrorMessage("Fields are empty","New password not provided",
+                    "Please fill in the new password and confirm password fields");
         }
 
     }
