@@ -136,22 +136,20 @@ public class ClockInOutController implements Initializable {
         //get the current user
         String currentUser = LoginController.userStore;
 
-        //finds recent clock record based on user
-        //TODO fix issue with this query
-        Tblclock newClock2 = clockRepository.findRecentClockForUser(currentUser);
-        System.out.print(newClock2.getPunchIn());
+        //finds recent clock record based on selected schedule
+        Tblclock newClock2 = clockRepository.findRecentClockForSchedule(scheduleList.getSelectionModel().getSelectedItem().getScheduleId());
 
         //get the current day of week
         /*String dayOfWeek = String.valueOf(DayOfWeek.from(LocalDate.now())).toLowerCase();
         dayOfWeek = dayOfWeek.substring(0,1).toUpperCase() + dayOfWeek.substring(1).toLowerCase();*/
 
-        /*newClock2.setPunchOut(java.sql.Time.valueOf(LocalTime.now()));
+        newClock2.setPunchOut(java.sql.Time.valueOf(LocalTime.now()));
 
         clockRepository.save(newClock2);
 
         feedbackLabel.setText("Successfully clocked out");
 
-        reloadClockTable();*/
+        reloadClockTable();
 
     }
 
