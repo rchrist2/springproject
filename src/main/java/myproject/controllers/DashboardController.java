@@ -139,8 +139,9 @@ public class DashboardController implements Initializable {
                 }
 
                 break;
-            case "Button":
-                System.out.println("You clicked the Button button");
+            case "Weekly Calendar":
+                switchWindow("/view/WeeklySchedule.fxml");
+                System.out.println("You clicked the Weekly Calendar button");
                 break;
         }
     }
