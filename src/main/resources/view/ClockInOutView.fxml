@@ -70,6 +70,22 @@
                   <Font size="15.0" />
                </font>
             </Label>
+            <Button fx:id="clockEditButton" disable="true" layoutX="697.0" layoutY="223.0" mnemonicParsing="false" onAction="#editClock" style="-fx-background-color: #39a7c3;" text="Edit" textFill="WHITE">
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </Button>
+            <Button fx:id="clockDeleteButton" disable="true" layoutX="743.0" layoutY="223.0" mnemonicParsing="false" onAction="#deleteClock" style="-fx-background-color: red;" text="Delete" textFill="WHITE">
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </Button>
+            <Pane fx:id="optionsPane2" layoutX="607.0" layoutY="223.0" prefHeight="25.0" prefWidth="70.0">
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </Pane>
+            <Pane fx:id="optionsPane" layoutX="537.0" layoutY="223.0" prefHeight="25.0" prefWidth="70.0" />
          </children>
       </AnchorPane>
    </children>

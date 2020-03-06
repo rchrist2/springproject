@@ -234,16 +234,13 @@ public class TimeOffController implements Initializable {
             });*/
 
             //set up other buttons for showing all users or current user
-            showThisUser.setPrefSize(submitRequestButton.getPrefWidth(), submitRequestButton.getPrefHeight());
             showThisUser.setText("Current User");
             showThisUser.setStyle("-fx-text-fill:white; -fx-background-color: #39a7c3;");
             showThisUser.setOnAction(event ->{
                 reloadTimeOffTableView();
                 setDataForTimeOffTableView();
-
             });
 
-            showAllUser.setPrefSize(submitRequestButton.getPrefWidth(), submitRequestButton.getPrefHeight());
             showAllUser.setText("All Users");
             showAllUser.setStyle("-fx-text-fill:white; -fx-background-color: #39a7c3;");
             showAllUser.setOnAction(event -> {
@@ -296,8 +293,7 @@ public class TimeOffController implements Initializable {
                 }
                 else{
                     ErrorMessages.showErrorMessage("Invalid time values","Time range for time" +
-                            " off request is invalid","Please edit time range for this " +
-                            "time off request");
+                            " off request is invalid","Please edit time range for this time off request");
                 }
 
                 reloadTimeOffTableView();
@@ -349,16 +345,17 @@ public class TimeOffController implements Initializable {
 
     @FXML
     private void deleteTimeOff(){
-        //get the current user (String) from LoginController
-        String currentUser = LoginController.userStore;
-
+        //get the selected entry from the table
         Tbltimeoff tf = selectedTimeOff;
         SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
+
+        //get the selected entry's user
+        String selectedUser = tf.getSchedule().getEmployee().getUser().getUsername();
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Delete Time Off Request");
         alert.setHeaderText("Are you sure?");
-        alert.setContentText("You are about to delete time off request for: " + currentUser + " on " +
+        alert.setContentText("You are about to delete time off request for: " + selectedUser + " on " +
                 tf.getSchedule().getScheduleDate() + " " +
                 timeFormat.format(tf.getBeginTimeOffDate()) + " to " + timeFormat.format(tf.getEndTimeOffDate()));
 

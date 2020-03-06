@@ -5,39 +5,34 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
-import myproject.ErrorMessages;
-import myproject.models.TblRoles;
-import myproject.models.Tblemployee;
+import myproject.models.Tblclock;
 import myproject.models.Tblschedule;
-import myproject.models.Tbltimeoff;
-import myproject.repositories.*;
-import myproject.services.EmployeeService;
+import myproject.repositories.ClockRepository;
+import myproject.repositories.ScheduleRepository;
 import myproject.services.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
-import java.sql.Date;
 import java.sql.Time;
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Component
-public class CrudTimeOffController implements Initializable {
+public class CrudClockController implements Initializable {
+
     @Autowired
     private ConfigurableApplicationContext springContext;
 
     @Autowired
-    private TimeOffRepository timeOffRepository;
+    private ClockRepository clockRepository;
 
     @Autowired
     private ScheduleRepository scheduleRepository;
@@ -57,78 +52,87 @@ public class CrudTimeOffController implements Initializable {
     @FXML
     public ComboBox<Integer> beginHrList;
     @FXML
+    public ComboBox<String> beginMinList;
+    @FXML
     public ComboBox<Integer> endHrList;
+    @FXML
+    public ComboBox<String> endMinList;
     @FXML
     public ComboBox<String> beginPMList;
     @FXML
     public ComboBox<String> endPMList;
 
-    @FXML
-    public ComboBox<String> approveList;
-
-    @FXML
-    public TextArea reasonInput;
-
     public ObservableList<Tblschedule> scheduleData;
 
     private ObservableList<Integer> hrList;
 
+    private ObservableList<String> minList;
+
     private ObservableList<String> pmList =
             FXCollections.observableArrayList(Arrays.asList("AM","PM"));
 
-    private ObservableList<String> approveData;
-
-    private TimeOffController timeOffController;
+    private ClockInOutController clockController;
 
     //The time off returned from the TimeOffController
-    private Tbltimeoff selectedTimeOff;
+    private Tblclock selectedClock;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle){
         //initialize drop down menus
-        approveData = FXCollections.observableArrayList(Arrays.asList("Approve","Deny"));
-        approveList.setItems(approveData);
-
         hrList = FXCollections.observableArrayList();
         hrList.addAll(IntStream.rangeClosed(1,12).boxed().collect(Collectors.toList()));
+
+        minList = FXCollections.observableArrayList();
+        List<Integer> minListInt = IntStream.rangeClosed(0,59).boxed().collect(Collectors.toList());
+
+
+        List<String> minListString = new ArrayList<String>(minListInt.size());
+        for (Integer myInt : minListInt) {
+            minListString.add(String.format("%02d", myInt));
+        }
+
+        minList.addAll(minListString);
 
         //fill the hour, minute, and AM/PM drop-downs with values
         beginPMList.setItems(pmList);
         endPMList.setItems(pmList);
+
+        beginMinList.setItems(minList);
+        endMinList.setItems(minList);
 
         beginHrList.setItems(hrList);
         endHrList.setItems(hrList);
     }
 
     @Autowired
-    public CrudTimeOffController(ConfigurableApplicationContext springContext) {
+    public CrudClockController(ConfigurableApplicationContext springContext) {
         this.springContext = springContext;
     }
 
-    public void setController(TimeOffController timeOffController) {
-        this.timeOffController = timeOffController;
+    public void setController(ClockInOutController clockController) {
+        this.clockController = clockController;
     }
 
     public void setLabel(String string){
         crudLabel.setText(string);
     }
 
-    public void setTimeOff(Tbltimeoff selectedTimeOff){
-        this.selectedTimeOff = selectedTimeOff;
-        setFieldsForEdit(this.selectedTimeOff);
+    public void setClock(Tblclock selectedClock){
+        this.selectedClock = selectedClock;
+        setFieldsForEdit(this.selectedClock);
     }
 
-    private void setFieldsForEdit(Tbltimeoff tf1){
+    private void setFieldsForEdit(Tblclock cl1){
         //use Calendar class to find if time has AM or PM
         Calendar begPM=Calendar.getInstance();
-        begPM.setTime(tf1.getBeginTimeOffDate());
+        begPM.setTime(cl1.getPunchIn());
 
         Calendar endPM=Calendar.getInstance();
-        endPM.setTime(tf1.getEndTimeOffDate());
+        endPM.setTime(cl1.getPunchOut());
 
         //if time has AM or PM, assign appropriate value in AM/PM drop-downs
         if(begPM.get(Calendar.AM_PM) == Calendar.AM
-        && endPM.get(Calendar.AM_PM) == Calendar.AM){
+                && endPM.get(Calendar.AM_PM) == Calendar.AM){
             beginPMList.getSelectionModel().select(0);
             endPMList.getSelectionModel().select(0);
         }
@@ -149,88 +153,75 @@ public class CrudTimeOffController implements Initializable {
         }
 
         //initialize the schedule dates for the current user
-        //not done in initialize() method due to nullpointerexception
         scheduleData = FXCollections.observableArrayList();
-        scheduleData.addAll(scheduleRepository.findScheduleForUser(selectedTimeOff.getSchedule().getEmployee().getUser().getUsername()));
+        scheduleData.addAll(scheduleRepository.findScheduleForUser(selectedClock.getSchedule().getEmployee().getUser().getUsername()));
         scheduleList.setItems(scheduleData);
 
         //get the schedule for this time off request and select it in drop-down
-        scheduleList.getSelectionModel().select(selectedTimeOff.getSchedule());
+        scheduleList.getSelectionModel().select(selectedClock.getSchedule());
 
-        //use Calendar class to extract only hour from time
+        //use Calendar class to extract only hour or minute from time
         Calendar calendarBeg=Calendar.getInstance();
-        calendarBeg.setTime(tf1.getBeginTimeOffDate());
+        Calendar calendarEnd=Calendar.getInstance();
+
+        //extract hours
+        calendarBeg.setTime(cl1.getPunchIn());
         int beginHour = calendarBeg.get(Calendar.HOUR);
 
-        Calendar calendarEnd=Calendar.getInstance();
-        calendarEnd.setTime(tf1.getEndTimeOffDate());
+        calendarEnd.setTime(cl1.getPunchOut());
         int endHour = calendarEnd.get(Calendar.HOUR);
 
-        //assigns via array index, so subtract 1 to display correct hour value
+        //extract minutes
+        calendarBeg.setTime(cl1.getPunchIn());
+        int beginMin = calendarBeg.get(Calendar.MINUTE);
+
+        calendarEnd.setTime(cl1.getPunchOut());
+        int endMin = calendarEnd.get(Calendar.MINUTE);
+
+        //assigns selected hour via array index since hrList is Int, so subtract 1 to display correct hour
         beginHrList.getSelectionModel().select(beginHour-1);
         endHrList.getSelectionModel().select(endHour-1);
 
-        //find whether time is approved or not, and set appropriate drop-down value
-        String approveSelect = "null";
-        if(tf1.isApproved()){
-            approveSelect = "Approve";
-        }
-        else if(!tf1.isApproved()){
-            approveSelect = "Deny";
-        }
-        approveList.getSelectionModel().select(approveSelect);
-
-        reasonInput.setText(tf1.getReasonDesc());
+        //assigns selected minute in drop down menu using leading zeroes
+        beginMinList.getSelectionModel().select(String.format("%02d", beginMin));
+        endMinList.getSelectionModel().select(String.format("%02d", endMin));
 
     }
 
     public void handleSave(ActionEvent event){
-        Tbltimeoff tf = selectedTimeOff;
-
-        //save the time off with approved/denied based on selection in drop-down
-        Boolean isApproved = tf.isApproved();
-        if(approveList.getSelectionModel().getSelectedItem().equals("Approve")) {
-            isApproved = true;
-        }
-        else if(approveList.getSelectionModel().getSelectedItem().equals("Deny")) {
-            isApproved = false;
-        }
+        Tblclock cl = selectedClock;
 
         //convert combobox values to 24 hour clock depending if AM or PM was selected
         if (beginPMList.getSelectionModel().getSelectedItem().equals("AM")) {
-            tf.setBeginTimeOffDate(Time.valueOf(beginHrList.getSelectionModel().getSelectedItem().toString()
-                    + ":00:00"));
+            cl.setPunchIn(Time.valueOf(beginHrList.getSelectionModel().getSelectedItem().toString()
+                    + ":" + beginMinList.getSelectionModel().getSelectedItem()
+                    + ":00"));
         } else if (beginPMList.getSelectionModel().getSelectedItem().equals("PM")) {
-            tf.setBeginTimeOffDate(Time.valueOf((beginHrList.getSelectionModel().getSelectedItem() + 12)
-                    + ":00:00"));
+            cl.setPunchIn(Time.valueOf((beginHrList.getSelectionModel().getSelectedItem() + 12)
+                    + ":" + beginMinList.getSelectionModel().getSelectedItem()
+                    + ":00"));
         }
 
         if (endPMList.getSelectionModel().getSelectedItem().equals("AM")) {
-            tf.setEndTimeOffDate(Time.valueOf(endHrList.getSelectionModel().getSelectedItem().toString()
-                    + ":00:00"));
+            cl.setPunchOut(Time.valueOf(endHrList.getSelectionModel().getSelectedItem().toString()
+                    + ":" + endMinList.getSelectionModel().getSelectedItem()
+                    + ":00"));
         } else if (endPMList.getSelectionModel().getSelectedItem().equals("PM")) {
-            tf.setEndTimeOffDate(Time.valueOf((endHrList.getSelectionModel().getSelectedItem() + 12)
-                    + ":00:00"));
+            cl.setPunchOut(Time.valueOf((endHrList.getSelectionModel().getSelectedItem() + 12)
+                    + ":" + endMinList.getSelectionModel().getSelectedItem()
+                    + ":00"));
         }
 
-        tf.setApproved(isApproved);
-        tf.setReasonDesc(reasonInput.getText());
-        tf.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
+        cl.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
 
-        if(tf.getBeginTimeOffDate().before(tf.getEndTimeOffDate())
-                && tf.getEndTimeOffDate().after(tf.getBeginTimeOffDate())){
-            timeOffRepository.save(tf);
+        //TODO verify time range is valid before saving
 
-            Stage stage = (Stage)saveButton.getScene().getWindow();
-            System.out.println("Saved");
-            stage.close();
-        }
-        else{
-            ErrorMessages.showErrorMessage("Invalid time values","Time range for time" +
-                    " off request is invalid","Please edit time range for this time off request");
-        }
+        clockRepository.save(cl);
 
-        }
+        Stage stage = (Stage)saveButton.getScene().getWindow();
+        System.out.println("Saved");
+        stage.close();
+    }
 
     @FXML
     private void handleCancel(){
@@ -238,5 +229,4 @@ public class CrudTimeOffController implements Initializable {
 
         currStage.close();
     }
-
 }
