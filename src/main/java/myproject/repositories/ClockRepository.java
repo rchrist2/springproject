@@ -26,5 +26,5 @@ public interface ClockRepository extends CrudRepository<Tblclock, Integer> {
             "tblusers u ON e.id=u.employee_id WHERE Username = :username", nativeQuery = true)
     List<Tblclock> findClockForUser(@Param("username") String user);
 
-    Tblclock findClockBySchedule(@Param("schedule") Tblschedule schedule);
+    List<Tblclock> findAll();
 }

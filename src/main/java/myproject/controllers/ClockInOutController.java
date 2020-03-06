@@ -6,9 +6,16 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.Pane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import myproject.ErrorMessages;
 import myproject.models.Tblclock;
 import myproject.models.Tblschedule;
@@ -21,12 +28,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.net.URL;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 @Component
@@ -51,6 +60,19 @@ public class ClockInOutController implements Initializable {
 
     @FXML
     public ComboBox<Tblschedule> scheduleList;
+
+    @FXML
+    private Pane optionsPane;
+
+    @FXML
+    private Pane optionsPane2;
+
+    @FXML
+    private Button clockDeleteButton;
+
+    @FXML
+    private Button clockEditButton;
+
     @FXML
     public Label feedbackLabel;
 
@@ -94,6 +116,9 @@ public class ClockInOutController implements Initializable {
 
         reloadClockTable();
         setDataForClockTableView();
+        addActionListenersForCrudButtons(clockDeleteButton);
+        addActionListenersForCrudButtons(clockEditButton);
+
 
         clockTable.getSelectionModel().selectedItemProperty().addListener((obs, old, newv) -> {
             selectedClock = newv;
@@ -102,7 +127,29 @@ public class ClockInOutController implements Initializable {
         //if the user is the owner or manager, they can see buttons to approve requests or show all users
         if(userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Manager")
                 || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Owner")) {
-            userCol.setVisible(true);
+            //declare variables
+            Button showAllUser = new Button();
+            Button showThisUser = new Button();
+
+            //add buttons to panes
+            optionsPane.getChildren().add(showAllUser);
+            optionsPane2.getChildren().add(showThisUser);
+
+            //set up other buttons for showing all users or current user
+            showThisUser.setText("Current User");
+            showThisUser.setStyle("-fx-text-fill:white; -fx-background-color: #39a7c3;");
+            showThisUser.setOnAction(event ->{
+                reloadClockTable();
+                setDataForClockTableView();
+            });
+
+            showAllUser.setText("All Users");
+            showAllUser.setStyle("-fx-text-fill:white; -fx-background-color: #39a7c3;");
+            showAllUser.setOnAction(event -> {
+                //use function to reload table showing all users
+                reloadClockTableAllUsers();
+                setDataForClockTableView();
+            });
 
         }
     }
@@ -153,6 +200,84 @@ public class ClockInOutController implements Initializable {
 
     }
 
+    @FXML
+    private void editClock(){
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/CrudClock.fxml"));
+            fxmlLoader.setControllerFactory(springContext::getBean);
+            Parent parent = fxmlLoader.load();
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initStyle(StageStyle.UNDECORATED);
+            stage.setTitle("Edit Clock In/Out Record");
+
+            CrudClockController crudClockController = fxmlLoader.getController();
+            crudClockController.setLabel("Edit Clock Record for "
+                    + selectedClock.getSchedule().getEmployee().getUser().getUsername());
+            crudClockController.setClock(selectedClock);
+            crudClockController.setController(this);
+
+            stage.setScene(new Scene(parent));
+
+            stage.showAndWait();
+
+            //reload table w/ all users if the user column is visible (only visible if all users are shown)
+            if(userCol.isVisible()){
+                reloadClockTableAllUsers();
+                setDataForClockTableView();
+                resetButtons();
+            }
+            else{
+                reloadClockTable();
+                setDataForClockTableView();
+                resetButtons();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void deleteClock(){
+        //get the selected entry from the table
+        Tblclock cl = selectedClock;
+        SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+
+        //get the selected entry's user
+        String selectedUser = cl.getSchedule().getEmployee().getUser().getUsername();
+        String selectedDay = cl.getSchedule().getDay().getDayDesc();
+        String selectedDate = dateFormat.format(cl.getSchedule().getScheduleDate());
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Delete Clock In/Out Record");
+        alert.setHeaderText("Are you sure?");
+        alert.setContentText("You are about to delete a clock in/out record for: " + selectedUser + " on " +
+                selectedDay + ", " + selectedDate + " from " +
+                timeFormat.format(cl.getPunchIn()) + " to " + timeFormat.format(cl.getPunchOut()));
+
+        Optional<ButtonType> choice = alert.showAndWait();
+        if(choice.get() == ButtonType.OK) {
+            clockRepository.delete(cl);
+        }
+        else{
+            System.out.println("Delete cancelled");
+        }
+
+        //reload table with all users if the user column is visible
+        if(userCol.isVisible()){
+            reloadClockTableAllUsers();
+            setDataForClockTableView();
+            resetButtons();
+        }
+        else{
+            reloadClockTable();
+            setDataForClockTableView();
+            resetButtons();
+        }
+    }
+
     private void setDataForClockTableView(){
         scheduleCol.setCellValueFactory(new PropertyValueFactory<>("schedule"));
 
@@ -176,18 +301,43 @@ public class ClockInOutController implements Initializable {
                 new SimpleObjectProperty<>(tf.getValue().getSchedule().getEmployee().getUser().getUsername()));
     }
 
+    private void reloadClockTableAllUsers(){
+        listOfClock.clear();
+        clockTable.setItems(listOfClock);
+        userCol.setVisible(true);
+
+        listOfClock.addAll(clockRepository.findAll());
+        filteredListOfClock = new FilteredList<>(listOfClock);
+        clockTable.setItems(filteredListOfClock);
+        tableUserLabel.setText("Clock History for All Users");
+        setDataForClockTableView();
+    }
+
     private void reloadClockTable(){
         //get the current user and create a new availability for them
         String currentUser = LoginController.userStore;
 
         listOfClock.clear();
         clockTable.setItems(listOfClock);
-        userCol.setVisible(true);
+        userCol.setVisible(false);
 
         listOfClock.addAll(clockRepository.findClockForUser(currentUser));
         filteredListOfClock = new FilteredList<>(listOfClock);
         clockTable.setItems(filteredListOfClock);
         tableUserLabel.setText("Clock History for " + currentUser);
         setDataForClockTableView();
+    }
+
+    private void addActionListenersForCrudButtons(Button button){
+        clockTable.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
+            if(newValue != null){
+                button.setDisable(false);
+            }
+        });
+    }
+
+    private void resetButtons(){
+        clockEditButton.setDisable(true);
+        clockDeleteButton.setDisable(true);
     }
 }
