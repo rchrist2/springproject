@@ -190,7 +190,7 @@ public class EmployeeManagementController implements Initializable {
 
                         /*
                           ON DELETE CASCADE works in a way we can't apply, so we have to delete
-                          each row one by one
+                          each row in order
                         */
                         scheduleService.deleteSchedule(emp.getId());
 

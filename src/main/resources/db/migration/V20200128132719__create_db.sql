@@ -74,6 +74,7 @@ VALUES ('Hue', 'Hue@gmail.com', '3333 Third Ln.', '832-836-7854', 2);
 INSERT INTO tblemployee
 VALUES ('Sim', 'Sim@gmail.com', '4444 Fourth Blvd.', '713-221-0092', 2);
 
+
 INSERT INTO tblusers
 VALUES ('kevin', 'kevin', 1);
 INSERT INTO tblusers

@@ -29,6 +29,24 @@ public interface ScheduleRepository extends CrudRepository<Tblschedule, Integer>
             "tblusers u ON e.id=u.employee_id WHERE Username = :username", nativeQuery = true)
     Tblschedule findScheduleForUser(@Param("username") String user);
 
+    @Query(value = "SELECT * FROM tblschedule s " +
+            "JOIN tblemployee e ON s.employee_id = e.id " +
+            "WHERE employee_id = :employeeId", nativeQuery = true)
+    List<Tblschedule> findScheduleForEmployee(@Param("employeeId") int employeeId);
+
+    @Query(value = "SELECT d.Day_Desc FROM tblday d JOIN tblSchedule s ON d.Day_id = s.day_id WHERE employee_id = :id", nativeQuery = true)
+    List<String> findEmployeeDays(@Param("id") int id);
+
+    @Query(value = "SELECT s.schedule_time_begin FROM tblschedule s " +
+            "JOIN tblemployee e ON s.employee_id = e.id " +
+            "WHERE s.employee_id = :empId AND s.day_id = :dayId", nativeQuery = true)
+    String findEmployeeStartHours(@Param("empId") int empId, @Param("dayId") int dayId);
+
+    @Query(value = "SELECT s.schedule_time_end FROM tblschedule s " +
+            "JOIN tblemployee e ON s.employee_id = e.id " +
+            "WHERE s.employee_id = :empId AND s.day_id = :dayId", nativeQuery = true)
+    String findEmployeeEndHours(@Param("empId") int empId, @Param("dayId") int dayId);
+
     @Modifying
     @Query(value = "UPDATE tblschedule SET schedule_time_begin = :begin, schedule_time_end = :end WHERE employee_id = :empId", nativeQuery = true)
     void updateSchedule(@Param("begin") Time begin, @Param("end") Time end, @Param("empId") int empId);

@@ -102,35 +102,11 @@ public class CrudEmployeeController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         listOfDaysObs = FXCollections.observableArrayList();
         listOfRoleObs = FXCollections.observableArrayList();
-        listOfAMandPM = FXCollections.observableArrayList("AM", "PM");
 
         listOfDaysObs.setAll(dayRepository.findAllDays());
         listOfRoleObs.setAll(roleRepository.findAllRoleDesc());
 
-        daysToWorkComboBox.setItems(listOfDaysObs);
         roleComboBox.setItems(listOfRoleObs);
-        //startCombo.setItems(listOfAMandPM);
-        //endCombo.setItems(listOfAMandPM);
-
-        daysToWorkListView.getSelectionModel().selectedItemProperty().addListener((obs, oldv, newv) -> {
-            if(daysToWorkListView.getSelectionModel().getSelectedItem() != null)
-                deleteDayButton.setDisable(false);
-        });
-
-        daysToWorkComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldv, newv) -> {
-            if(daysToWorkComboBox.getSelectionModel().getSelectedItem() != null)
-                addDaysButton.setDisable(false);
-            else
-                addDaysButton.setDisable(true);
-        });
-
-        possibleTimes = FXCollections.observableArrayList(
-                "01:00:00", "02:00:00", "03:00:00", "04:00:00",
-                "05:00:00", "06:00:00", "07:00:00", "08:00:00",
-                "09:00:00", "10:00:00", "11:00:00", "12:00:00",
-                "13:00:00", "14:00:00", "15:00:00", "16:00:00",
-                "17:00:00", "18:00:00", "19:00:00", "20:00:00",
-                "21:00:00", "22:00:00", "23:00:00", "24:00:00");
 
     }
 
@@ -161,41 +137,6 @@ public class CrudEmployeeController implements Initializable {
             case "Add":
                 try {
                     employeeRepository.save(newEmp);
-
-
-                    /*
-                       Grab all of the times in the Vbox that contains the times
-                    */
-                    for (Node node : timePerDayVBox.getChildren()) {
-                        //Converts the node to a Hbox because theres Hbox's in the VBox
-                        HBox timesComboBoxHbox = (HBox) node;
-
-                        for (Node node1 : timesComboBoxHbox.getChildren()) {
-                            //Convert the node into a combobox
-                            ComboBox nodeToCombo = (ComboBox) node1;
-
-                            //Add the times to the list
-                            listOfDayHours.add(nodeToCombo.getSelectionModel().getSelectedItem().toString());
-                        }
-                    }
-
-                    int listHoursIndex = 0;
-
-                    //Save the chosen days for the new employee
-                    for (String days : daysToWorkListView.getItems()) {
-
-                        //TODO Make sure to change the time to the textfield.get() || Create a time formatter for the textfields
-                        //Tblschedule newSchedTest = new Tblschedule(Time.valueOf("08:00:00"), Time.valueOf("12:00:00"), Date.valueOf(LocalDate.now()), newEmp, dayRepository.findDay(days));
-
-                        String beginTime = listOfDayHours.get(listHoursIndex++);
-                        String endTime = listOfDayHours.get(listHoursIndex++);
-
-                        Tblschedule testing = new Tblschedule(Time.valueOf(beginTime), Time.valueOf(endTime),
-                                Date.valueOf(LocalDate.now()), newEmp, dayRepository.findDay(days));
-
-                        //Save the schedule to the employee
-                        scheduleRepository.save(testing);
-                    }
 
                     Stage stage = (Stage)saveButton.getScene().getWindow();
                     ErrorMessages.showInformationMessage("Successful", "Employee Success", "Added " + nameText.getText() + " successfully");

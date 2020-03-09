@@ -1,11 +1,9 @@
 package myproject.models;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "tblemployee")
@@ -68,11 +66,21 @@ public class Tblemployee {
         List<String> listOfDays = new ArrayList<>();
 
         for (Tblschedule schedule : this.schedules) {
-            System.out.println(schedule);
+            //System.out.println(schedule);
             listOfDays.add(schedule.getDay().getDayDesc());
         }
 
         return String.join("\n", listOfDays);
+    }
+
+    public String employeeDates(){
+        List<String> listOfDates = new ArrayList<>();
+
+        for (Tblschedule tblschedule : this.schedules){
+            listOfDates.add(tblschedule.getScheduleDate().toString());
+        }
+
+        return String.join("\n", listOfDates);
     }
 
     public String employeeStartHours(){

@@ -24,10 +24,15 @@ import org.springframework.stereotype.Component;
 import java.net.URL;
 import java.sql.Date;
 import java.sql.Time;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import static java.time.temporal.TemporalAdjusters.nextOrSame;
+import static java.time.temporal.TemporalAdjusters.previousOrSame;
 
 @Component
 public class EmployeeSchedulerController implements Initializable {
@@ -47,7 +52,8 @@ public class EmployeeSchedulerController implements Initializable {
     @FXML
     private Label employeeLabel,
                 employeeSelectError,
-                listOfEmployeeLabel;
+                listOfEmployeeLabel,
+                dateLabel;
 
     @FXML
     private Spinner<String> sundayStartSpinner, sundayEndSpinner,
@@ -70,7 +76,8 @@ public class EmployeeSchedulerController implements Initializable {
     private TableColumn<Tblemployee, String> nameColumn,
                                         startTimeColumn,
                                         endTimeColumn,
-                                        dayColumn;
+                                        dayColumn,
+                                        dateColumn;
 
     @FXML
     private TableView<Tblemployee> scheduleTableView;
@@ -92,7 +99,14 @@ public class EmployeeSchedulerController implements Initializable {
 
     private FilteredList<Tblemployee> filteredEmployeeList;
 
+    private LocalDate today = LocalDate.now();
+    private LocalDate sunday = today.with(previousOrSame(DayOfWeek.SUNDAY));
+    private LocalDate saturday = today.with(nextOrSame(DayOfWeek.SATURDAY));
+
+    private DateTimeFormatter dayFormat = DateTimeFormatter.ofPattern("MMM dd, yyyy");
+
     private Tblemployee selectedEmployee;
+
     private ObservableList<String> times = FXCollections.observableArrayList(
             "01:00:00", "02:00:00", "03:00:00", "04:00:00",
             "05:00:00", "06:00:00", "07:00:00", "08:00:00",
@@ -112,10 +126,15 @@ public class EmployeeSchedulerController implements Initializable {
 
         employeeListView.setItems(listOfEmployees);
 
+        //Displays the date of the first day of week to end day
+        dateLabel.setText(sunday.format(dayFormat) + " - " + saturday.format(dayFormat));
+
         addListenersToCheckBoxes();
         addTimesToSpinner();
         setCellData();
         loadDataToTable();
+
+        handleEdittingEmployee();
     }
 
     @FXML
@@ -156,12 +175,22 @@ public class EmployeeSchedulerController implements Initializable {
         listOfEmployeeLabel.setDisable(false);
 
         selectButton.setDisable(false);
+
+        scheduleTableView.getSelectionModel().clearSelection();
+
+        scheduleButton.setText("Add Schedule");
+
+        resetCheckBoxes();
     }
 
     @FXML
     private void handleAddSchedule(){
+        LocalDate begOfWeek = sunday;
+
         List<String> listOfTimes = new ArrayList<>();
         List<String> listOfDays = new ArrayList<>();
+        List<LocalDate> listOfDates = new ArrayList<>();
+
         String errorString = "";
         boolean errors = false;
 
@@ -178,7 +207,10 @@ public class EmployeeSchedulerController implements Initializable {
                 errorString += "- Sunday\n";
             }
 
+            listOfDates.add(begOfWeek);
             listOfDays.add("Sunday");
+
+            begOfWeek = sunday;
         }
 
         if(mondayCheck.isSelected()){
@@ -192,7 +224,12 @@ public class EmployeeSchedulerController implements Initializable {
                 errorString += "- Monday\n";
             }
 
+            begOfWeek = begOfWeek.plusDays(1);
+
+            listOfDates.add(begOfWeek);
             listOfDays.add("Monday");
+
+            begOfWeek = sunday;
         }
 
         if(tuesdayCheck.isSelected()){
@@ -206,7 +243,12 @@ public class EmployeeSchedulerController implements Initializable {
                 errorString += "- Tuesday\n";
             }
 
+            begOfWeek = begOfWeek.plusDays(2);
+
+            listOfDates.add(begOfWeek);
             listOfDays.add("Tuesday");
+
+            begOfWeek = sunday;
         }
 
         if(wednesdayCheck.isSelected()){
@@ -220,7 +262,12 @@ public class EmployeeSchedulerController implements Initializable {
                 errorString += "- Wednesday\n";
             }
 
+            begOfWeek = begOfWeek.plusDays(3);
+
+            listOfDates.add(begOfWeek);
             listOfDays.add("Wednesday");
+
+            begOfWeek = sunday;
         }
 
         if(thursdayCheck.isSelected()){
@@ -234,7 +281,12 @@ public class EmployeeSchedulerController implements Initializable {
                 errorString += "- Thursday\n";
             }
 
+            begOfWeek = begOfWeek.plusDays(4);
+
+            listOfDates.add(begOfWeek);
             listOfDays.add("Thursday");
+
+            begOfWeek = sunday;
         }
 
         if(fridayCheck.isSelected()){
@@ -248,7 +300,12 @@ public class EmployeeSchedulerController implements Initializable {
                 errorString += "- Friday\n";
             }
 
+            begOfWeek = begOfWeek.plusDays(5);
+
+            listOfDates.add(begOfWeek);
             listOfDays.add("Friday");
+
+            begOfWeek = sunday;
         }
 
         if(saturdayCheck.isSelected()){
@@ -262,7 +319,12 @@ public class EmployeeSchedulerController implements Initializable {
                 errorString += "- Saturday\n";
             }
 
+            begOfWeek = begOfWeek.plusDays(6);
+
+            listOfDates.add(begOfWeek);
             listOfDays.add("Saturday");
+
+            begOfWeek = sunday;
         }
 
         if(errors){
@@ -278,25 +340,107 @@ public class EmployeeSchedulerController implements Initializable {
         employeeListView.setDisable(false);
         listOfEmployeeLabel.setDisable(false);
 
-        int timeIndex = 0;
-
-        //Debugging to check if schedule is done correctly
-        /*for (String day : listOfDays){
-            System.out.println(selectedEmployee.getName() + " - " + day + ": "
-                    + listOfTimes.get(timeIndex++) + " - " + listOfTimes.get(timeIndex++));
-        }*/
+        int timeIndex = 0, i = 0;
 
         if(!errors) {
+
+            if(scheduleButton.getText().equals("Update Schedule")){
+                scheduleService.deleteSchedule(selectedEmployee.getId());
+            }
+
             for (String day : listOfDays) {
-                scheduleService.insertSchedule(Time.valueOf(listOfTimes.get(timeIndex++)), Time.valueOf(listOfTimes.get(timeIndex++)),
-                        Date.valueOf(LocalDate.now()), selectedEmployee.getId(), dayRepository.findDay(day).getDayId());
+                    scheduleService.insertSchedule(Time.valueOf(listOfTimes.get(timeIndex++)), Time.valueOf(listOfTimes.get(timeIndex++)),
+                            Date.valueOf(listOfDates.get(i++)), selectedEmployee.getId(), dayRepository.findDay(day).getDayId());
             }
 
             ErrorMessages.showInformationMessage("Successful", "Saved Schedule", selectedEmployee + "'s schedule was saved successfully");
             loadDataToTable();
         }
 
+        resetCheckBoxes();
+    }
 
+    private void handleEdittingEmployee(){
+        scheduleTableView.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) ->{
+            if(newValue != null) {
+                employeeListView.setDisable(true);
+
+                selectedEmployee = scheduleTableView.getSelectionModel().getSelectedItem();
+                List<String> days = scheduleRepository.findEmployeeDays(selectedEmployee.getId());
+
+                scheduleGridPane.setDisable(false);
+                resetCheckBoxes();
+                for (String day : days) {
+                    switch (day.toLowerCase()) {
+                        case "sunday":
+                            sundayCheck.setSelected(true);
+                            mondayStartSpinner.getValueFactory().setValue(scheduleRepository.findEmployeeStartHours(selectedEmployee.getId(), 1));
+                            mondayEndSpinner.getValueFactory().setValue(scheduleRepository.findEmployeeEndHours(selectedEmployee.getId(), 1));
+
+                            sundayStartSpinner.setDisable(false);
+                            sundayEndSpinner.setDisable(false);
+                            break;
+                        case "monday":
+                            mondayCheck.setSelected(true);
+                            mondayStartSpinner.getValueFactory().setValue(scheduleRepository.findEmployeeStartHours(selectedEmployee.getId(), 2));
+                            mondayEndSpinner.getValueFactory().setValue(scheduleRepository.findEmployeeEndHours(selectedEmployee.getId(), 2));
+
+                            mondayStartSpinner.setDisable(false);
+                            mondayEndSpinner.setDisable(false);
+                            break;
+                        case "tuesday":
+                            tuesdayCheck.setSelected(true);
+                            tuesdayStartSpinner.getValueFactory().setValue(scheduleRepository.findEmployeeStartHours(selectedEmployee.getId(), 3));
+                            tuesdayEndSpinner.getValueFactory().setValue(scheduleRepository.findEmployeeEndHours(selectedEmployee.getId(), 3));
+
+                            tuesdayStartSpinner.setDisable(false);
+                            tuesdayEndSpinner.setDisable(false);
+                            break;
+                        case "wednesday":
+                            wednesdayCheck.setSelected(true);
+                            wednesdayStartSpinner.getValueFactory().setValue(scheduleRepository.findEmployeeStartHours(selectedEmployee.getId(), 4));
+                            wednesdayEndSpinner.getValueFactory().setValue(scheduleRepository.findEmployeeEndHours(selectedEmployee.getId(), 4));
+
+                            wednesdayStartSpinner.setDisable(false);
+                            wednesdayEndSpinner.setDisable(false);
+                            break;
+                        case "thursday":
+                            thursdayCheck.setSelected(true);
+                            thursdayStartSpinner.getValueFactory().setValue(scheduleRepository.findEmployeeStartHours(selectedEmployee.getId(), 5));
+                            thursdayEndSpinner.getValueFactory().setValue(scheduleRepository.findEmployeeEndHours(selectedEmployee.getId(), 5));
+
+                            thursdayStartSpinner.setDisable(false);
+                            thursdayEndSpinner.setDisable(false);
+                            break;
+                        case "friday":
+                            fridayCheck.setSelected(true);
+                            fridayStartSpinner.getValueFactory().setValue(scheduleRepository.findEmployeeStartHours(selectedEmployee.getId(), 6));
+                            fridayEndSpinner.getValueFactory().setValue(scheduleRepository.findEmployeeEndHours(selectedEmployee.getId(), 6));
+
+                            fridayStartSpinner.setDisable(false);
+                            fridayEndSpinner.setDisable(false);
+                            break;
+                        case "saturday":
+                            saturdayCheck.setSelected(true);
+                            saturdayStartSpinner.getValueFactory().setValue(scheduleRepository.findEmployeeStartHours(selectedEmployee.getId(), 7));
+                            saturdayEndSpinner.getValueFactory().setValue(scheduleRepository.findEmployeeEndHours(selectedEmployee.getId(), 7));
+
+                            saturdayStartSpinner.setDisable(false);
+                            saturdayEndSpinner.setDisable(false);
+                            break;
+                    }
+                }
+
+                scheduleButton.setDisable(false);
+                scheduleButton.setText("Update Schedule");
+
+                employeeLabel.setDisable(false);
+                employeeLabel.setText(selectedEmployee.getName() + "'s Schedule");
+
+                resetButton.setDisable(false);
+                selectButton.setDisable(true);
+            }
+        });
     }
 
     @FXML
@@ -306,6 +450,8 @@ public class EmployeeSchedulerController implements Initializable {
         endTimeColumn.setCellValueFactory(startTime -> new ReadOnlyStringWrapper(startTime.getValue().employeeEndHours()));
 
         dayColumn.setCellValueFactory(day -> new ReadOnlyStringWrapper(day.getValue().employeeSchedule()));
+        dateColumn.setCellValueFactory(date -> new ReadOnlyStringWrapper(date.getValue().employeeDates()));
+
     }
 
     @FXML
@@ -448,5 +594,15 @@ public class EmployeeSchedulerController implements Initializable {
         fridayEndSpinner.setValueFactory(fridayEndTimes);
         saturdayStartSpinner.setValueFactory(saturdayStartTimes);
         saturdayEndSpinner.setValueFactory(saturdayEndTimes);
+    }
+
+    private void resetCheckBoxes(){
+        sundayCheck.setSelected(false);
+        mondayCheck.setSelected(false);
+        tuesdayCheck.setSelected(false);
+        wednesdayCheck.setSelected(false);
+        thursdayCheck.setSelected(false);
+        fridayCheck.setSelected(false);
+        saturdayCheck.setSelected(false);
     }
 }

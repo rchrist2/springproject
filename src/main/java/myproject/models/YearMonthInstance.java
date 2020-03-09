@@ -1,6 +1,7 @@
 package myproject.models;
 
 import java.time.YearMonth;
+import java.util.Calendar;
 
 public class YearMonthInstance {
     private final static YearMonthInstance currentYearMonth = new YearMonthInstance();
@@ -30,5 +31,13 @@ public class YearMonthInstance {
     //Decreases the yearMonth by 1
     public void prevMonth(){
         yearMonth = yearMonth.minusMonths(1);
+    }
+
+    public void getDayStartOfWeek(){
+        Calendar calendar = Calendar.getInstance();
+
+
+
+
     }
 }
