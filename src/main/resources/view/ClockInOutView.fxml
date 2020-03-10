@@ -70,12 +70,12 @@
                   <Font size="15.0" />
                </font>
             </Label>
-            <Button fx:id="clockEditButton" disable="true" layoutX="697.0" layoutY="223.0" mnemonicParsing="false" onAction="#editClock" style="-fx-background-color: #39a7c3;" text="Edit" textFill="WHITE">
+            <Button fx:id="clockEditButton" disable="true" layoutX="697.0" layoutY="223.0" mnemonicParsing="false" onAction="#editClock" style="-fx-background-color: #39a7c3;" text="Edit" textFill="WHITE" visible="false">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </Button>
-            <Button fx:id="clockDeleteButton" disable="true" layoutX="743.0" layoutY="223.0" mnemonicParsing="false" onAction="#deleteClock" style="-fx-background-color: red;" text="Delete" textFill="WHITE">
+            <Button fx:id="clockDeleteButton" disable="true" layoutX="743.0" layoutY="223.0" mnemonicParsing="false" onAction="#deleteClock" style="-fx-background-color: red;" text="Delete" textFill="WHITE" visible="false">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
@@ -86,7 +86,7 @@
                </padding>
             </Pane>
             <Pane fx:id="optionsPane" layoutX="537.0" layoutY="223.0" prefHeight="25.0" prefWidth="70.0" />
-            <Label fx:id="lastActionLabel" layoutX="266.0" layoutY="37.0" text="Last Action &quot;In/Out&quot; on ">
+            <Label fx:id="lastActionLabel" layoutX="266.0" layoutY="37.0">
                <font>
                   <Font size="15.0" />
                </font>

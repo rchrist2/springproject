@@ -12,7 +12,7 @@ public class Tblclock {
     private int clockId;
     private java.sql.Time punchIn;
     private java.sql.Time punchOut;
-    private Timestamp date_created;
+    private Timestamp dateCreated;
     Tblschedule schedule;
 
     //many clock-ins/outs can be used for one schedule
@@ -59,12 +59,12 @@ public class Tblclock {
 
     @Basic
     @Column(name = "date_created")
-    public Timestamp getDate_created() {
-        return date_created;
+    public Timestamp getDateCreated() {
+        return dateCreated;
     }
 
-    public void setDate_created(Timestamp date_created) {
-        this.date_created = date_created;
+    public void setDateCreated(Timestamp dateCreated) {
+        this.dateCreated = dateCreated;
     }
 
     @Override
@@ -75,7 +75,7 @@ public class Tblclock {
         return clockId == tblclock.clockId &&
                 Objects.equals(punchIn, tblclock.punchIn) &&
                 Objects.equals(punchOut, tblclock.punchOut) &&
-                Objects.equals(date_created, tblclock.date_created);
+                Objects.equals(dateCreated, tblclock.dateCreated);
     }
 
     @Override

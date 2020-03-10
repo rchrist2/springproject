@@ -135,8 +135,8 @@ public class LoginController implements Initializable {
 
     @FXML
     private void needHelp(){
-        ErrorMessages.showInformationMessage("Need Help?","Contact info listed below:",
-                "Email us at email@gmail.com or Call 999-999-9999");
+        ErrorMessages.showInformationMessage("Need Help?","Contact info listed below",
+                "Email: scsolutions475@gmail.com");
     }
 
     @FXML

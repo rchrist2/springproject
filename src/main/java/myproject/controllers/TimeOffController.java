@@ -173,6 +173,11 @@ public class TimeOffController implements Initializable {
         //if the user is the owner or manager, they can see buttons to approve requests or show all users
         if(userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Manager")
         || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Owner")){
+
+            //only managers/owner can edit or delete
+            timeOffEditButton.setVisible(true);
+            timeOffDeleteButton.setVisible(true);
+
             //declare variables
             Button showAllUser = new Button();
             Button showThisUser = new Button();
@@ -257,9 +262,6 @@ public class TimeOffController implements Initializable {
 
     @FXML
     private void submitTimeOffRequest(){
-        //get the current user (String) from LoginController
-        String currentUser = LoginController.userStore;
-
         //check if any of the fields are empty
             if(!(scheduleList.getSelectionModel().isEmpty() || beginHrList.getSelectionModel().isEmpty()
             || beginPMList.getSelectionModel().isEmpty() || endHrList.getSelectionModel().isEmpty()
@@ -268,19 +270,51 @@ public class TimeOffController implements Initializable {
 
                 //convert combobox values to 24 hour clock depending if AM or PM was selected
                 if (beginPMList.getSelectionModel().getSelectedItem().equals("AM")) {
-                    newTimeOff.setBeginTimeOffDate(Time.valueOf(beginHrList.getSelectionModel().getSelectedItem().toString()
-                            + ":00:00"));
+
+                    //if the beginning hour is 12 am
+                    if(beginHrList.getSelectionModel().getSelectedItem().toString().equals("12")){
+                        newTimeOff.setBeginTimeOffDate(Time.valueOf("00"
+                                + ":00:00"));
+                    }
+                    else {
+                        newTimeOff.setBeginTimeOffDate(Time.valueOf(beginHrList.getSelectionModel().getSelectedItem().toString()
+                                + ":00:00"));
+                    }
                 } else if (beginPMList.getSelectionModel().getSelectedItem().equals("PM")) {
-                    newTimeOff.setBeginTimeOffDate(Time.valueOf((beginHrList.getSelectionModel().getSelectedItem() + 12)
-                            + ":00:00"));
+
+                    //if the beginning hour is 12 pm
+                    if(beginHrList.getSelectionModel().getSelectedItem().toString().equals("12")) {
+                        newTimeOff.setBeginTimeOffDate(Time.valueOf("12"
+                                + ":00:00"));
+                    }
+                    else{
+                        newTimeOff.setBeginTimeOffDate(Time.valueOf((beginHrList.getSelectionModel().getSelectedItem() + 12)
+                                + ":00:00"));
+                    }
                 }
 
                 if (endPMList.getSelectionModel().getSelectedItem().equals("AM")) {
-                    newTimeOff.setEndTimeOffDate(Time.valueOf(endHrList.getSelectionModel().getSelectedItem().toString()
-                            + ":00:00"));
+
+                    //if the ending hour is 12 am
+                    if(endHrList.getSelectionModel().getSelectedItem().toString().equals("12")){
+                        newTimeOff.setEndTimeOffDate(Time.valueOf("00"
+                                + ":00:00"));
+                    }
+                    else {
+                        newTimeOff.setEndTimeOffDate(Time.valueOf(endHrList.getSelectionModel().getSelectedItem().toString()
+                                + ":00:00"));
+                    }
                 } else if (endPMList.getSelectionModel().getSelectedItem().equals("PM")) {
-                    newTimeOff.setEndTimeOffDate(Time.valueOf((endHrList.getSelectionModel().getSelectedItem() + 12)
-                            + ":00:00"));
+
+                    //if the ending hour is 12 pm
+                    if(endHrList.getSelectionModel().getSelectedItem().toString().equals("12")) {
+                        newTimeOff.setEndTimeOffDate(Time.valueOf("12"
+                                + ":00:00"));
+                    }
+                    else {
+                        newTimeOff.setEndTimeOffDate(Time.valueOf((endHrList.getSelectionModel().getSelectedItem() + 12)
+                                + ":00:00"));
+                    }
                 }
 
                 newTimeOff.setApproved(false);

@@ -60,3 +60,6 @@ CREATE TABLE tbltimeoff(
 	reason_desc varchar(128) not null,
 	schedule_id int not null FOREIGN KEY REFERENCES tblschedule(schedule_id)
 );
+
+## Check Constraints as of 3/10/2020
+alter table tblusers add constraint username_is_email check (username like '%_@__%.__%');

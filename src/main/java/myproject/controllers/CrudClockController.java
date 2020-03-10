@@ -179,9 +179,23 @@ public class CrudClockController implements Initializable {
         calendarEnd.setTime(cl1.getPunchOut());
         int endMin = calendarEnd.get(Calendar.MINUTE);
 
-        //assigns selected hour via array index since hrList is Int, so subtract 1 to display correct hour
-        beginHrList.getSelectionModel().select(beginHour-1);
-        endHrList.getSelectionModel().select(endHour-1);
+        //assigns hour comboboxes
+        if(beginHour == 0 && endHour == 0){ //if any of the hours are equal to 12
+            beginHrList.setValue(12);
+            endHrList.setValue(12);
+        }
+        else if(endHour == 0){
+            beginHrList.setValue(beginHour);
+            endHrList.setValue(12);
+        }
+        else if(beginHour == 0){
+            beginHrList.setValue(12);
+            endHrList.setValue(endHour);
+        }
+        else{
+            beginHrList.setValue(beginHour);
+            endHrList.setValue(endHour);
+        }
 
         //assigns selected minute in drop down menu using leading zeroes
         beginMinList.getSelectionModel().select(String.format("%02d", beginMin));
@@ -192,43 +206,91 @@ public class CrudClockController implements Initializable {
     public void handleSave(ActionEvent event){
         Tblclock cl = selectedClock;
 
-        //TODO make sure all fields are selected
-
         //convert combobox values to 24 hour clock depending if AM or PM was selected
         if (beginPMList.getSelectionModel().getSelectedItem().equals("AM")) {
-            cl.setPunchIn(Time.valueOf(beginHrList.getSelectionModel().getSelectedItem().toString()
-                    + ":" + beginMinList.getSelectionModel().getSelectedItem()
-                    + ":00"));
+
+            //if the beginning hour is 12 am
+            if(beginHrList.getSelectionModel().getSelectedItem().toString().equals("12")){
+                cl.setPunchIn(Time.valueOf("00"
+                        + ":" + beginMinList.getSelectionModel().getSelectedItem()
+                        + ":00"));
+            }
+            else {
+                cl.setPunchIn(Time.valueOf(beginHrList.getSelectionModel().getSelectedItem().toString()
+                        + ":" + beginMinList.getSelectionModel().getSelectedItem()
+                        + ":00"));
+            }
         } else if (beginPMList.getSelectionModel().getSelectedItem().equals("PM")) {
-            cl.setPunchIn(Time.valueOf((beginHrList.getSelectionModel().getSelectedItem() + 12)
-                    + ":" + beginMinList.getSelectionModel().getSelectedItem()
-                    + ":00"));
+
+            //if the beginning hour is 12 pm
+            if(beginHrList.getSelectionModel().getSelectedItem().toString().equals("12")) {
+                cl.setPunchIn(Time.valueOf("12"
+                        + ":" + beginMinList.getSelectionModel().getSelectedItem()
+                        + ":00"));
+            }
+            else{
+                cl.setPunchIn(Time.valueOf((beginHrList.getSelectionModel().getSelectedItem() + 12)
+                        + ":" + beginMinList.getSelectionModel().getSelectedItem()
+                        + ":00"));
+            }
         }
 
         if (endPMList.getSelectionModel().getSelectedItem().equals("AM")) {
-            cl.setPunchOut(Time.valueOf(endHrList.getSelectionModel().getSelectedItem().toString()
-                    + ":" + endMinList.getSelectionModel().getSelectedItem()
-                    + ":00"));
+
+            //if the ending hour is 12 am
+            if(endHrList.getSelectionModel().getSelectedItem().toString().equals("12")){
+                cl.setPunchOut(Time.valueOf("00"
+                        + ":" + endMinList.getSelectionModel().getSelectedItem()
+                        + ":00"));
+            }
+            else {
+                cl.setPunchOut(Time.valueOf(endHrList.getSelectionModel().getSelectedItem().toString()
+                        + ":" + endMinList.getSelectionModel().getSelectedItem()
+                        + ":00"));
+            }
         } else if (endPMList.getSelectionModel().getSelectedItem().equals("PM")) {
-            cl.setPunchOut(Time.valueOf((endHrList.getSelectionModel().getSelectedItem() + 12)
-                    + ":" + endMinList.getSelectionModel().getSelectedItem()
-                    + ":00"));
+
+            //if the ending hour is 12 pm
+            if(endHrList.getSelectionModel().getSelectedItem().toString().equals("12")) {
+                cl.setPunchOut(Time.valueOf("12"
+                        + ":" + endMinList.getSelectionModel().getSelectedItem()
+                        + ":00"));
+            }
+            else {
+                cl.setPunchOut(Time.valueOf((endHrList.getSelectionModel().getSelectedItem() + 12)
+                        + ":" + endMinList.getSelectionModel().getSelectedItem()
+                        + ":00"));
+            }
         }
 
         cl.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
 
-        if(cl.getPunchIn().before(cl.getPunchOut())
-                && cl.getPunchOut().after(cl.getPunchIn())){
-            clockRepository.save(cl);
+        //check if any fields were empty or using default selection of "Hour"
+        if(!(beginHrList.getSelectionModel().isEmpty() ||
+        beginMinList.getSelectionModel().isEmpty() ||
+        beginPMList.getSelectionModel().isEmpty() ||
+        endHrList.getSelectionModel().isEmpty() ||
+        endMinList.getSelectionModel().isEmpty() ||
+        endPMList.getSelectionModel().isEmpty() ||
+        scheduleList.getSelectionModel().isEmpty())) {
+            //check that the selected time range is valid
+            if (cl.getPunchIn().before(cl.getPunchOut())
+                    && cl.getPunchOut().after(cl.getPunchIn())) {
+                clockRepository.save(cl);
 
-            Stage stage = (Stage)saveButton.getScene().getWindow();
-            System.out.println("Saved");
-            stage.close();
+                Stage stage = (Stage) saveButton.getScene().getWindow();
+                System.out.println("Saved");
+                stage.close();
+            } else {
+                ErrorMessages.showErrorMessage("Invalid time values",
+                        "Time range is invalid",
+                        "Please edit time range for this clock in/out record");
+            }
         }
         else{
-            ErrorMessages.showErrorMessage("Invalid time values",
-                    "Time range is invalid",
-                    "Please edit time range for this clock in/out record");
+            ErrorMessages.showErrorMessage("Fields are empty",
+                    "Selections missing from drop-down menus",
+                    "Please select from the drop-down menus");
         }
     }
 

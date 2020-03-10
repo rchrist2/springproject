@@ -30,7 +30,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Date;
+import java.util.Date;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
@@ -127,6 +127,9 @@ public class ClockInOutController implements Initializable {
                         timeFormat.format(recentClockForUser.getPunchOut()));
             }
         }
+        else{
+            lastActionLabel.setText("");
+        }
 
         scheduleData = FXCollections.observableArrayList();
         scheduleData.addAll(scheduleRepository.findScheduleForUser(currentUser));
@@ -146,6 +149,11 @@ public class ClockInOutController implements Initializable {
         //if the user is the owner or manager, they can see buttons to approve requests or show all users
         if(userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Manager")
                 || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Owner")) {
+
+            //only managers/owner can edit or delete
+            clockEditButton.setVisible(true);
+            clockDeleteButton.setVisible(true);
+
             //declare variables
             Button showAllUser = new Button();
             Button showThisUser = new Button();
@@ -175,32 +183,41 @@ public class ClockInOutController implements Initializable {
 
     @FXML
     public void clockIn(){
+        Date dateNow = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+
         if(!(scheduleList.getSelectionModel().isEmpty())) {
-            Tblclock newClock = new Tblclock();
 
-            newClock.setPunchIn(java.sql.Time.valueOf(LocalTime.now()));
+            //if the schedule date is equal to today's date
+            if(sdf.format(scheduleList.getSelectionModel().getSelectedItem()
+                    .getScheduleDate()).equals(sdf.format(dateNow))) {
 
-            newClock.setPunchOut(java.sql.Time.valueOf("00:00:00"));
-            newClock.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
-            newClock.setDate_created(new java.sql.Timestamp(new java.util.Date().getTime()));
+                Tblclock newClock = new Tblclock();
 
-            //gets the day of week as a string (matches capitalized format ex. "Monday" in database)
-        /*String dayOfWeek = String.valueOf(DayOfWeek.from(LocalDate.now())).toLowerCase();
-        dayOfWeek = dayOfWeek.substring(0,1).toUpperCase() + dayOfWeek.substring(1).toLowerCase();
-        newAvail.setDay(dayRepository.findDay(dayOfWeek));*/
+                newClock.setPunchIn(java.sql.Time.valueOf(LocalTime.now()));
 
-            //save the new clock-in
-            clockRepository.save(newClock);
+                newClock.setPunchOut(java.sql.Time.valueOf("00:00:00"));
+                newClock.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
+                newClock.setDateCreated(new java.sql.Timestamp(new java.util.Date().getTime()));
 
-            SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
-            SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
-            String day = newClock.getSchedule().getDay().getDayDesc();
-            String date = dateFormat.format(newClock.getSchedule().getScheduleDate());
-            lastActionLabel.setText("Last Action \"In\" on " + day +
-                    ", " + date + " at "
-                    + timeFormat.format(newClock.getPunchIn()));
+                //save the new clock-in
+                clockRepository.save(newClock);
 
-            reloadClockTable();
+                SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
+                SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+                String day = newClock.getSchedule().getDay().getDayDesc();
+                String date = dateFormat.format(newClock.getSchedule().getScheduleDate());
+                lastActionLabel.setText("Last Action \"In\" on " + day +
+                        ", " + date + " at "
+                        + timeFormat.format(newClock.getPunchIn()));
+
+                reloadClockTable();
+            }
+            else{
+                ErrorMessages.showErrorMessage("Invalid schedule selected",
+                        "Schedule must be equal to today's date",
+                        "You cannot clock in for a date earlier than or later than today's date");
+            }
         }
         else{
             ErrorMessages.showErrorMessage("Fields are empty",
@@ -212,27 +229,37 @@ public class ClockInOutController implements Initializable {
 
     @FXML
     public void clockOut(){
+        Date dateNow = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+
         if(!(scheduleList.getSelectionModel().isEmpty())) {
-            //finds recent clock record based on selected schedule
-            Tblclock newClock2 = clockRepository.findRecentClockForSchedule(scheduleList.getSelectionModel().getSelectedItem().getScheduleId());
 
-            //get the current day of week
-        /*String dayOfWeek = String.valueOf(DayOfWeek.from(LocalDate.now())).toLowerCase();
-        dayOfWeek = dayOfWeek.substring(0,1).toUpperCase() + dayOfWeek.substring(1).toLowerCase();*/
+            //if the schedule date is equal to today's date
+            if(sdf.format(scheduleList.getSelectionModel().getSelectedItem()
+                    .getScheduleDate()).equals(sdf.format(dateNow))) {
 
-            newClock2.setPunchOut(java.sql.Time.valueOf(LocalTime.now()));
+                //finds recent clock record based on selected schedule
+                Tblclock newClock2 = clockRepository.findRecentClockForSchedule(scheduleList.getSelectionModel().getSelectedItem().getScheduleId());
 
-            clockRepository.save(newClock2);
+                newClock2.setPunchOut(java.sql.Time.valueOf(LocalTime.now()));
 
-            SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
-            SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
-            String day = newClock2.getSchedule().getDay().getDayDesc();
-            String date = dateFormat.format(newClock2.getSchedule().getScheduleDate());
-            lastActionLabel.setText("Last Action \"Out\" on " + day +
-                    ", " + date + " at "
-                    + timeFormat.format(newClock2.getPunchOut()));
+                clockRepository.save(newClock2);
 
-            reloadClockTable();
+                SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
+                SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+                String day = newClock2.getSchedule().getDay().getDayDesc();
+                String date = dateFormat.format(newClock2.getSchedule().getScheduleDate());
+                lastActionLabel.setText("Last Action \"Out\" on " + day +
+                        ", " + date + " at "
+                        + timeFormat.format(newClock2.getPunchOut()));
+
+                reloadClockTable();
+            }
+            else{
+                ErrorMessages.showErrorMessage("Invalid schedule selected",
+                        "Schedule must be equal to today's date",
+                        "You cannot clock out for a date earlier than or later than today's date");
+            }
         }
         else{
             ErrorMessages.showErrorMessage("Fields are empty",

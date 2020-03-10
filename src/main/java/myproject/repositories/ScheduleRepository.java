@@ -27,7 +27,7 @@ public interface ScheduleRepository extends CrudRepository<Tblschedule, Integer>
 
     @Query(value = "SELECT * FROM tblschedule s JOIN tblemployee e ON s.employee_id=e.id JOIN " +
             "tblusers u ON e.id=u.employee_id WHERE Username = :username", nativeQuery = true)
-    Tblschedule findScheduleForUser(@Param("username") String user);
+    List<Tblschedule> findScheduleForUser(@Param("username") String user);
 
     @Query(value = "SELECT * FROM tblschedule s " +
             "JOIN tblemployee e ON s.employee_id = e.id " +

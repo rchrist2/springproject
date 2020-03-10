@@ -58,7 +58,7 @@
             <ComboBox fx:id="beginPMList" layoutX="131.0" layoutY="70.0" prefHeight="25.0" prefWidth="92.0" promptText="AM/PM" />
             <ComboBox fx:id="beginHrList" layoutX="56.0" layoutY="70.0" prefHeight="25.0" prefWidth="70.0" promptText="Hour" />
             <Label layoutX="14.0" layoutY="123.0" text="Approved:" />
-            <ComboBox fx:id="approveList" layoutX="82.0" layoutY="119.0" prefHeight="25.0" prefWidth="120.0" promptText="Approve/Deny" />
+            <ComboBox fx:id="approveList" disable="true" layoutX="82.0" layoutY="119.0" prefHeight="25.0" prefWidth="120.0" promptText="Approve/Deny" />
             <Label layoutX="14.0" layoutY="213.0" text="Reason:" />
             <TextArea fx:id="reasonInput" layoutX="66.0" layoutY="218.0" prefHeight="124.0" prefWidth="356.0" />
             <Label layoutX="15.0" layoutY="169.0" text="Select Schedule:" />
