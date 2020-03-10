@@ -230,7 +230,7 @@ public class CrudTimeOffController implements Initializable {
                     " off request is invalid","Please edit time range for this time off request");
         }
 
-        }
+    }
 
     @FXML
     private void handleCancel(){

@@ -10,6 +10,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
+import myproject.ErrorMessages;
 import myproject.models.Tblclock;
 import myproject.models.Tblschedule;
 import myproject.repositories.ClockRepository;
@@ -191,6 +192,8 @@ public class CrudClockController implements Initializable {
     public void handleSave(ActionEvent event){
         Tblclock cl = selectedClock;
 
+        //TODO make sure all fields are selected
+
         //convert combobox values to 24 hour clock depending if AM or PM was selected
         if (beginPMList.getSelectionModel().getSelectedItem().equals("AM")) {
             cl.setPunchIn(Time.valueOf(beginHrList.getSelectionModel().getSelectedItem().toString()
@@ -214,13 +217,19 @@ public class CrudClockController implements Initializable {
 
         cl.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
 
-        //TODO verify time range is valid before saving
+        if(cl.getPunchIn().before(cl.getPunchOut())
+                && cl.getPunchOut().after(cl.getPunchIn())){
+            clockRepository.save(cl);
 
-        clockRepository.save(cl);
-
-        Stage stage = (Stage)saveButton.getScene().getWindow();
-        System.out.println("Saved");
-        stage.close();
+            Stage stage = (Stage)saveButton.getScene().getWindow();
+            System.out.println("Saved");
+            stage.close();
+        }
+        else{
+            ErrorMessages.showErrorMessage("Invalid time values",
+                    "Time range is invalid",
+                    "Please edit time range for this clock in/out record");
+        }
     }
 
     @FXML

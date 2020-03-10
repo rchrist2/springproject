@@ -15,8 +15,8 @@ public class Tbltimeoff {
     private String reasonDesc;
     private Tblschedule schedule;
 
-    //one time off request can belong to only one schedule
-    @OneToOne(cascade = CascadeType.MERGE)
+    //many time off requests can belong to only one schedule
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "schedule_id", referencedColumnName = "schedule_id")
     public Tblschedule getSchedule() {
         return schedule;
