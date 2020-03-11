@@ -101,11 +101,11 @@ public class TimeOffController implements Initializable {
     public ComboBox<Tblschedule> scheduleList;
 
     @FXML
-    public ComboBox<Integer> beginHrList;
+    public Spinner<Integer> beginHrList;
     /*@FXML
     public ComboBox<Integer> beginMinList;*/
     @FXML
-    public ComboBox<Integer> endHrList;
+    public Spinner<Integer> endHrList;
     /*@FXML
     public ComboBox<Integer> endMinList;*/
     @FXML
@@ -148,16 +148,21 @@ public class TimeOffController implements Initializable {
         hrList = FXCollections.observableArrayList();
         //minList = FXCollections.observableArrayList();
 
-        hrList.addAll(IntStream.rangeClosed(1,12).boxed().collect(Collectors.toList()));
-        //minList.addAll(IntStream.rangeClosed(0,59).boxed().collect(Collectors.toList()));
+        hrList.addAll(IntStream.rangeClosed(0,12).boxed().collect(Collectors.toList()));
 
         //fill the hour, minute, and AM/PM comboboxes with values
         beginPMList.setItems(pmList);
         endPMList.setItems(pmList);
 
-        beginHrList.setItems(hrList);
+        SpinnerValueFactory<Integer> bHours =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(hrList);
+        SpinnerValueFactory<Integer> eHours =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(hrList);
+
+        beginHrList.setValueFactory(bHours);
+        endHrList.setValueFactory(eHours);
+
         //beginMinList.setItems(minList);
-        endHrList.setItems(hrList);
         //endMinList.setItems(minList);
 
         //reload table, set column data, and add listeners to buttons
@@ -263,8 +268,8 @@ public class TimeOffController implements Initializable {
     @FXML
     private void submitTimeOffRequest(){
         //check if any of the fields are empty
-            if(!(scheduleList.getSelectionModel().isEmpty() || beginHrList.getSelectionModel().isEmpty()
-            || beginPMList.getSelectionModel().isEmpty() || endHrList.getSelectionModel().isEmpty()
+            if(!(scheduleList.getSelectionModel().isEmpty() || beginHrList.getValue()==0
+            || beginPMList.getSelectionModel().isEmpty() || endHrList.getValue()==0
             || endPMList.getSelectionModel().isEmpty() || reasonInput.getText().trim().isEmpty())) {
                 Tbltimeoff newTimeOff = new Tbltimeoff();
 
@@ -272,23 +277,23 @@ public class TimeOffController implements Initializable {
                 if (beginPMList.getSelectionModel().getSelectedItem().equals("AM")) {
 
                     //if the beginning hour is 12 am
-                    if(beginHrList.getSelectionModel().getSelectedItem().toString().equals("12")){
+                    if(beginHrList.getValue().toString().equals("12")){
                         newTimeOff.setBeginTimeOffDate(Time.valueOf("00"
                                 + ":00:00"));
                     }
                     else {
-                        newTimeOff.setBeginTimeOffDate(Time.valueOf(beginHrList.getSelectionModel().getSelectedItem().toString()
+                        newTimeOff.setBeginTimeOffDate(Time.valueOf(beginHrList.getValue().toString()
                                 + ":00:00"));
                     }
                 } else if (beginPMList.getSelectionModel().getSelectedItem().equals("PM")) {
 
                     //if the beginning hour is 12 pm
-                    if(beginHrList.getSelectionModel().getSelectedItem().toString().equals("12")) {
+                    if(beginHrList.getValue().toString().equals("12")) {
                         newTimeOff.setBeginTimeOffDate(Time.valueOf("12"
                                 + ":00:00"));
                     }
                     else{
-                        newTimeOff.setBeginTimeOffDate(Time.valueOf((beginHrList.getSelectionModel().getSelectedItem() + 12)
+                        newTimeOff.setBeginTimeOffDate(Time.valueOf((beginHrList.getValue() + 12)
                                 + ":00:00"));
                     }
                 }
@@ -296,23 +301,23 @@ public class TimeOffController implements Initializable {
                 if (endPMList.getSelectionModel().getSelectedItem().equals("AM")) {
 
                     //if the ending hour is 12 am
-                    if(endHrList.getSelectionModel().getSelectedItem().toString().equals("12")){
+                    if(endHrList.getValue().toString().equals("12")){
                         newTimeOff.setEndTimeOffDate(Time.valueOf("00"
                                 + ":00:00"));
                     }
                     else {
-                        newTimeOff.setEndTimeOffDate(Time.valueOf(endHrList.getSelectionModel().getSelectedItem().toString()
+                        newTimeOff.setEndTimeOffDate(Time.valueOf(endHrList.getValue().toString()
                                 + ":00:00"));
                     }
                 } else if (endPMList.getSelectionModel().getSelectedItem().equals("PM")) {
 
                     //if the ending hour is 12 pm
-                    if(endHrList.getSelectionModel().getSelectedItem().toString().equals("12")) {
+                    if(endHrList.getValue().toString().equals("12")) {
                         newTimeOff.setEndTimeOffDate(Time.valueOf("12"
                                 + ":00:00"));
                     }
                     else {
-                        newTimeOff.setEndTimeOffDate(Time.valueOf((endHrList.getSelectionModel().getSelectedItem() + 12)
+                        newTimeOff.setEndTimeOffDate(Time.valueOf((endHrList.getValue() + 12)
                                 + ":00:00"));
                     }
                 }
