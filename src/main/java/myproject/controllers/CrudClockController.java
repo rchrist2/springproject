@@ -5,10 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 import myproject.ErrorMessages;
 import myproject.models.Tblclock;
@@ -51,13 +48,13 @@ public class CrudClockController implements Initializable {
     public ComboBox<Tblschedule> scheduleList;
 
     @FXML
-    public ComboBox<Integer> beginHrList;
+    public Spinner<Integer> beginHrList;
     @FXML
-    public ComboBox<String> beginMinList;
+    public Spinner<String> beginMinList;
     @FXML
-    public ComboBox<Integer> endHrList;
+    public Spinner<Integer> endHrList;
     @FXML
-    public ComboBox<String> endMinList;
+    public Spinner<String> endMinList;
     @FXML
     public ComboBox<String> beginPMList;
     @FXML
@@ -98,11 +95,19 @@ public class CrudClockController implements Initializable {
         beginPMList.setItems(pmList);
         endPMList.setItems(pmList);
 
-        beginMinList.setItems(minList);
-        endMinList.setItems(minList);
+        SpinnerValueFactory<Integer> bHours =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(hrList);
+        SpinnerValueFactory<String> bMins =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(minList);
+        SpinnerValueFactory<Integer> eHours =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(hrList);
+        SpinnerValueFactory<String> eMins =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(minList);
 
-        beginHrList.setItems(hrList);
-        endHrList.setItems(hrList);
+        beginHrList.setValueFactory(bHours);
+        beginMinList.setValueFactory(bMins);
+        endHrList.setValueFactory(eHours);
+        endMinList.setValueFactory(eMins);
     }
 
     @Autowired
@@ -181,25 +186,25 @@ public class CrudClockController implements Initializable {
 
         //assigns hour comboboxes
         if(beginHour == 0 && endHour == 0){ //if any of the hours are equal to 12
-            beginHrList.setValue(12);
-            endHrList.setValue(12);
+            beginHrList.getValueFactory().setValue(12);
+            endHrList.getValueFactory().setValue(12);
         }
         else if(endHour == 0){
-            beginHrList.setValue(beginHour);
-            endHrList.setValue(12);
+            beginHrList.getValueFactory().setValue(beginHour);
+            endHrList.getValueFactory().setValue(12);
         }
         else if(beginHour == 0){
-            beginHrList.setValue(12);
-            endHrList.setValue(endHour);
+            beginHrList.getValueFactory().setValue(12);
+            endHrList.getValueFactory().setValue(endHour);
         }
         else{
-            beginHrList.setValue(beginHour);
-            endHrList.setValue(endHour);
+            beginHrList.getValueFactory().setValue(beginHour);
+            endHrList.getValueFactory().setValue(endHour);
         }
 
         //assigns selected minute in drop down menu using leading zeroes
-        beginMinList.getSelectionModel().select(String.format("%02d", beginMin));
-        endMinList.getSelectionModel().select(String.format("%02d", endMin));
+        beginMinList.getValueFactory().setValue(String.format("%02d", beginMin));
+        endMinList.getValueFactory().setValue(String.format("%02d", endMin));
 
     }
 
@@ -210,27 +215,27 @@ public class CrudClockController implements Initializable {
         if (beginPMList.getSelectionModel().getSelectedItem().equals("AM")) {
 
             //if the beginning hour is 12 am
-            if(beginHrList.getSelectionModel().getSelectedItem().toString().equals("12")){
+            if(beginHrList.getValue().toString().equals("12")){
                 cl.setPunchIn(Time.valueOf("00"
-                        + ":" + beginMinList.getSelectionModel().getSelectedItem()
+                        + ":" + beginMinList.getValue()
                         + ":00"));
             }
             else {
-                cl.setPunchIn(Time.valueOf(beginHrList.getSelectionModel().getSelectedItem().toString()
-                        + ":" + beginMinList.getSelectionModel().getSelectedItem()
+                cl.setPunchIn(Time.valueOf(beginHrList.getValue().toString()
+                        + ":" + beginMinList.getValue()
                         + ":00"));
             }
         } else if (beginPMList.getSelectionModel().getSelectedItem().equals("PM")) {
 
             //if the beginning hour is 12 pm
-            if(beginHrList.getSelectionModel().getSelectedItem().toString().equals("12")) {
+            if(beginHrList.getValue().toString().equals("12")) {
                 cl.setPunchIn(Time.valueOf("12"
-                        + ":" + beginMinList.getSelectionModel().getSelectedItem()
+                        + ":" + beginMinList.getValue()
                         + ":00"));
             }
             else{
-                cl.setPunchIn(Time.valueOf((beginHrList.getSelectionModel().getSelectedItem() + 12)
-                        + ":" + beginMinList.getSelectionModel().getSelectedItem()
+                cl.setPunchIn(Time.valueOf((beginHrList.getValue() + 12)
+                        + ":" + beginMinList.getValue()
                         + ":00"));
             }
         }
@@ -238,27 +243,27 @@ public class CrudClockController implements Initializable {
         if (endPMList.getSelectionModel().getSelectedItem().equals("AM")) {
 
             //if the ending hour is 12 am
-            if(endHrList.getSelectionModel().getSelectedItem().toString().equals("12")){
+            if(endHrList.getValue().toString().equals("12")){
                 cl.setPunchOut(Time.valueOf("00"
-                        + ":" + endMinList.getSelectionModel().getSelectedItem()
+                        + ":" + endMinList.getValue()
                         + ":00"));
             }
             else {
-                cl.setPunchOut(Time.valueOf(endHrList.getSelectionModel().getSelectedItem().toString()
-                        + ":" + endMinList.getSelectionModel().getSelectedItem()
+                cl.setPunchOut(Time.valueOf(endHrList.getValue().toString()
+                        + ":" + endMinList.getValue()
                         + ":00"));
             }
         } else if (endPMList.getSelectionModel().getSelectedItem().equals("PM")) {
 
             //if the ending hour is 12 pm
-            if(endHrList.getSelectionModel().getSelectedItem().toString().equals("12")) {
+            if(endHrList.getValue().toString().equals("12")) {
                 cl.setPunchOut(Time.valueOf("12"
-                        + ":" + endMinList.getSelectionModel().getSelectedItem()
+                        + ":" + endMinList.getValue()
                         + ":00"));
             }
             else {
-                cl.setPunchOut(Time.valueOf((endHrList.getSelectionModel().getSelectedItem() + 12)
-                        + ":" + endMinList.getSelectionModel().getSelectedItem()
+                cl.setPunchOut(Time.valueOf((endHrList.getValue() + 12)
+                        + ":" + endMinList.getValue()
                         + ":00"));
             }
         }
@@ -266,11 +271,11 @@ public class CrudClockController implements Initializable {
         cl.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
 
         //check if any fields were empty or using default selection of "Hour"
-        if(!(beginHrList.getSelectionModel().isEmpty() ||
-        beginMinList.getSelectionModel().isEmpty() ||
+        if(!(/*beginHrList.getValue().equals(0) ||
+        beginMinList.getValue().equals(0) ||*/
         beginPMList.getSelectionModel().isEmpty() ||
-        endHrList.getSelectionModel().isEmpty() ||
-        endMinList.getSelectionModel().isEmpty() ||
+        /*endHrList.getValue().equals(0) ||
+        endMinList.getValue().equals(0) ||*/
         endPMList.getSelectionModel().isEmpty() ||
         scheduleList.getSelectionModel().isEmpty())) {
             //check that the selected time range is valid
