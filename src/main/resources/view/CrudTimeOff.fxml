@@ -9,6 +9,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="445.0" prefWidth="600.0" style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.CrudTimeOffController">
@@ -55,6 +56,7 @@
             <ComboBox fx:id="scheduleList" layoutX="108.0" layoutY="165.0" prefWidth="150.0" promptText="Select Schedule" />
             <Spinner fx:id="beginHrList" layoutX="56.0" layoutY="70.0" prefHeight="25.0" prefWidth="70.0" />
             <Spinner fx:id="endHrList" layoutX="258.0" layoutY="70.0" prefHeight="25.0" prefWidth="70.0" />
+            <Pane fx:id="errorMsgPane" layoutX="82.0" layoutY="119.0" onMouseClicked="#approveClicked" prefHeight="25.0" prefWidth="120.0" />
             </children>
         </AnchorPane>
     </children>

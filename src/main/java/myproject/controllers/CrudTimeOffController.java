@@ -8,6 +8,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import myproject.ErrorMessages;
 import myproject.models.TblRoles;
@@ -46,6 +47,9 @@ public class CrudTimeOffController implements Initializable {
     private UserRepository userRepository;
 
     @FXML
+    private Pane errorMsgPane;
+
+    @FXML
     private Label crudLabel;
 
     @FXML
@@ -55,17 +59,16 @@ public class CrudTimeOffController implements Initializable {
     private Button cancelButton;
 
     @FXML
-    public ComboBox<Tblschedule> scheduleList;
-
-    @FXML
     public Spinner<Integer> beginHrList;
     @FXML
     public Spinner<Integer> endHrList;
+
+    @FXML
+    public ComboBox<Tblschedule> scheduleList;
     @FXML
     public ComboBox<String> beginPMList;
     @FXML
     public ComboBox<String> endPMList;
-
     @FXML
     public ComboBox<String> approveList;
 
@@ -91,14 +94,15 @@ public class CrudTimeOffController implements Initializable {
         //get the current user
         String currentUser = LoginController.userStore;
 
-        //initialize drop down menus
+        //initialize drop down menus and their observable lists
         approveData = FXCollections.observableArrayList(Arrays.asList("Approve", "Deny"));
         approveList.setItems(approveData);
 
+        //make a list of hours from 1 to 12
         hrList = FXCollections.observableArrayList();
         hrList.addAll(IntStream.rangeClosed(1, 12).boxed().collect(Collectors.toList()));
 
-        //fill the hour, minute, and AM/PM drop-downs with values
+        //fill the hour, minute, and AM/PM drop-downs or spinners with values
         beginPMList.setItems(pmList);
         endPMList.setItems(pmList);
 
@@ -110,11 +114,13 @@ public class CrudTimeOffController implements Initializable {
         beginHrList.setValueFactory(bHours);
         endHrList.setValueFactory(eHours);
 
+        //give only managers and owner ability to approve/disapprove
         if (userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Manager")
                 || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Owner")) {
 
-            //give only managers and owner ability to approve/disapprove
             approveList.setDisable(false);
+            errorMsgPane.setVisible(false);
+
         }
     }
 
@@ -166,8 +172,7 @@ public class CrudTimeOffController implements Initializable {
             endPMList.getSelectionModel().select(1);
         }
 
-        //initialize the schedule dates for the current user
-        //not done in initialize() method due to nullpointerexception
+        //initialize the schedule dates for the current user (not done in initialize() method due to nullpointerexception)
         scheduleData = FXCollections.observableArrayList();
         scheduleData.addAll(scheduleRepository.findScheduleForUser(selectedTimeOff.getSchedule().getEmployee().getUser().getUsername()));
         scheduleList.setItems(scheduleData);
@@ -184,7 +189,7 @@ public class CrudTimeOffController implements Initializable {
         calendarEnd.setTime(tf1.getEndTimeOffDate());
         int endHour = calendarEnd.get(Calendar.HOUR);
 
-        //assigns hour comboboxes
+        //assigns hour spinners
         if(beginHour == 0 && endHour == 0){ //if any of the hours are equal to 12
             beginHrList.getValueFactory().setValue(12);
             endHrList.getValueFactory().setValue(12);
@@ -202,7 +207,7 @@ public class CrudTimeOffController implements Initializable {
             endHrList.getValueFactory().setValue(endHour);
         }
 
-        //find whether time is approved or not, and set appropriate drop-down value
+        //find whether request is approved or not, and set appropriate drop-down value
         String approveSelect = "null";
         if(tf1.isApproved()){
             approveSelect = "Approve";
@@ -217,18 +222,30 @@ public class CrudTimeOffController implements Initializable {
     }
 
     public void handleSave(ActionEvent event){
-        Tbltimeoff tf = selectedTimeOff;
+        //get the current user
+        String currentUser = LoginController.userStore;
 
-        //save the time off with approved/denied based on selection in drop-down
+        //get the selected time off request
+        Tbltimeoff tf = selectedTimeOff;
         Boolean isApproved = tf.isApproved();
-        if(approveList.getSelectionModel().getSelectedItem().equals("Approve")) {
-            isApproved = true;
+
+        //check if the user has privileges to approve or deny the request
+        if (userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Manager")
+                || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Owner")) {
+            //save the time off with approved/denied based on selection in drop-down
+            if(approveList.getSelectionModel().getSelectedItem().equals("Approve")) {
+                isApproved = true;
+            }
+            else if(approveList.getSelectionModel().getSelectedItem().equals("Deny")) {
+                isApproved = false;
+            }
         }
-        else if(approveList.getSelectionModel().getSelectedItem().equals("Deny")) {
+        else{
+            //if they don't have privileges, deny the request by default
             isApproved = false;
         }
 
-        //convert combobox values to 24 hour clock depending if AM or PM was selected
+        //convert spinner values to 24 hour clock depending if AM or PM was selected
         if (beginPMList.getSelectionModel().getSelectedItem().equals("AM")) {
 
             //if the beginning hour is 12 am
@@ -287,6 +304,7 @@ public class CrudTimeOffController implements Initializable {
         endPMList.getSelectionModel().isEmpty() ||
         reasonInput.getText().trim().isEmpty() ||
         scheduleList.getSelectionModel().isEmpty())) {
+
             //check if the selected time range is valid
             if (tf.getBeginTimeOffDate().before(tf.getEndTimeOffDate())
                     && tf.getEndTimeOffDate().after(tf.getBeginTimeOffDate())) {
@@ -312,6 +330,19 @@ public class CrudTimeOffController implements Initializable {
         Stage currStage = (Stage)cancelButton.getScene().getWindow();
 
         currStage.close();
+    }
+
+    //show an error message that tells an unprivileged user why they cannot approve/deny request
+    @FXML
+    private void approveClicked() {
+        //get the current user
+        String currentUser = LoginController.userStore;
+
+        if (!(userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Manager")
+                || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Owner"))) {
+            ErrorMessages.showErrorMessage("Insufficient privileges","Cannot approve/deny request",
+                    "You do not have sufficient privileges to approve or deny this request.");
+        }
     }
 
 }

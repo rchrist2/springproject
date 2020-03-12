@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.text.*?>
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SplitMenuButton?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="750.0" prefWidth="985.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.ClockInOutController">
+<AnchorPane prefHeight="750.0" prefWidth="985.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.ClockInOutController">
    <children>
       <Pane prefHeight="115.0" prefWidth="985.0" style="-fx-background-color: linear-gradient(to right, #39a7c3 , white); -fx-border-color: transparent transparent derive(black, 10%) transparent;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -35,58 +42,58 @@
             </VBox>
          </children>
       </Pane>
-      <AnchorPane layoutX="75.0" layoutY="114.0" prefHeight="636.0" prefWidth="808.0">
+      <AnchorPane layoutY="115.0" prefHeight="635.0" prefWidth="985.0" style="-fx-background-color: white;">
          <children>
-            <Label fx:id="clockFeedback" layoutX="404.0" layoutY="155.0" />
-            <Label fx:id="feedbackLabel" layoutX="348.0" layoutY="194.0" prefHeight="17.0" prefWidth="133.0" />
-            <Label layoutX="301.0" layoutY="95.0" text="Select Schedule:">
+            <Label fx:id="clockFeedback" layoutX="472.0" layoutY="162.0" />
+            <Label fx:id="feedbackLabel" layoutX="416.0" layoutY="201.0" prefHeight="17.0" prefWidth="133.0" />
+            <Label layoutX="369.0" layoutY="102.0" text="Select Schedule:">
                <font>
                   <Font name="System Italic" size="18.0" />
                </font>
             </Label>
-            <TableView fx:id="clockTable" layoutY="257.0" prefHeight="339.0" prefWidth="808.0">
+            <TableView fx:id="clockTable" layoutX="68.0" layoutY="264.0" prefHeight="339.0" prefWidth="808.0">
                <columns>
                   <TableColumn fx:id="punchInCol" prefWidth="99.0" text="Punch In" />
                   <TableColumn fx:id="punchOutCol" prefWidth="99.0" text="Punch Out" />
-                  <TableColumn fx:id="scheduleCol" prefWidth="99.0" text="Schedule" />
+                  <TableColumn fx:id="scheduleCol" prefWidth="99.0" text="Schedule Date" />
                   <TableColumn fx:id="userCol" prefWidth="82.99998474121094" text="User" visible="false" />
                   <TableColumn fx:id="userCol" prefWidth="99.0" text="User" visible="false" />
                </columns>
             </TableView>
-            <Label layoutX="301.0" layoutY="150.0" text="Select Option: ">
+            <Label layoutX="369.0" layoutY="157.0" text="Select Option: ">
                <font>
                   <Font name="System Italic" size="18.0" />
                </font>
             </Label>
-            <SplitMenuButton layoutX="432.0" layoutY="151.0" mnemonicParsing="false" text="Select In/Out">
+            <SplitMenuButton layoutX="500.0" layoutY="158.0" mnemonicParsing="false" text="Select In/Out">
               <items>
                 <MenuItem mnemonicParsing="false" onAction="#clockIn" text="In" />
                 <MenuItem mnemonicParsing="false" onAction="#clockOut" text="Out" />
               </items>
             </SplitMenuButton>
-            <ComboBox fx:id="scheduleList" layoutX="432.0" layoutY="96.0" prefWidth="150.0" promptText="Select Schedule" />
-            <Label fx:id="tableUserLabel" layoutY="224.0" text="Clock History for User">
+            <ComboBox fx:id="scheduleList" layoutX="500.0" layoutY="103.0" prefWidth="150.0" promptText="Select Schedule" />
+            <Label fx:id="tableUserLabel" layoutX="68.0" layoutY="231.0" text="Clock History for User">
                <font>
                   <Font size="15.0" />
                </font>
             </Label>
-            <Button fx:id="clockEditButton" disable="true" layoutX="697.0" layoutY="223.0" mnemonicParsing="false" onAction="#editClock" style="-fx-background-color: #39a7c3;" text="Edit" textFill="WHITE" visible="false">
+            <Button fx:id="clockEditButton" disable="true" layoutX="765.0" layoutY="230.0" mnemonicParsing="false" onAction="#editClock" style="-fx-background-color: #39a7c3;" text="Edit" textFill="WHITE" visible="false">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </Button>
-            <Button fx:id="clockDeleteButton" disable="true" layoutX="743.0" layoutY="223.0" mnemonicParsing="false" onAction="#deleteClock" style="-fx-background-color: red;" text="Delete" textFill="WHITE" visible="false">
+            <Button fx:id="clockDeleteButton" disable="true" layoutX="811.0" layoutY="230.0" mnemonicParsing="false" onAction="#deleteClock" style="-fx-background-color: red;" text="Delete" textFill="WHITE" visible="false">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </Button>
-            <Pane fx:id="optionsPane2" layoutX="607.0" layoutY="223.0" prefHeight="25.0" prefWidth="70.0">
+            <Pane fx:id="optionsPane2" layoutX="675.0" layoutY="230.0" prefHeight="25.0" prefWidth="70.0">
                <padding>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </padding>
             </Pane>
-            <Pane fx:id="optionsPane" layoutX="537.0" layoutY="223.0" prefHeight="25.0" prefWidth="70.0" />
-            <Label fx:id="lastActionLabel" layoutX="266.0" layoutY="37.0">
+            <Pane fx:id="optionsPane" layoutX="605.0" layoutY="230.0" prefHeight="25.0" prefWidth="70.0" />
+            <Label fx:id="lastActionLabel" layoutX="334.0" layoutY="44.0">
                <font>
                   <Font size="15.0" />
                </font>

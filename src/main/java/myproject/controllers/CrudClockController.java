@@ -71,19 +71,19 @@ public class CrudClockController implements Initializable {
 
     private ClockInOutController clockController;
 
-    //The time off returned from the TimeOffController
+    //The clock record returned from the ClockInOutController
     private Tblclock selectedClock;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle){
-        //initialize drop down menus
+        //initialize drop down menus lists
         hrList = FXCollections.observableArrayList();
         hrList.addAll(IntStream.rangeClosed(1,12).boxed().collect(Collectors.toList()));
 
         minList = FXCollections.observableArrayList();
         List<Integer> minListInt = IntStream.rangeClosed(0,59).boxed().collect(Collectors.toList());
 
-
+        //make a list of minutes with leading zeroes for single-digit numbers
         List<String> minListString = new ArrayList<String>(minListInt.size());
         for (Integer myInt : minListInt) {
             minListString.add(String.format("%02d", myInt));
@@ -91,7 +91,7 @@ public class CrudClockController implements Initializable {
 
         minList.addAll(minListString);
 
-        //fill the hour, minute, and AM/PM drop-downs with values
+        //fill the hour, minute, and AM/PM drop-downs or spinners with values
         beginPMList.setItems(pmList);
         endPMList.setItems(pmList);
 
@@ -271,11 +271,7 @@ public class CrudClockController implements Initializable {
         cl.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
 
         //check if any fields were empty or using default selection of "Hour"
-        if(!(/*beginHrList.getValue().equals(0) ||
-        beginMinList.getValue().equals(0) ||*/
-        beginPMList.getSelectionModel().isEmpty() ||
-        /*endHrList.getValue().equals(0) ||
-        endMinList.getValue().equals(0) ||*/
+        if(!(beginPMList.getSelectionModel().isEmpty() ||
         endPMList.getSelectionModel().isEmpty() ||
         scheduleList.getSelectionModel().isEmpty())) {
             //check that the selected time range is valid

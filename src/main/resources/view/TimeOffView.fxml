@@ -100,12 +100,12 @@
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </padding>
             </Pane>
-            <Button fx:id="timeOffDeleteButton" disable="true" layoutX="811.0" layoutY="229.0" mnemonicParsing="false" onAction="#deleteTimeOff" style="-fx-background-color: red;" text="Delete" textFill="WHITE" visible="false">
+            <Button fx:id="timeOffDeleteButton" disable="true" layoutX="811.0" layoutY="229.0" mnemonicParsing="false" onAction="#deleteTimeOff" style="-fx-background-color: red;" text="Delete" textFill="WHITE" >
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </Button>
-            <Button fx:id="timeOffEditButton" disable="true" layoutX="765.0" layoutY="229.0" mnemonicParsing="false" onAction="#editTimeOff" style="-fx-background-color: #39a7c3;" text="Edit" textFill="WHITE" visible="false">
+            <Button fx:id="timeOffEditButton" disable="true" layoutX="765.0" layoutY="229.0" mnemonicParsing="false" onAction="#editTimeOff" style="-fx-background-color: #39a7c3;" text="Edit" textFill="WHITE" >
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
