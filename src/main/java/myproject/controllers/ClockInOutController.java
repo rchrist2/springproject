@@ -77,6 +77,12 @@ public class ClockInOutController implements Initializable {
     public Label lastActionLabel;
 
     @FXML
+    public CheckBox allTimeCheck;
+
+    @FXML
+    public CheckBox currentWeekCheck;
+
+    @FXML
     public TableView<Tblclock> clockTable;
 
     @FXML
@@ -103,11 +109,11 @@ public class ClockInOutController implements Initializable {
         //get the current user
         String currentUser = LoginController.userStore;
         Tblusers currUser = userRepository.findUsername(currentUser);
-        tableUserLabel.setText("Clock History for " + currUser.getEmployee().getName());
+        tableUserLabel.setText("Clock History This Week for " + currUser.getEmployee().getName());
 
         //initialize list of user's clock history
         listOfClock = FXCollections.observableArrayList();
-        listOfClock.addAll(clockRepository.findClockForUser(currentUser));
+        listOfClock.addAll(clockRepository.findClockThisWeekForUser(currentUser));
 
         //show the last clock in/out action for this user
         if(!(listOfClock.isEmpty())) {
@@ -134,11 +140,16 @@ public class ClockInOutController implements Initializable {
             lastActionLabel.setText("");
         }
 
-        //initialize the schedule drop down menu
+        //initialize the schedule drop down menu for current week
         scheduleData = FXCollections.observableArrayList();
-        scheduleData.addAll(scheduleRepository.findScheduleForUser(currentUser));
+        scheduleData.addAll(scheduleRepository.findScheduleThisWeekForUser(currentUser));
 
-        scheduleList.setItems(scheduleData);
+        if(!(scheduleData.isEmpty())){
+            scheduleList.setItems(scheduleData);
+        }
+        else{
+            scheduleList.setItems(null);
+        }
 
         reloadClockTable();
         setDataForClockTableView();
@@ -389,10 +400,10 @@ public class ClockInOutController implements Initializable {
         clockTable.setItems(listOfClock);
         userCol.setVisible(true);
 
-        listOfClock.addAll(clockRepository.findAll());
+        listOfClock.addAll(clockRepository.findClockThisWeekAllUser());
         filteredListOfClock = new FilteredList<>(listOfClock);
         clockTable.setItems(filteredListOfClock);
-        tableUserLabel.setText("Clock History for All Users");
+        tableUserLabel.setText("Clock History This Week for All Users");
         setDataForClockTableView();
     }
 
@@ -405,10 +416,10 @@ public class ClockInOutController implements Initializable {
         clockTable.setItems(listOfClock);
         userCol.setVisible(false);
 
-        listOfClock.addAll(clockRepository.findClockForUser(currentUser));
+        listOfClock.addAll(clockRepository.findClockThisWeekForUser(currentUser));
         filteredListOfClock = new FilteredList<>(listOfClock);
         clockTable.setItems(filteredListOfClock);
-        tableUserLabel.setText("Clock History for " + currUser.getEmployee().getName());
+        tableUserLabel.setText("Clock History This Week for " + currUser.getEmployee().getName());
         setDataForClockTableView();
     }
 
@@ -423,5 +434,65 @@ public class ClockInOutController implements Initializable {
     private void resetButtons(){
         clockEditButton.setDisable(true);
         clockDeleteButton.setDisable(true);
+    }
+
+    @FXML
+    private void showCurrentWeek(){
+        //if the user column is visible (which is only for managers/owner)
+        if(userCol.isVisible()){
+            //reload the table to show all users (only for managers/owner)
+            listOfClock.clear();
+            clockTable.setItems(listOfClock);
+
+            listOfClock.addAll(clockRepository.findClockThisWeekAllUser());
+            filteredListOfClock = new FilteredList<>(listOfClock);
+            clockTable.setItems(filteredListOfClock);
+            tableUserLabel.setText("Clock History This Week for All Users");
+            setDataForClockTableView();
+        }
+        else{
+            //get the current user and create a new availability for them
+            String currentUser = LoginController.userStore;
+            Tblusers currUser = userRepository.findUsername(currentUser);
+
+            listOfClock.clear();
+            clockTable.setItems(listOfClock);
+
+            listOfClock.addAll(clockRepository.findClockThisWeekForUser(currentUser));
+            filteredListOfClock = new FilteredList<>(listOfClock);
+            clockTable.setItems(filteredListOfClock);
+            tableUserLabel.setText("Clock History This Week for " + currUser.getEmployee().getName());
+            setDataForClockTableView();
+        }
+    }
+
+    @FXML
+    private void showAllWeeks(){
+        //if the user column is visible (which is only for managers/owner)
+        if(userCol.isVisible()){
+            //reload the table to show all users (only for managers/owner)
+            listOfClock.clear();
+            clockTable.setItems(listOfClock);
+
+            listOfClock.addAll(clockRepository.findAll());
+            filteredListOfClock = new FilteredList<>(listOfClock);
+            clockTable.setItems(filteredListOfClock);
+            tableUserLabel.setText("Clock History All Time for All Users");
+            setDataForClockTableView();
+        }
+        else{
+            //get the current user and create a new availability for them
+            String currentUser = LoginController.userStore;
+            Tblusers currUser = userRepository.findUsername(currentUser);
+
+            listOfClock.clear();
+            clockTable.setItems(listOfClock);
+
+            listOfClock.addAll(clockRepository.findClockForUser(currentUser));
+            filteredListOfClock = new FilteredList<>(listOfClock);
+            clockTable.setItems(filteredListOfClock);
+            tableUserLabel.setText("Clock History All Time for " + currUser.getEmployee().getName());
+            setDataForClockTableView();
+        }
     }
 }

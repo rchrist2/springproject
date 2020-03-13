@@ -26,6 +26,11 @@ public interface ScheduleRepository extends CrudRepository<Tblschedule, Integer>
     List<Tblschedule> findAll();
 
     @Query(value = "SELECT * FROM tblschedule s JOIN tblemployee e ON s.employee_id=e.id JOIN " +
+            "tblusers u ON e.id=u.employee_id WHERE Username = :username " +
+            "AND DATEPART(week, s.schedule_date) = DATEPART(week, GETDATE())", nativeQuery = true)
+    List<Tblschedule> findScheduleThisWeekForUser(@Param("username") String user);
+
+    @Query(value = "SELECT * FROM tblschedule s JOIN tblemployee e ON s.employee_id=e.id JOIN " +
             "tblusers u ON e.id=u.employee_id WHERE Username = :username", nativeQuery = true)
     List<Tblschedule> findScheduleForUser(@Param("username") String user);
 
