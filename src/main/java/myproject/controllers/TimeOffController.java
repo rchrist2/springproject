@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.domain.Range;
 import org.springframework.stereotype.Component;
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.net.URL;
@@ -59,6 +60,9 @@ public class TimeOffController implements Initializable {
     @FXML
     private Pane optionsPane2;
 
+    @FXML
+    private Pane timePane;
+
     /*@FXML
     private Pane optionsPane3;
 
@@ -73,6 +77,24 @@ public class TimeOffController implements Initializable {
 
     @FXML
     private Button timeOffEditButton;
+
+    @FXML
+    private Button submitRequestButton;
+
+    @FXML
+    private Button submitRequestButton1;
+
+    @FXML
+    public RadioButton dayOffCheck;
+
+    @FXML
+    public RadioButton changeAvailCheck;
+
+    /*@FXML
+    public RadioButton allTimeCheck;
+
+    @FXML
+    public RadioButton currentWeekCheck;*/
 
     @FXML
     public TableView<Tbltimeoff> timeOffTable;
@@ -108,7 +130,7 @@ public class TimeOffController implements Initializable {
     public Spinner<Integer> endHrList;
 
     @FXML
-    public TextArea reasonInput;
+    public TextField reasonInput;
 
     public ObservableList<Tblschedule> scheduleData;
 
@@ -159,6 +181,7 @@ public class TimeOffController implements Initializable {
         setDataForTimeOffTableView();
         addActionListenersForCrudButtons(timeOffDeleteButton);
         addActionListenersForCrudButtons(timeOffEditButton);
+        addToggleGroupForRadioButtons();
 
         timeOffTable.getSelectionModel().selectedItemProperty().addListener((obs, old, newv) -> {
             selectedTimeOff = newv;
@@ -250,83 +273,97 @@ public class TimeOffController implements Initializable {
     }
 
     @FXML
-    private void submitTimeOffRequest(){
-        //check if any of the fields are empty
-            if(!(scheduleList.getSelectionModel().isEmpty() || beginHrList.getValue()==0
-            || beginPMList.getSelectionModel().isEmpty() || endHrList.getValue()==0
-            || endPMList.getSelectionModel().isEmpty() || reasonInput.getText().trim().isEmpty())) {
+    private void submitTimeOffRequestWithoutTime(){
+            if (!(scheduleList.getSelectionModel().isEmpty()
+                    || reasonInput.getText().trim().isEmpty())) {
                 Tbltimeoff newTimeOff = new Tbltimeoff();
 
-                //convert combobox values to 24 hour clock depending if AM or PM was selected
-                if (beginPMList.getSelectionModel().getSelectedItem().equals("AM")) {
-
-                    //if the beginning hour is 12 am
-                    if(beginHrList.getValue().toString().equals("12")){
-                        newTimeOff.setBeginTimeOffDate(Time.valueOf("00"
-                                + ":00:00"));
-                    }
-                    else {
-                        newTimeOff.setBeginTimeOffDate(Time.valueOf(beginHrList.getValue().toString()
-                                + ":00:00"));
-                    }
-                } else if (beginPMList.getSelectionModel().getSelectedItem().equals("PM")) {
-
-                    //if the beginning hour is 12 pm
-                    if(beginHrList.getValue().toString().equals("12")) {
-                        newTimeOff.setBeginTimeOffDate(Time.valueOf("12"
-                                + ":00:00"));
-                    }
-                    else{
-                        newTimeOff.setBeginTimeOffDate(Time.valueOf((beginHrList.getValue() + 12)
-                                + ":00:00"));
-                    }
-                }
-
-                if (endPMList.getSelectionModel().getSelectedItem().equals("AM")) {
-
-                    //if the ending hour is 12 am
-                    if(endHrList.getValue().toString().equals("12")){
-                        newTimeOff.setEndTimeOffDate(Time.valueOf("00"
-                                + ":00:00"));
-                    }
-                    else {
-                        newTimeOff.setEndTimeOffDate(Time.valueOf(endHrList.getValue().toString()
-                                + ":00:00"));
-                    }
-                } else if (endPMList.getSelectionModel().getSelectedItem().equals("PM")) {
-
-                    //if the ending hour is 12 pm
-                    if(endHrList.getValue().toString().equals("12")) {
-                        newTimeOff.setEndTimeOffDate(Time.valueOf("12"
-                                + ":00:00"));
-                    }
-                    else {
-                        newTimeOff.setEndTimeOffDate(Time.valueOf((endHrList.getValue() + 12)
-                                + ":00:00"));
-                    }
-                }
-
+                newTimeOff.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
+                newTimeOff.setBeginTimeOffDate(scheduleList.getSelectionModel().getSelectedItem().getScheduleTimeBegin());
+                newTimeOff.setEndTimeOffDate(scheduleList.getSelectionModel().getSelectedItem().getScheduleTimeEnd());
                 newTimeOff.setApproved(false);
                 newTimeOff.setReasonDesc(reasonInput.getText());
-                newTimeOff.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
-
-                //check if the time range is valid
-                if(newTimeOff.getBeginTimeOffDate().before(newTimeOff.getEndTimeOffDate())
-                        && newTimeOff.getEndTimeOffDate().after(newTimeOff.getBeginTimeOffDate())){
-                    timeOffRepository.save(newTimeOff);
-                }
-                else{
-                    ErrorMessages.showErrorMessage("Invalid time values","Time range for time" +
-                            " off request is invalid","Please edit time range for this time off request");
-                }
 
                 reloadTimeOffTableView();
-            }
-            else{
+            } else {
                 ErrorMessages.showErrorMessage("Fields are empty",
                         "There are empty fields",
                         "Please select items from drop-down menus or enter text for fields");
             }
+    }
+
+    @FXML
+    private void submitTimeOffRequestWithTime(){
+                //check if any of the fields are empty
+                if (!(scheduleList.getSelectionModel().isEmpty() || beginHrList.getValue() == 0
+                        || beginPMList.getSelectionModel().isEmpty() || endHrList.getValue() == 0
+                        || endPMList.getSelectionModel().isEmpty() || reasonInput.getText().trim().isEmpty())) {
+                    Tbltimeoff newTimeOff = new Tbltimeoff();
+
+                    //convert combobox values to 24 hour clock depending if AM or PM was selected
+                    if (beginPMList.getSelectionModel().getSelectedItem().equals("AM")) {
+
+                        //if the beginning hour is 12 am
+                        if (beginHrList.getValue().toString().equals("12")) {
+                            newTimeOff.setBeginTimeOffDate(Time.valueOf("00"
+                                    + ":00:00"));
+                        } else {
+                            newTimeOff.setBeginTimeOffDate(Time.valueOf(beginHrList.getValue().toString()
+                                    + ":00:00"));
+                        }
+                    } else if (beginPMList.getSelectionModel().getSelectedItem().equals("PM")) {
+
+                        //if the beginning hour is 12 pm
+                        if (beginHrList.getValue().toString().equals("12")) {
+                            newTimeOff.setBeginTimeOffDate(Time.valueOf("12"
+                                    + ":00:00"));
+                        } else {
+                            newTimeOff.setBeginTimeOffDate(Time.valueOf((beginHrList.getValue() + 12)
+                                    + ":00:00"));
+                        }
+                    }
+
+                    if (endPMList.getSelectionModel().getSelectedItem().equals("AM")) {
+
+                        //if the ending hour is 12 am
+                        if (endHrList.getValue().toString().equals("12")) {
+                            newTimeOff.setEndTimeOffDate(Time.valueOf("00"
+                                    + ":00:00"));
+                        } else {
+                            newTimeOff.setEndTimeOffDate(Time.valueOf(endHrList.getValue().toString()
+                                    + ":00:00"));
+                        }
+                    } else if (endPMList.getSelectionModel().getSelectedItem().equals("PM")) {
+
+                        //if the ending hour is 12 pm
+                        if (endHrList.getValue().toString().equals("12")) {
+                            newTimeOff.setEndTimeOffDate(Time.valueOf("12"
+                                    + ":00:00"));
+                        } else {
+                            newTimeOff.setEndTimeOffDate(Time.valueOf((endHrList.getValue() + 12)
+                                    + ":00:00"));
+                        }
+                    }
+
+                    newTimeOff.setApproved(false);
+                    newTimeOff.setReasonDesc(reasonInput.getText());
+                    newTimeOff.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
+
+                    //check if the time range is valid
+                    if (newTimeOff.getBeginTimeOffDate().before(newTimeOff.getEndTimeOffDate())
+                            && newTimeOff.getEndTimeOffDate().after(newTimeOff.getBeginTimeOffDate())) {
+                        timeOffRepository.save(newTimeOff);
+                    } else {
+                        ErrorMessages.showErrorMessage("Invalid time values", "Time range for time" +
+                                " off request is invalid", "Please edit time range for this time off request");
+                    }
+
+                    reloadTimeOffTableView();
+                } else {
+                    ErrorMessages.showErrorMessage("Fields are empty",
+                            "There are empty fields",
+                            "Please select items from drop-down menus or enter text for fields");
+                }
 
         }
 
@@ -481,6 +518,64 @@ public class TimeOffController implements Initializable {
         tableUserLabel.setText("Time Off Requests for " + currUser.getEmployee().getName());
     }
 
+    /*@FXML
+    private void showCurrentWeek(){
+        //if the user column is visible (which is only for managers/owner)
+        if(userCol.isVisible()){
+            //reload the table to show all users (only for managers/owner)
+            listOfTimeOffs.clear();
+            timeOffTable.setItems(listOfTimeOffs);
+
+            listOfTimeOffs.addAll(timeOffRepository.findTimeOffThisWeekAllUser());
+            filteredListOfTimeOff = new FilteredList<>(listOfTimeOffs);
+            timeOffTable.setItems(filteredListOfTimeOff);
+            tableUserLabel.setText("Time Off Requests This Week for All Users");
+            setDataForTimeOffTableView();
+        }
+        else{
+            String currentUser = LoginController.userStore;
+            Tblusers currUser = userRepository.findUsername(currentUser);
+
+            listOfTimeOffs.clear();
+            timeOffTable.setItems(listOfTimeOffs);
+
+            listOfTimeOffs.addAll(timeOffRepository.findTimeOffThisWeekForUser(currentUser));
+            filteredListOfTimeOff = new FilteredList<>(listOfTimeOffs);
+            timeOffTable.setItems(filteredListOfTimeOff);
+            tableUserLabel.setText("Time Off Requests This Week for " + currUser.getEmployee().getName());
+            setDataForTimeOffTableView();
+        }
+    }
+
+    @FXML
+    private void showAllWeeks(){
+        //if the user column is visible (which is only for managers/owner)
+        if(userCol.isVisible()){
+            //reload the table to show all users (only for managers/owner)
+            listOfTimeOffs.clear();
+            timeOffTable.setItems(listOfTimeOffs);
+
+            listOfTimeOffs.addAll(timeOffRepository.findAllTimeOff());
+            filteredListOfTimeOff = new FilteredList<>(listOfTimeOffs);
+            timeOffTable.setItems(filteredListOfTimeOff);
+            tableUserLabel.setText("Time Off Requests All Time for All Users");
+            setDataForTimeOffTableView();
+        }
+        else{
+            String currentUser = LoginController.userStore;
+            Tblusers currUser = userRepository.findUsername(currentUser);
+
+            listOfTimeOffs.clear();
+            timeOffTable.setItems(listOfTimeOffs);
+
+            listOfTimeOffs.addAll(timeOffRepository.findAllTimeOffByUser(currentUser));
+            filteredListOfTimeOff = new FilteredList<>(listOfTimeOffs);
+            timeOffTable.setItems(filteredListOfTimeOff);
+            tableUserLabel.setText("Time Off Requests All Time for " + currUser.getEmployee().getName());
+            setDataForTimeOffTableView();
+        }
+    }*/
+
     private void addActionListenersForCrudButtons(Button button){
         timeOffTable.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
             if(newValue != null){
@@ -492,6 +587,26 @@ public class TimeOffController implements Initializable {
     private void resetButtons(){
         timeOffEditButton.setDisable(true);
         timeOffDeleteButton.setDisable(true);
+    }
+
+    private void addToggleGroupForRadioButtons(){
+        ToggleGroup toggleGroup = new ToggleGroup();
+
+        dayOffCheck.setToggleGroup(toggleGroup);
+        changeAvailCheck.setToggleGroup(toggleGroup);
+
+    }
+
+    @FXML
+    private void dayOffChecked(){
+        timePane.setVisible(false);
+        submitRequestButton.setVisible(true);
+    }
+
+    @FXML
+    private void changeAvailabilityChecked(){
+        timePane.setVisible(true);
+        submitRequestButton.setVisible(false);
     }
 
 }

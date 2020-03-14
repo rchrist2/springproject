@@ -77,10 +77,10 @@ public class ClockInOutController implements Initializable {
     public Label lastActionLabel;
 
     @FXML
-    public CheckBox allTimeCheck;
+    public RadioButton allTimeCheck;
 
     @FXML
-    public CheckBox currentWeekCheck;
+    public RadioButton currentWeekCheck;
 
     @FXML
     public TableView<Tblclock> clockTable;
@@ -155,7 +155,7 @@ public class ClockInOutController implements Initializable {
         setDataForClockTableView();
         addActionListenersForCrudButtons(clockDeleteButton);
         addActionListenersForCrudButtons(clockEditButton);
-
+        addToggleGroupForRadioButtons();
 
         clockTable.getSelectionModel().selectedItemProperty().addListener((obs, old, newv) -> {
             selectedClock = newv;
@@ -451,7 +451,6 @@ public class ClockInOutController implements Initializable {
             setDataForClockTableView();
         }
         else{
-            //get the current user and create a new availability for them
             String currentUser = LoginController.userStore;
             Tblusers currUser = userRepository.findUsername(currentUser);
 
@@ -481,7 +480,6 @@ public class ClockInOutController implements Initializable {
             setDataForClockTableView();
         }
         else{
-            //get the current user and create a new availability for them
             String currentUser = LoginController.userStore;
             Tblusers currUser = userRepository.findUsername(currentUser);
 
@@ -494,5 +492,13 @@ public class ClockInOutController implements Initializable {
             tableUserLabel.setText("Clock History All Time for " + currUser.getEmployee().getName());
             setDataForClockTableView();
         }
+    }
+
+    private void addToggleGroupForRadioButtons(){
+        ToggleGroup toggleGroup = new ToggleGroup();
+
+        currentWeekCheck.setToggleGroup(toggleGroup);
+        allTimeCheck.setToggleGroup(toggleGroup);
+
     }
 }
