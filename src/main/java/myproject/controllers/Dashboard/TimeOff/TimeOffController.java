@@ -20,11 +20,8 @@ import myproject.ErrorMessages;
 import myproject.controllers.WelcomeLoginSignup.LoginController;
 import myproject.models.Tblschedule;
 import myproject.models.Tbltimeoff;
-<<<<<<< HEAD:src/main/java/myproject/controllers/Dashboard/TimeOff/TimeOffController.java
-=======
 import myproject.models.Tblusers;
 import myproject.repositories.EmployeeRepository;
->>>>>>> 6fe0a3d8dfdf7d260a0d2f1ea0e131850d8824f3:src/main/java/myproject/controllers/TimeOffController.java
 import myproject.repositories.ScheduleRepository;
 import myproject.repositories.TimeOffRepository;
 import myproject.repositories.UserRepository;
@@ -285,6 +282,8 @@ public class TimeOffController implements Initializable {
                 newTimeOff.setEndTimeOffDate(scheduleList.getSelectionModel().getSelectedItem().getScheduleTimeEnd());
                 newTimeOff.setApproved(false);
                 newTimeOff.setReasonDesc(reasonInput.getText());
+
+                timeOffRepository.save(newTimeOff);
 
                 reloadTimeOffTableView();
             } else {

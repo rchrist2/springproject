@@ -19,11 +19,9 @@ import javafx.stage.StageStyle;
 import myproject.controllers.WelcomeLoginSignup.LoginController;
 import myproject.models.Tblclock;
 import myproject.models.Tblschedule;
-<<<<<<< HEAD:src/main/java/myproject/controllers/Dashboard/ClockInOut/ClockInOutController.java
-=======
+import myproject.ErrorMessages;
 import myproject.models.Tbltimeoff;
 import myproject.models.Tblusers;
->>>>>>> 6fe0a3d8dfdf7d260a0d2f1ea0e131850d8824f3:src/main/java/myproject/controllers/ClockInOutController.java
 import myproject.repositories.ClockRepository;
 import myproject.repositories.ScheduleRepository;
 import myproject.repositories.DayRepository;
@@ -31,14 +29,10 @@ import myproject.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
-
 import java.io.IOException;
 import java.net.URL;
-<<<<<<< HEAD:src/main/java/myproject/controllers/Dashboard/ClockInOut/ClockInOutController.java
-=======
 import java.util.Date;
 import java.sql.Time;
->>>>>>> 6fe0a3d8dfdf7d260a0d2f1ea0e131850d8824f3:src/main/java/myproject/controllers/ClockInOutController.java
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.Optional;

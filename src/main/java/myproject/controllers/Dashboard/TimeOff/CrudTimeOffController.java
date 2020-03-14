@@ -6,11 +6,9 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-<<<<<<< HEAD:src/main/java/myproject/controllers/Dashboard/TimeOff/CrudTimeOffController.java
-=======
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
->>>>>>> 6fe0a3d8dfdf7d260a0d2f1ea0e131850d8824f3:src/main/java/myproject/controllers/CrudTimeOffController.java
+import myproject.controllers.WelcomeLoginSignup.LoginController;
 import javafx.stage.Stage;
 import myproject.ErrorMessages;
 import myproject.models.Tblschedule;
