@@ -1,8 +1,7 @@
-package myproject.controllers;
+package myproject.controllers.Dashboard.Calendar;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -10,6 +9,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import myproject.ErrorMessages;
+import myproject.controllers.WelcomeLoginSignup.LoginController;
 import myproject.models.Tblemployee;
 import myproject.models.Tblschedule;
 import myproject.models.Tblusers;
@@ -96,9 +96,7 @@ public class CalendarController implements Initializable {
                 //output an error message for user
                 ErrorMessages.showErrorMessage("Failed to load calendar","Cannot locate availability for \" + currentUser",
                         "Availability for " + currentUser + " does not exist or cannot be found.");
-            }
-
-
+        }
     }
 
     /*

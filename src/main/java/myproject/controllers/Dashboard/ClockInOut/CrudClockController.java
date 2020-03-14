@@ -1,18 +1,23 @@
-package myproject.controllers;
+package myproject.controllers.Dashboard.ClockInOut;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+<<<<<<< HEAD:src/main/java/myproject/controllers/Dashboard/ClockInOut/CrudClockController.java
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+=======
 import javafx.scene.control.*;
+>>>>>>> 6fe0a3d8dfdf7d260a0d2f1ea0e131850d8824f3:src/main/java/myproject/controllers/CrudClockController.java
 import javafx.stage.Stage;
 import myproject.ErrorMessages;
 import myproject.models.Tblclock;
 import myproject.models.Tblschedule;
 import myproject.repositories.ClockRepository;
 import myproject.repositories.ScheduleRepository;
-import myproject.services.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;

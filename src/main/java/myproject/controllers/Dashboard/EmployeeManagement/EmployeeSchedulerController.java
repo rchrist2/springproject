@@ -1,4 +1,4 @@
-package myproject.controllers;
+package myproject.controllers.Dashboard.EmployeeManagement;
 
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
@@ -181,6 +181,7 @@ public class EmployeeSchedulerController implements Initializable {
         scheduleButton.setText("Add Schedule");
 
         resetCheckBoxes();
+        resetSpinners();
     }
 
     @FXML
@@ -358,6 +359,7 @@ public class EmployeeSchedulerController implements Initializable {
         }
 
         resetCheckBoxes();
+        resetSpinners();
     }
 
     private void handleEdittingEmployee(){
@@ -439,6 +441,7 @@ public class EmployeeSchedulerController implements Initializable {
 
                 resetButton.setDisable(false);
                 selectButton.setDisable(true);
+                resetSpinners();
             }
         });
     }
@@ -466,7 +469,6 @@ public class EmployeeSchedulerController implements Initializable {
 
         scheduleTableView.setItems(filteredEmployeeList);
     }
-
 
     private boolean spinnerValidation(String start, String end){
         return start != null && end != null;
@@ -604,5 +606,22 @@ public class EmployeeSchedulerController implements Initializable {
         thursdayCheck.setSelected(false);
         fridayCheck.setSelected(false);
         saturdayCheck.setSelected(false);
+    }
+
+    private void resetSpinners(){
+        sundayStartSpinner.getValueFactory().setValue("01:00:00");
+        sundayEndSpinner.getValueFactory().setValue("01:00:00");
+        mondayStartSpinner.getValueFactory().setValue("01:00:00");
+        mondayEndSpinner.getValueFactory().setValue("01:00:00");
+        tuesdayStartSpinner.getValueFactory().setValue("01:00:00");
+        tuesdayEndSpinner.getValueFactory().setValue("01:00:00");
+        wednesdayStartSpinner.getValueFactory().setValue("01:00:00");
+        wednesdayEndSpinner.getValueFactory().setValue("01:00:00");
+        thursdayStartSpinner.getValueFactory().setValue("01:00:00");
+        thursdayEndSpinner.getValueFactory().setValue("01:00:00");
+        fridayStartSpinner.getValueFactory().setValue("01:00:00");
+        fridayEndSpinner.getValueFactory().setValue("01:00:00");
+        saturdayStartSpinner.getValueFactory().setValue("01:00:00");
+        saturdayEndSpinner.getValueFactory().setValue("01:00:00");
     }
 }

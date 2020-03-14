@@ -1,4 +1,4 @@
-package myproject.controllers;
+package myproject.controllers.Dashboard.Calendar;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -24,6 +24,8 @@ import java.lang.reflect.Array;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -91,10 +93,14 @@ public class WeeklyScheduleController implements Initializable {
     }
 
     private void populateWeeklyCalendar(){
+        Instant start = Instant.now();
+
         String strDateFormat = "HH:mm a";
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(strDateFormat);
 
         for (int i = 1; i <= listOfEmployees.size(); i++) {
+            int x = 0;
+
             //The beginning of the current week, makes sure that with each new employee
             //the week "restarts" back to the first day
             LocalDate currentDay = sunday;
@@ -111,6 +117,24 @@ public class WeeklyScheduleController implements Initializable {
             for (int j = 1; j <= 7; j++) {
                 //Store the hours of the employees in a list
                 List<Tblschedule> employeeSchedule = scheduleRepository.findScheduleForEmployee(name.getId());
+                System.out.println("The size of employeeSchedule");
+
+                /*if(x < employeeSchedule.size()) {
+                    Tblschedule currSchedule = employeeSchedule.get(x);
+
+                    if (currSchedule.getDay().getDayDesc().toLowerCase().equals(currentDay.getDayOfWeek().toString().toLowerCase())) {
+                        Label hours = new Label();
+                        hours.setText(currSchedule.getScheduleTimeBegin().toLocalTime().format(dateTimeFormatter) + " - "
+                                + currSchedule.getScheduleTimeEnd().toLocalTime().format(dateTimeFormatter));
+
+                        hours.setFont(Font.font("System", 11));
+                        hours.setStyle("-fx-padding: 0 0 0 5");
+
+                        weeklyCalendarGridPane.add(hours, j, i);
+                        x++;
+                    }
+                }*/
+
 
                 for (Tblschedule tblSchedule : employeeSchedule){
                     //Check to see if the current day matches the day in the employee schedule
@@ -131,6 +155,10 @@ public class WeeklyScheduleController implements Initializable {
                 currentDay = currentDay.plusDays(1);
             }
         }
+        Instant end = Instant.now();
+        Duration timeElapsed = Duration.between(start, end);
+
+        System.out.println("The time elapsed is: " + timeElapsed);
     }
 
     private void refreshDayLabels(){

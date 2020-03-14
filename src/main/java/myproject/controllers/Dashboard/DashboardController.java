@@ -1,11 +1,10 @@
-package myproject.controllers;
+package myproject.controllers.Dashboard;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -16,6 +15,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import myproject.ErrorMessages;
+import myproject.controllers.WelcomeLoginSignup.LoginController;
 import myproject.models.Tblusers;
 import myproject.repositories.EmployeeRepository;
 import myproject.repositories.UserRepository;
@@ -95,11 +95,11 @@ public class DashboardController implements Initializable {
                 System.out.println("You clicked the calendar button");
                 switchWindow("/view/CalendarView.fxml");
                 break;
-            case "Employee Management":
+            case "Management":
                 System.out.println("You clicked the Employee Management button");
                 switchWindow("/view/EmployeeManagementView.fxml");
                 break;
-            case "Employee Scheduler":
+            case "Scheduler":
                 System.out.println("You clicked the Employee Scheduler button");
                 switchWindow("/view/EmployeeScheduler.fxml");
                 break;

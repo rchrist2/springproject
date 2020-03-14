@@ -1,4 +1,4 @@
-package myproject.controllers;
+package myproject.controllers.Dashboard.EmployeeManagement;
 
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
@@ -15,8 +15,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import myproject.models.TblRoles;
 import myproject.models.Tblemployee;
-import myproject.models.Tblschedule;
 import myproject.repositories.EmployeeRepository;
 import myproject.repositories.ScheduleRepository;
 import myproject.services.EmployeeService;
@@ -31,7 +31,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 @Component
-public class EmployeeManagementController implements Initializable {
+public class EmployeeRoleManagementController implements Initializable {
 
     @FXML
     private Label titleLabel;
@@ -54,6 +54,16 @@ public class EmployeeManagementController implements Initializable {
             roleColumn,
             hoursColumn,
             daysColumn;
+
+    @FXML
+    private TextField roleText;
+
+    @FXML
+    private TextArea roleDescTextA;
+
+    @FXML
+    private TableView<TblRoles> roleTableView;
+
 
     @Autowired
     private ConfigurableApplicationContext springContext;
@@ -112,9 +122,6 @@ public class EmployeeManagementController implements Initializable {
         addressColumn.setCellValueFactory(new PropertyValueFactory<>("address"));
         phoneColumn.setCellValueFactory(new PropertyValueFactory<>("phone"));
         roleColumn.setCellValueFactory(role -> new ReadOnlyStringWrapper(role.getValue().getRole().getRoleDesc()));
-
-        //hoursColumn.setCellValueFactory(hours -> new ReadOnlyStringWrapper(hours.getValue().employeeHours()));
-        daysColumn.setCellValueFactory(days -> new ReadOnlyStringWrapper(days.getValue().employeeSchedule()));
     }
 
     @SuppressWarnings("Duplicates")
@@ -222,4 +229,32 @@ public class EmployeeManagementController implements Initializable {
         editEmployeeButton.setDisable(true);
         deleteEmployeeButton.setDisable(true);
     }
+
+
+    /*====================================
+                Role Management
+     ====================================*/
+
+    private void reloadRoleTableView(){
+
+    }
+
+    @FXML
+    private void handleSaveRole(){
+        System.out.println("Save a role");
+
+    }
+
+    @FXML
+    private void handleEditRole(){
+        System.out.println("Edit a role");
+
+    }
+
+    @FXML
+    private void handleDeleteRole(){
+        System.out.println("Delete a role");
+
+    }
+
 }

@@ -1,4 +1,4 @@
-package myproject.controllers;
+package myproject.controllers.Dashboard.TimeOff;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -8,7 +8,6 @@ import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -18,16 +17,19 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import myproject.ErrorMessages;
+import myproject.controllers.WelcomeLoginSignup.LoginController;
 import myproject.models.Tblschedule;
 import myproject.models.Tbltimeoff;
+<<<<<<< HEAD:src/main/java/myproject/controllers/Dashboard/TimeOff/TimeOffController.java
+=======
 import myproject.models.Tblusers;
 import myproject.repositories.EmployeeRepository;
+>>>>>>> 6fe0a3d8dfdf7d260a0d2f1ea0e131850d8824f3:src/main/java/myproject/controllers/TimeOffController.java
 import myproject.repositories.ScheduleRepository;
 import myproject.repositories.TimeOffRepository;
 import myproject.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.data.domain.Range;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Text;
 

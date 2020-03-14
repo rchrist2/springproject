@@ -1,11 +1,10 @@
-package myproject.controllers;
+package myproject.controllers.Dashboard.EmployeeManagement;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -13,7 +12,6 @@ import javafx.stage.Stage;
 import myproject.ErrorMessages;
 import myproject.models.TblRoles;
 import myproject.models.Tblemployee;
-import myproject.models.Tblschedule;
 import myproject.repositories.DayRepository;
 import myproject.repositories.EmployeeRepository;
 import myproject.repositories.RoleRepository;
@@ -25,13 +23,9 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
-import java.sql.Date;
-import java.sql.Time;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.Set;
 
 @Component
 public class CrudEmployeeController implements Initializable {
@@ -68,7 +62,7 @@ public class CrudEmployeeController implements Initializable {
 
     private ConfigurableApplicationContext springContext;
     private EmployeeRepository employeeRepository;
-    private EmployeeManagementController employeeManagementController;
+    private EmployeeRoleManagementController employeeRoleManagementController;
     private EmployeeService employeeService;
     private RoleRepository roleRepository;
     private ScheduleRepository scheduleRepository;
@@ -94,8 +88,8 @@ public class CrudEmployeeController implements Initializable {
         this.scheduleService = scheduleService;
     }
 
-    public void setController(EmployeeManagementController employeeManagementController) {
-        this.employeeManagementController = employeeManagementController;
+    public void setController(EmployeeRoleManagementController employeeRoleManagementController) {
+        this.employeeRoleManagementController = employeeRoleManagementController;
     }
 
     @Override
