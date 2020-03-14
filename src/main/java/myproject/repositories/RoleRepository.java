@@ -20,4 +20,7 @@ public interface RoleRepository extends CrudRepository<TblRoles, Integer> {
 
     @Query(value = "SELECT role_desc FROM tblRoles", nativeQuery = true)
     List<String> findAllRoleDesc();
+
+
+
 }

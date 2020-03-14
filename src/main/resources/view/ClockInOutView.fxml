@@ -8,7 +8,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="750.0" prefWidth="985.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.ClockInOutController">
+<AnchorPane prefHeight="750.0" prefWidth="985.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.Dashboard.ClockInOut.ClockInOutController">
    <children>
       <Pane prefHeight="115.0" prefWidth="985.0" style="-fx-background-color: linear-gradient(to right, #39a7c3 , white); -fx-border-color: transparent transparent derive(black, 10%) transparent;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>

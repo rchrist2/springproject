@@ -1,4 +1,4 @@
-package myproject.controllers;
+package myproject.controllers.Dashboard.TimeOff;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

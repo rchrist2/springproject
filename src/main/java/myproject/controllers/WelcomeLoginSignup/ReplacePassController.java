@@ -1,4 +1,4 @@
-package myproject.controllers;
+package myproject.controllers.WelcomeLoginSignup;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

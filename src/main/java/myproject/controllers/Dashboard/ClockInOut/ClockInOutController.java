@@ -1,4 +1,4 @@
-package myproject.controllers;
+package myproject.controllers.Dashboard.ClockInOut;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -16,10 +16,9 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import myproject.ErrorMessages;
+import myproject.controllers.WelcomeLoginSignup.LoginController;
 import myproject.models.Tblclock;
 import myproject.models.Tblschedule;
-import myproject.models.Tbltimeoff;
 import myproject.repositories.ClockRepository;
 import myproject.repositories.ScheduleRepository;
 import myproject.repositories.DayRepository;
@@ -30,10 +29,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Date;
 import java.text.SimpleDateFormat;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Optional;
 import java.util.ResourceBundle;

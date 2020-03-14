@@ -1,30 +1,22 @@
-package myproject.controllers;
+package myproject.controllers.Dashboard.TimeOff;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import myproject.ErrorMessages;
-import myproject.models.TblRoles;
-import myproject.models.Tblemployee;
 import myproject.models.Tblschedule;
 import myproject.models.Tbltimeoff;
 import myproject.repositories.*;
-import myproject.services.EmployeeService;
-import myproject.services.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
-import java.sql.Date;
 import java.sql.Time;
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.ResourceBundle;

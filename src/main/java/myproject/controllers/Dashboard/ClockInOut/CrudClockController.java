@@ -1,4 +1,4 @@
-package myproject.controllers;
+package myproject.controllers.Dashboard.ClockInOut;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -8,13 +8,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 import myproject.models.Tblclock;
 import myproject.models.Tblschedule;
 import myproject.repositories.ClockRepository;
 import myproject.repositories.ScheduleRepository;
-import myproject.services.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
