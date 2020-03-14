@@ -19,6 +19,11 @@ import javafx.stage.StageStyle;
 import myproject.controllers.WelcomeLoginSignup.LoginController;
 import myproject.models.Tblclock;
 import myproject.models.Tblschedule;
+<<<<<<< HEAD:src/main/java/myproject/controllers/Dashboard/ClockInOut/ClockInOutController.java
+=======
+import myproject.models.Tbltimeoff;
+import myproject.models.Tblusers;
+>>>>>>> 6fe0a3d8dfdf7d260a0d2f1ea0e131850d8824f3:src/main/java/myproject/controllers/ClockInOutController.java
 import myproject.repositories.ClockRepository;
 import myproject.repositories.ScheduleRepository;
 import myproject.repositories.DayRepository;
@@ -29,6 +34,11 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URL;
+<<<<<<< HEAD:src/main/java/myproject/controllers/Dashboard/ClockInOut/ClockInOutController.java
+=======
+import java.util.Date;
+import java.sql.Time;
+>>>>>>> 6fe0a3d8dfdf7d260a0d2f1ea0e131850d8824f3:src/main/java/myproject/controllers/ClockInOutController.java
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.Optional;
@@ -44,15 +54,10 @@ public class ClockInOutController implements Initializable {
     private ScheduleRepository scheduleRepository;
 
     @Autowired
-    private DayRepository dayRepository;
-
-    @Autowired
     private ClockRepository clockRepository;
 
     @Autowired
     private UserRepository userRepository;
-
-    public ObservableList<Tblschedule> scheduleData;
 
     @FXML
     public ComboBox<Tblschedule> scheduleList;
@@ -70,7 +75,16 @@ public class ClockInOutController implements Initializable {
     private Button clockEditButton;
 
     @FXML
-    public Label feedbackLabel;
+    public Label tableUserLabel;
+
+    @FXML
+    public Label lastActionLabel;
+
+    @FXML
+    public CheckBox allTimeCheck;
+
+    @FXML
+    public CheckBox currentWeekCheck;
 
     @FXML
     public TableView<Tblclock> clockTable;
@@ -87,28 +101,59 @@ public class ClockInOutController implements Initializable {
     @FXML
     public TableColumn<Tblclock, String> userCol;
 
-    @FXML
-    public Label tableUserLabel;
-
     public Tblclock selectedClock;
 
     private ObservableList<Tblclock> listOfClock;
     private FilteredList<Tblclock> filteredListOfClock;
 
+    public ObservableList<Tblschedule> scheduleData;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         //get the current user
         String currentUser = LoginController.userStore;
-        tableUserLabel.setText("Clock History for " + currentUser);
+        Tblusers currUser = userRepository.findUsername(currentUser);
+        tableUserLabel.setText("Clock History This Week for " + currUser.getEmployee().getName());
 
         //initialize list of user's clock history
         listOfClock = FXCollections.observableArrayList();
-        listOfClock.addAll(clockRepository.findClockForUser(currentUser));
+        listOfClock.addAll(clockRepository.findClockThisWeekForUser(currentUser));
 
+        //show the last clock in/out action for this user
+        if(!(listOfClock.isEmpty())) {
+            Tblclock recentClockForUser = clockRepository.findRecentClockForUser(currentUser);
+            SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+
+            //get the recent clock in/out details
+            String recentDay = recentClockForUser.getSchedule().getDay().getDayDesc();
+            String recentDate = dateFormat.format(recentClockForUser.getSchedule().getScheduleDate());
+
+            if(recentClockForUser.getPunchOut().equals(Time.valueOf("00:00:00"))){
+                lastActionLabel.setText("Last Action \"In\" on " + recentDay + ", " +
+                        recentDate + " at " +
+                        timeFormat.format(recentClockForUser.getPunchIn()));
+            }
+            else if(!(recentClockForUser.getPunchOut().equals(Time.valueOf("00:00:00")))){
+                lastActionLabel.setText("Last Action \"Out\" on " + recentDay + ", " +
+                        recentDate + " at " +
+                        timeFormat.format(recentClockForUser.getPunchOut()));
+            }
+        }
+        else{
+            lastActionLabel.setText("");
+        }
+
+        //initialize the schedule drop down menu for current week
         scheduleData = FXCollections.observableArrayList();
-        scheduleData.addAll(scheduleRepository.findScheduleForUser(currentUser));
+        scheduleData.addAll(scheduleRepository.findScheduleThisWeekForUser(currentUser));
 
-        scheduleList.setItems(scheduleData);
+        if(!(scheduleData.isEmpty())){
+            scheduleList.setItems(scheduleData);
+        }
+        else{
+            scheduleList.setItems(null);
+        }
 
         reloadClockTable();
         setDataForClockTableView();
@@ -120,9 +165,14 @@ public class ClockInOutController implements Initializable {
             selectedClock = newv;
         });
 
-        //if the user is the owner or manager, they can see buttons to approve requests or show all users
+        //if the user is the owner or manager, they can see buttons to edit requests or show all users
         if(userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Manager")
                 || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Owner")) {
+
+            //only managers/owner can edit or delete clock history
+            clockEditButton.setVisible(true);
+            clockDeleteButton.setVisible(true);
+
             //declare variables
             Button showAllUser = new Button();
             Button showThisUser = new Button();
@@ -152,53 +202,101 @@ public class ClockInOutController implements Initializable {
 
     @FXML
     public void clockIn(){
-        Tblclock newClock = new Tblclock();
+        //get the current date
+        Date dateNow = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 
-        newClock.setPunchIn(java.sql.Time.valueOf(LocalTime.now()));
+        //if a schedule was selected
+        if(!(scheduleList.getSelectionModel().isEmpty())) {
 
-        newClock.setPunchOut(java.sql.Time.valueOf("00:00:00"));
-        newClock.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
-        newClock.setDate_created(new java.sql.Timestamp(new java.util.Date().getTime()));
+            //check if the schedule date is equal to today's date
+            if(sdf.format(scheduleList.getSelectionModel().getSelectedItem()
+                    .getScheduleDate()).equals(sdf.format(dateNow))) {
 
-        //gets the day of week as a string (matches capitalized format ex. "Monday" in database)
-        /*String dayOfWeek = String.valueOf(DayOfWeek.from(LocalDate.now())).toLowerCase();
-        dayOfWeek = dayOfWeek.substring(0,1).toUpperCase() + dayOfWeek.substring(1).toLowerCase();
-        newAvail.setDay(dayRepository.findDay(dayOfWeek));*/
+                Tblclock newClock = new Tblclock();
 
-        //save the new clock-in
-        clockRepository.save(newClock);
+                newClock.setPunchIn(java.sql.Time.valueOf(LocalTime.now()));
 
-        feedbackLabel.setText("Successfully clocked in");
+                newClock.setPunchOut(java.sql.Time.valueOf("00:00:00"));
+                newClock.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
+                newClock.setDateCreated(new java.sql.Timestamp(new java.util.Date().getTime()));
 
-        reloadClockTable();
+                //save the new clock-in
+                clockRepository.save(newClock);
+
+                //update the "Last Action" label
+                SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
+                SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+                String day = newClock.getSchedule().getDay().getDayDesc();
+                String date = dateFormat.format(newClock.getSchedule().getScheduleDate());
+                lastActionLabel.setText("Last Action \"In\" on " + day +
+                        ", " + date + " at "
+                        + timeFormat.format(newClock.getPunchIn()));
+
+                reloadClockTable();
+            }
+            else{
+                ErrorMessages.showErrorMessage("Invalid schedule selected",
+                        "Schedule must be equal to today's date",
+                        "You cannot clock in for a date earlier than or later than today's date");
+            }
+        }
+        else{
+            ErrorMessages.showErrorMessage("Fields are empty",
+                    "No Schedule selected",
+                    "Please select a Schedule from the drop-down menu");
+        }
 
     }
 
     @FXML
     public void clockOut(){
-        //get the current user
-        String currentUser = LoginController.userStore;
+        //get the current date
+        Date dateNow = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 
-        //finds recent clock record based on selected schedule
-        Tblclock newClock2 = clockRepository.findRecentClockForSchedule(scheduleList.getSelectionModel().getSelectedItem().getScheduleId());
+        if(!(scheduleList.getSelectionModel().isEmpty())) {
 
-        //get the current day of week
-        /*String dayOfWeek = String.valueOf(DayOfWeek.from(LocalDate.now())).toLowerCase();
-        dayOfWeek = dayOfWeek.substring(0,1).toUpperCase() + dayOfWeek.substring(1).toLowerCase();*/
+            //check if the schedule date is equal to today's date
+            if(sdf.format(scheduleList.getSelectionModel().getSelectedItem()
+                    .getScheduleDate()).equals(sdf.format(dateNow))) {
 
-        newClock2.setPunchOut(java.sql.Time.valueOf(LocalTime.now()));
+                //finds recent clock record based on selected schedule
+                Tblclock newClock2 = clockRepository.findRecentClockForSchedule(scheduleList.getSelectionModel().getSelectedItem().getScheduleId());
 
-        clockRepository.save(newClock2);
+                newClock2.setPunchOut(java.sql.Time.valueOf(LocalTime.now()));
 
-        feedbackLabel.setText("Successfully clocked out");
+                clockRepository.save(newClock2);
 
-        reloadClockTable();
+                //update the "Last Action" label
+                SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
+                SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+                String day = newClock2.getSchedule().getDay().getDayDesc();
+                String date = dateFormat.format(newClock2.getSchedule().getScheduleDate());
+                lastActionLabel.setText("Last Action \"Out\" on " + day +
+                        ", " + date + " at "
+                        + timeFormat.format(newClock2.getPunchOut()));
+
+                reloadClockTable();
+            }
+            else{
+                ErrorMessages.showErrorMessage("Invalid schedule selected",
+                        "Schedule must be equal to today's date",
+                        "You cannot clock out for a date earlier than or later than today's date");
+            }
+        }
+        else{
+            ErrorMessages.showErrorMessage("Fields are empty",
+                    "No Schedule selected",
+                    "Please select a Schedule from the drop-down menu");
+        }
 
     }
 
     @FXML
     private void editClock(){
         try {
+            //open the CRUD form
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/CrudClock.fxml"));
             fxmlLoader.setControllerFactory(springContext::getBean);
             Parent parent = fxmlLoader.load();
@@ -209,7 +307,7 @@ public class ClockInOutController implements Initializable {
 
             CrudClockController crudClockController = fxmlLoader.getController();
             crudClockController.setLabel("Edit Clock Record for "
-                    + selectedClock.getSchedule().getEmployee().getUser().getUsername());
+                    + selectedClock.getSchedule().getEmployee().getName());
             crudClockController.setClock(selectedClock);
             crudClockController.setController(this);
 
@@ -241,11 +339,12 @@ public class ClockInOutController implements Initializable {
         SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
         SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
 
-        //get the selected entry's user
+        //get the selected entry's user and other info
         String selectedUser = cl.getSchedule().getEmployee().getUser().getUsername();
         String selectedDay = cl.getSchedule().getDay().getDayDesc();
         String selectedDate = dateFormat.format(cl.getSchedule().getScheduleDate());
 
+        //ask the user if they are sure about deletion
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Delete Clock In/Out Record");
         alert.setHeaderText("Are you sure?");
@@ -254,6 +353,8 @@ public class ClockInOutController implements Initializable {
                 timeFormat.format(cl.getPunchIn()) + " to " + timeFormat.format(cl.getPunchOut()));
 
         Optional<ButtonType> choice = alert.showAndWait();
+
+        //if the user clicks "OK", delete the entry
         if(choice.get() == ButtonType.OK) {
             clockRepository.delete(cl);
         }
@@ -298,29 +399,31 @@ public class ClockInOutController implements Initializable {
     }
 
     private void reloadClockTableAllUsers(){
+        //reload the table to show all users (only for managers/owner)
         listOfClock.clear();
         clockTable.setItems(listOfClock);
         userCol.setVisible(true);
 
-        listOfClock.addAll(clockRepository.findAll());
+        listOfClock.addAll(clockRepository.findClockThisWeekAllUser());
         filteredListOfClock = new FilteredList<>(listOfClock);
         clockTable.setItems(filteredListOfClock);
-        tableUserLabel.setText("Clock History for All Users");
+        tableUserLabel.setText("Clock History This Week for All Users");
         setDataForClockTableView();
     }
 
     private void reloadClockTable(){
         //get the current user and create a new availability for them
         String currentUser = LoginController.userStore;
+        Tblusers currUser = userRepository.findUsername(currentUser);
 
         listOfClock.clear();
         clockTable.setItems(listOfClock);
         userCol.setVisible(false);
 
-        listOfClock.addAll(clockRepository.findClockForUser(currentUser));
+        listOfClock.addAll(clockRepository.findClockThisWeekForUser(currentUser));
         filteredListOfClock = new FilteredList<>(listOfClock);
         clockTable.setItems(filteredListOfClock);
-        tableUserLabel.setText("Clock History for " + currentUser);
+        tableUserLabel.setText("Clock History This Week for " + currUser.getEmployee().getName());
         setDataForClockTableView();
     }
 
@@ -335,5 +438,65 @@ public class ClockInOutController implements Initializable {
     private void resetButtons(){
         clockEditButton.setDisable(true);
         clockDeleteButton.setDisable(true);
+    }
+
+    @FXML
+    private void showCurrentWeek(){
+        //if the user column is visible (which is only for managers/owner)
+        if(userCol.isVisible()){
+            //reload the table to show all users (only for managers/owner)
+            listOfClock.clear();
+            clockTable.setItems(listOfClock);
+
+            listOfClock.addAll(clockRepository.findClockThisWeekAllUser());
+            filteredListOfClock = new FilteredList<>(listOfClock);
+            clockTable.setItems(filteredListOfClock);
+            tableUserLabel.setText("Clock History This Week for All Users");
+            setDataForClockTableView();
+        }
+        else{
+            //get the current user and create a new availability for them
+            String currentUser = LoginController.userStore;
+            Tblusers currUser = userRepository.findUsername(currentUser);
+
+            listOfClock.clear();
+            clockTable.setItems(listOfClock);
+
+            listOfClock.addAll(clockRepository.findClockThisWeekForUser(currentUser));
+            filteredListOfClock = new FilteredList<>(listOfClock);
+            clockTable.setItems(filteredListOfClock);
+            tableUserLabel.setText("Clock History This Week for " + currUser.getEmployee().getName());
+            setDataForClockTableView();
+        }
+    }
+
+    @FXML
+    private void showAllWeeks(){
+        //if the user column is visible (which is only for managers/owner)
+        if(userCol.isVisible()){
+            //reload the table to show all users (only for managers/owner)
+            listOfClock.clear();
+            clockTable.setItems(listOfClock);
+
+            listOfClock.addAll(clockRepository.findAll());
+            filteredListOfClock = new FilteredList<>(listOfClock);
+            clockTable.setItems(filteredListOfClock);
+            tableUserLabel.setText("Clock History All Time for All Users");
+            setDataForClockTableView();
+        }
+        else{
+            //get the current user and create a new availability for them
+            String currentUser = LoginController.userStore;
+            Tblusers currUser = userRepository.findUsername(currentUser);
+
+            listOfClock.clear();
+            clockTable.setItems(listOfClock);
+
+            listOfClock.addAll(clockRepository.findClockForUser(currentUser));
+            filteredListOfClock = new FilteredList<>(listOfClock);
+            clockTable.setItems(filteredListOfClock);
+            tableUserLabel.setText("Clock History All Time for " + currUser.getEmployee().getName());
+            setDataForClockTableView();
+        }
     }
 }

@@ -73,7 +73,9 @@ public class DashboardController implements Initializable {
             employeeButton.setDisable(true);
         }
 
-        loggedUserLabel.setText(LoginController.userStore);
+        //show the current user's full name
+        Tblusers currUser = userRepository.findUsername(LoginController.userStore);
+        loggedUserLabel.setText(currUser.getEmployee().getName());
 
     }
 

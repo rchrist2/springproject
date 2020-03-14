@@ -5,10 +5,15 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+<<<<<<< HEAD:src/main/java/myproject/controllers/Dashboard/ClockInOut/CrudClockController.java
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+=======
+import javafx.scene.control.*;
+>>>>>>> 6fe0a3d8dfdf7d260a0d2f1ea0e131850d8824f3:src/main/java/myproject/controllers/CrudClockController.java
 import javafx.stage.Stage;
+import myproject.ErrorMessages;
 import myproject.models.Tblclock;
 import myproject.models.Tblschedule;
 import myproject.repositories.ClockRepository;
@@ -48,13 +53,13 @@ public class CrudClockController implements Initializable {
     public ComboBox<Tblschedule> scheduleList;
 
     @FXML
-    public ComboBox<Integer> beginHrList;
+    public Spinner<Integer> beginHrList;
     @FXML
-    public ComboBox<String> beginMinList;
+    public Spinner<String> beginMinList;
     @FXML
-    public ComboBox<Integer> endHrList;
+    public Spinner<Integer> endHrList;
     @FXML
-    public ComboBox<String> endMinList;
+    public Spinner<String> endMinList;
     @FXML
     public ComboBox<String> beginPMList;
     @FXML
@@ -71,19 +76,19 @@ public class CrudClockController implements Initializable {
 
     private ClockInOutController clockController;
 
-    //The time off returned from the TimeOffController
+    //The clock record returned from the ClockInOutController
     private Tblclock selectedClock;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle){
-        //initialize drop down menus
+        //initialize drop down menus lists
         hrList = FXCollections.observableArrayList();
         hrList.addAll(IntStream.rangeClosed(1,12).boxed().collect(Collectors.toList()));
 
         minList = FXCollections.observableArrayList();
         List<Integer> minListInt = IntStream.rangeClosed(0,59).boxed().collect(Collectors.toList());
 
-
+        //make a list of minutes with leading zeroes for single-digit numbers
         List<String> minListString = new ArrayList<String>(minListInt.size());
         for (Integer myInt : minListInt) {
             minListString.add(String.format("%02d", myInt));
@@ -91,15 +96,23 @@ public class CrudClockController implements Initializable {
 
         minList.addAll(minListString);
 
-        //fill the hour, minute, and AM/PM drop-downs with values
+        //fill the hour, minute, and AM/PM drop-downs or spinners with values
         beginPMList.setItems(pmList);
         endPMList.setItems(pmList);
 
-        beginMinList.setItems(minList);
-        endMinList.setItems(minList);
+        SpinnerValueFactory<Integer> bHours =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(hrList);
+        SpinnerValueFactory<String> bMins =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(minList);
+        SpinnerValueFactory<Integer> eHours =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(hrList);
+        SpinnerValueFactory<String> eMins =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(minList);
 
-        beginHrList.setItems(hrList);
-        endHrList.setItems(hrList);
+        beginHrList.setValueFactory(bHours);
+        beginMinList.setValueFactory(bMins);
+        endHrList.setValueFactory(eHours);
+        endMinList.setValueFactory(eMins);
     }
 
     @Autowired
@@ -176,13 +189,27 @@ public class CrudClockController implements Initializable {
         calendarEnd.setTime(cl1.getPunchOut());
         int endMin = calendarEnd.get(Calendar.MINUTE);
 
-        //assigns selected hour via array index since hrList is Int, so subtract 1 to display correct hour
-        beginHrList.getSelectionModel().select(beginHour-1);
-        endHrList.getSelectionModel().select(endHour-1);
+        //assigns hour comboboxes
+        if(beginHour == 0 && endHour == 0){ //if any of the hours are equal to 12
+            beginHrList.getValueFactory().setValue(12);
+            endHrList.getValueFactory().setValue(12);
+        }
+        else if(endHour == 0){
+            beginHrList.getValueFactory().setValue(beginHour);
+            endHrList.getValueFactory().setValue(12);
+        }
+        else if(beginHour == 0){
+            beginHrList.getValueFactory().setValue(12);
+            endHrList.getValueFactory().setValue(endHour);
+        }
+        else{
+            beginHrList.getValueFactory().setValue(beginHour);
+            endHrList.getValueFactory().setValue(endHour);
+        }
 
         //assigns selected minute in drop down menu using leading zeroes
-        beginMinList.getSelectionModel().select(String.format("%02d", beginMin));
-        endMinList.getSelectionModel().select(String.format("%02d", endMin));
+        beginMinList.getValueFactory().setValue(String.format("%02d", beginMin));
+        endMinList.getValueFactory().setValue(String.format("%02d", endMin));
 
     }
 
@@ -191,34 +218,86 @@ public class CrudClockController implements Initializable {
 
         //convert combobox values to 24 hour clock depending if AM or PM was selected
         if (beginPMList.getSelectionModel().getSelectedItem().equals("AM")) {
-            cl.setPunchIn(Time.valueOf(beginHrList.getSelectionModel().getSelectedItem().toString()
-                    + ":" + beginMinList.getSelectionModel().getSelectedItem()
-                    + ":00"));
+
+            //if the beginning hour is 12 am
+            if(beginHrList.getValue().toString().equals("12")){
+                cl.setPunchIn(Time.valueOf("00"
+                        + ":" + beginMinList.getValue()
+                        + ":00"));
+            }
+            else {
+                cl.setPunchIn(Time.valueOf(beginHrList.getValue().toString()
+                        + ":" + beginMinList.getValue()
+                        + ":00"));
+            }
         } else if (beginPMList.getSelectionModel().getSelectedItem().equals("PM")) {
-            cl.setPunchIn(Time.valueOf((beginHrList.getSelectionModel().getSelectedItem() + 12)
-                    + ":" + beginMinList.getSelectionModel().getSelectedItem()
-                    + ":00"));
+
+            //if the beginning hour is 12 pm
+            if(beginHrList.getValue().toString().equals("12")) {
+                cl.setPunchIn(Time.valueOf("12"
+                        + ":" + beginMinList.getValue()
+                        + ":00"));
+            }
+            else{
+                cl.setPunchIn(Time.valueOf((beginHrList.getValue() + 12)
+                        + ":" + beginMinList.getValue()
+                        + ":00"));
+            }
         }
 
         if (endPMList.getSelectionModel().getSelectedItem().equals("AM")) {
-            cl.setPunchOut(Time.valueOf(endHrList.getSelectionModel().getSelectedItem().toString()
-                    + ":" + endMinList.getSelectionModel().getSelectedItem()
-                    + ":00"));
+
+            //if the ending hour is 12 am
+            if(endHrList.getValue().toString().equals("12")){
+                cl.setPunchOut(Time.valueOf("00"
+                        + ":" + endMinList.getValue()
+                        + ":00"));
+            }
+            else {
+                cl.setPunchOut(Time.valueOf(endHrList.getValue().toString()
+                        + ":" + endMinList.getValue()
+                        + ":00"));
+            }
         } else if (endPMList.getSelectionModel().getSelectedItem().equals("PM")) {
-            cl.setPunchOut(Time.valueOf((endHrList.getSelectionModel().getSelectedItem() + 12)
-                    + ":" + endMinList.getSelectionModel().getSelectedItem()
-                    + ":00"));
+
+            //if the ending hour is 12 pm
+            if(endHrList.getValue().toString().equals("12")) {
+                cl.setPunchOut(Time.valueOf("12"
+                        + ":" + endMinList.getValue()
+                        + ":00"));
+            }
+            else {
+                cl.setPunchOut(Time.valueOf((endHrList.getValue() + 12)
+                        + ":" + endMinList.getValue()
+                        + ":00"));
+            }
         }
 
         cl.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
 
-        //TODO verify time range is valid before saving
+        //check if any fields were empty or using default selection of "Hour"
+        if(!(beginPMList.getSelectionModel().isEmpty() ||
+        endPMList.getSelectionModel().isEmpty() ||
+        scheduleList.getSelectionModel().isEmpty())) {
+            //check that the selected time range is valid
+            if (cl.getPunchIn().before(cl.getPunchOut())
+                    && cl.getPunchOut().after(cl.getPunchIn())) {
+                clockRepository.save(cl);
 
-        clockRepository.save(cl);
-
-        Stage stage = (Stage)saveButton.getScene().getWindow();
-        System.out.println("Saved");
-        stage.close();
+                Stage stage = (Stage) saveButton.getScene().getWindow();
+                System.out.println("Saved");
+                stage.close();
+            } else {
+                ErrorMessages.showErrorMessage("Invalid time values",
+                        "Time range is invalid",
+                        "Please edit time range for this clock in/out record");
+            }
+        }
+        else{
+            ErrorMessages.showErrorMessage("Fields are empty",
+                    "Selections missing from drop-down menus",
+                    "Please select from the drop-down menus");
+        }
     }
 
     @FXML

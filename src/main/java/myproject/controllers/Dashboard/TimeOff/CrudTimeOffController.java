@@ -6,6 +6,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+<<<<<<< HEAD:src/main/java/myproject/controllers/Dashboard/TimeOff/CrudTimeOffController.java
+=======
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+>>>>>>> 6fe0a3d8dfdf7d260a0d2f1ea0e131850d8824f3:src/main/java/myproject/controllers/CrudTimeOffController.java
 import javafx.stage.Stage;
 import myproject.ErrorMessages;
 import myproject.models.Tblschedule;
@@ -34,6 +39,12 @@ public class CrudTimeOffController implements Initializable {
     @Autowired
     private ScheduleRepository scheduleRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @FXML
+    private Pane errorMsgPane;
+
     @FXML
     private Label crudLabel;
 
@@ -44,17 +55,16 @@ public class CrudTimeOffController implements Initializable {
     private Button cancelButton;
 
     @FXML
-    public ComboBox<Tblschedule> scheduleList;
+    public Spinner<Integer> beginHrList;
+    @FXML
+    public Spinner<Integer> endHrList;
 
     @FXML
-    public ComboBox<Integer> beginHrList;
-    @FXML
-    public ComboBox<Integer> endHrList;
+    public ComboBox<Tblschedule> scheduleList;
     @FXML
     public ComboBox<String> beginPMList;
     @FXML
     public ComboBox<String> endPMList;
-
     @FXML
     public ComboBox<String> approveList;
 
@@ -76,20 +86,38 @@ public class CrudTimeOffController implements Initializable {
     private Tbltimeoff selectedTimeOff;
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle){
-        //initialize drop down menus
-        approveData = FXCollections.observableArrayList(Arrays.asList("Approve","Deny"));
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        //get the current user
+        String currentUser = LoginController.userStore;
+
+        //initialize drop down menus and their observable lists
+        approveData = FXCollections.observableArrayList(Arrays.asList("Approve", "Deny"));
         approveList.setItems(approveData);
 
+        //make a list of hours from 1 to 12
         hrList = FXCollections.observableArrayList();
-        hrList.addAll(IntStream.rangeClosed(1,12).boxed().collect(Collectors.toList()));
+        hrList.addAll(IntStream.rangeClosed(1, 12).boxed().collect(Collectors.toList()));
 
-        //fill the hour, minute, and AM/PM drop-downs with values
+        //fill the hour, minute, and AM/PM drop-downs or spinners with values
         beginPMList.setItems(pmList);
         endPMList.setItems(pmList);
 
-        beginHrList.setItems(hrList);
-        endHrList.setItems(hrList);
+        SpinnerValueFactory<Integer> bHours =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(hrList);
+        SpinnerValueFactory<Integer> eHours =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(hrList);
+
+        beginHrList.setValueFactory(bHours);
+        endHrList.setValueFactory(eHours);
+
+        //give only managers and owner ability to approve/disapprove
+        if (userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Manager")
+                || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Owner")) {
+
+            approveList.setDisable(false);
+            errorMsgPane.setVisible(false);
+
+        }
     }
 
     @Autowired
@@ -140,8 +168,7 @@ public class CrudTimeOffController implements Initializable {
             endPMList.getSelectionModel().select(1);
         }
 
-        //initialize the schedule dates for the current user
-        //not done in initialize() method due to nullpointerexception
+        //initialize the schedule dates for the current user (not done in initialize() method due to nullpointerexception)
         scheduleData = FXCollections.observableArrayList();
         scheduleData.addAll(scheduleRepository.findScheduleForUser(selectedTimeOff.getSchedule().getEmployee().getUser().getUsername()));
         scheduleList.setItems(scheduleData);
@@ -158,11 +185,25 @@ public class CrudTimeOffController implements Initializable {
         calendarEnd.setTime(tf1.getEndTimeOffDate());
         int endHour = calendarEnd.get(Calendar.HOUR);
 
-        //assigns via array index, so subtract 1 to display correct hour value
-        beginHrList.getSelectionModel().select(beginHour-1);
-        endHrList.getSelectionModel().select(endHour-1);
+        //assigns hour spinners
+        if(beginHour == 0 && endHour == 0){ //if any of the hours are equal to 12
+            beginHrList.getValueFactory().setValue(12);
+            endHrList.getValueFactory().setValue(12);
+        }
+        else if(endHour == 0){
+            beginHrList.getValueFactory().setValue(beginHour);
+            endHrList.getValueFactory().setValue(12);
+        }
+        else if(beginHour == 0){
+            beginHrList.getValueFactory().setValue(12);
+            endHrList.getValueFactory().setValue(endHour);
+        }
+        else{
+            beginHrList.getValueFactory().setValue(beginHour);
+            endHrList.getValueFactory().setValue(endHour);
+        }
 
-        //find whether time is approved or not, and set appropriate drop-down value
+        //find whether request is approved or not, and set appropriate drop-down value
         String approveSelect = "null";
         if(tf1.isApproved()){
             approveSelect = "Approve";
@@ -177,58 +218,127 @@ public class CrudTimeOffController implements Initializable {
     }
 
     public void handleSave(ActionEvent event){
-        Tbltimeoff tf = selectedTimeOff;
+        //get the current user
+        String currentUser = LoginController.userStore;
 
-        //save the time off with approved/denied based on selection in drop-down
+        //get the selected time off request
+        Tbltimeoff tf = selectedTimeOff;
         Boolean isApproved = tf.isApproved();
-        if(approveList.getSelectionModel().getSelectedItem().equals("Approve")) {
-            isApproved = true;
+
+        //check if the user has privileges to approve or deny the request
+        if (userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Manager")
+                || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Owner")) {
+            //save the time off with approved/denied based on selection in drop-down
+            if(approveList.getSelectionModel().getSelectedItem().equals("Approve")) {
+                isApproved = true;
+            }
+            else if(approveList.getSelectionModel().getSelectedItem().equals("Deny")) {
+                isApproved = false;
+            }
         }
-        else if(approveList.getSelectionModel().getSelectedItem().equals("Deny")) {
+        else{
+            //if they don't have privileges, deny the request by default
             isApproved = false;
         }
 
-        //convert combobox values to 24 hour clock depending if AM or PM was selected
+        //convert spinner values to 24 hour clock depending if AM or PM was selected
         if (beginPMList.getSelectionModel().getSelectedItem().equals("AM")) {
-            tf.setBeginTimeOffDate(Time.valueOf(beginHrList.getSelectionModel().getSelectedItem().toString()
-                    + ":00:00"));
+
+            //if the beginning hour is 12 am
+            if(beginHrList.getValue().toString().equals("12")){
+                tf.setBeginTimeOffDate(Time.valueOf("00"
+                        + ":00:00"));
+            }
+            else {
+                tf.setBeginTimeOffDate(Time.valueOf(beginHrList.getValue().toString()
+                        + ":00:00"));
+            }
         } else if (beginPMList.getSelectionModel().getSelectedItem().equals("PM")) {
-            tf.setBeginTimeOffDate(Time.valueOf((beginHrList.getSelectionModel().getSelectedItem() + 12)
-                    + ":00:00"));
+
+            //if the beginning hour is 12 pm
+            if(beginHrList.getValue().toString().equals("12")) {
+                tf.setBeginTimeOffDate(Time.valueOf("12"
+                        + ":00:00"));
+            }
+            else{
+                tf.setBeginTimeOffDate(Time.valueOf((beginHrList.getValue() + 12)
+                        + ":00:00"));
+            }
         }
 
         if (endPMList.getSelectionModel().getSelectedItem().equals("AM")) {
-            tf.setEndTimeOffDate(Time.valueOf(endHrList.getSelectionModel().getSelectedItem().toString()
-                    + ":00:00"));
+
+            //if the ending hour is 12 am
+            if(endHrList.getValue().toString().equals("12")){
+                tf.setEndTimeOffDate(Time.valueOf("00"
+                        + ":00:00"));
+            }
+            else {
+                tf.setEndTimeOffDate(Time.valueOf(endHrList.getValue().toString()
+                        + ":00:00"));
+            }
         } else if (endPMList.getSelectionModel().getSelectedItem().equals("PM")) {
-            tf.setEndTimeOffDate(Time.valueOf((endHrList.getSelectionModel().getSelectedItem() + 12)
-                    + ":00:00"));
+
+            //if the ending hour is 12 pm
+            if(endHrList.getValue().toString().equals("12")) {
+                tf.setEndTimeOffDate(Time.valueOf("12"
+                        + ":00:00"));
+            }
+            else {
+                tf.setEndTimeOffDate(Time.valueOf((endHrList.getValue() + 12)
+                        + ":00:00"));
+            }
         }
 
         tf.setApproved(isApproved);
         tf.setReasonDesc(reasonInput.getText());
         tf.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
 
-        if(tf.getBeginTimeOffDate().before(tf.getEndTimeOffDate())
-                && tf.getEndTimeOffDate().after(tf.getBeginTimeOffDate())){
-            timeOffRepository.save(tf);
+        //check if any fields are empty, probably not necessary since these are set already
+        if(!(approveList.getSelectionModel().isEmpty() ||
+        beginPMList.getSelectionModel().isEmpty() ||
+        endPMList.getSelectionModel().isEmpty() ||
+        reasonInput.getText().trim().isEmpty() ||
+        scheduleList.getSelectionModel().isEmpty())) {
 
-            Stage stage = (Stage)saveButton.getScene().getWindow();
-            System.out.println("Saved");
-            stage.close();
+            //check if the selected time range is valid
+            if (tf.getBeginTimeOffDate().before(tf.getEndTimeOffDate())
+                    && tf.getEndTimeOffDate().after(tf.getBeginTimeOffDate())) {
+                timeOffRepository.save(tf);
+
+                Stage stage = (Stage) saveButton.getScene().getWindow();
+                System.out.println("Saved");
+                stage.close();
+            } else {
+                ErrorMessages.showErrorMessage("Invalid time values", "Time range for time" +
+                        " off request is invalid", "Please edit time range for this time off request");
+            }
         }
         else{
-            ErrorMessages.showErrorMessage("Invalid time values","Time range for time" +
-                    " off request is invalid","Please edit time range for this time off request");
+            ErrorMessages.showErrorMessage("Fields are empty",
+                    "Selections missing or text fields are blank",
+                    "Please select from the drop-down menus and fill in text fields");
         }
-
-        }
+    }
 
     @FXML
     private void handleCancel(){
         Stage currStage = (Stage)cancelButton.getScene().getWindow();
 
         currStage.close();
+    }
+
+    //show an error message that tells an unprivileged user why they cannot approve/deny request
+    @FXML
+    private void approveClicked() {
+        //get the current user
+        String currentUser = LoginController.userStore;
+
+        if (!(userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Manager")
+                || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Owner"))) {
+            ErrorMessages.showErrorMessage("Insufficient privileges","Cannot approve/deny request",
+                    "You do not have sufficient privileges to approve or deny this request.");
+        }
     }
 
 }
