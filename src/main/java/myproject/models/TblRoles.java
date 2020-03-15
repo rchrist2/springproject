@@ -2,28 +2,15 @@ package myproject.models;
 
 import javax.persistence.*;
 import java.util.Objects;
-import java.util.Set;
 
 @Entity
-@Table(name = "tblroles")
-public class TblRoles {
+@Table(name = "tblroles", schema = "dbo", catalog = "4375db")
+public class TblrolesNew {
     private int roleId;
+    private String roleName;
     private String roleDesc;
-    private Set<Tblemployee> employees;
-
-    //one role can belong to many employees
-    @OneToMany(fetch = FetchType.EAGER,mappedBy = "role",cascade = CascadeType.ALL)
-    public Set<Tblemployee> getEmployee() {
-        return employees;
-    }
-
-    public void setEmployee(Set<Tblemployee> employees) {
-        this.employees = employees;
-    }
-
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Role_ID")
     public int getRoleId() {
         return roleId;
@@ -31,6 +18,16 @@ public class TblRoles {
 
     public void setRoleId(int roleId) {
         this.roleId = roleId;
+    }
+
+    @Basic
+    @Column(name = "Role_Name")
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
     }
 
     @Basic
@@ -47,13 +44,14 @@ public class TblRoles {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        TblRoles tblRoles = (TblRoles) o;
-        return roleId == tblRoles.roleId &&
-                Objects.equals(roleDesc, tblRoles.roleDesc);
+        TblrolesNew that = (TblrolesNew) o;
+        return roleId == that.roleId &&
+                Objects.equals(roleName, that.roleName) &&
+                Objects.equals(roleDesc, that.roleDesc);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(roleId, roleDesc);
+        return Objects.hash(roleId, roleName, roleDesc);
     }
 }
