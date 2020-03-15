@@ -75,3 +75,4 @@ https://www.geeksforgeeks.org/generate-random-string-of-given-size-in-java/
 https://stackoverflow.com/questions/47771296/how-to-reset-a-counter-column-to-zero-in-a-table-every-month
 https://stackoverflow.com/questions/538739/best-way-to-store-time-hhmm-in-a-database
 https://www.baeldung.com/spring-email
+https://loading.io/license/
