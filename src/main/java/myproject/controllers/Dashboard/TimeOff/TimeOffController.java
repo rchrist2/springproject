@@ -28,6 +28,7 @@ import myproject.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.net.URL;
@@ -58,6 +59,9 @@ public class TimeOffController implements Initializable {
     @FXML
     private Pane optionsPane2;
 
+    @FXML
+    private Pane timePane;
+
     /*@FXML
     private Pane optionsPane3;
 
@@ -72,6 +76,24 @@ public class TimeOffController implements Initializable {
 
     @FXML
     private Button timeOffEditButton;
+
+    @FXML
+    private Button submitRequestButton;
+
+    @FXML
+    private Button submitRequestButton1;
+
+    @FXML
+    public RadioButton dayOffCheck;
+
+    @FXML
+    public RadioButton changeAvailCheck;
+
+    /*@FXML
+    public RadioButton allTimeCheck;
+
+    @FXML
+    public RadioButton currentWeekCheck;*/
 
     @FXML
     public TableView<Tbltimeoff> timeOffTable;
@@ -107,9 +129,10 @@ public class TimeOffController implements Initializable {
     public Spinner<Integer> endHrList;
 
     @FXML
-    public TextArea reasonInput;
+    public TextField reasonInput;
 
     public ObservableList<Tblschedule> scheduleData;
+    private FilteredList<Tblschedule> filteredScheduleData;
 
     private ObservableList<Tbltimeoff> listOfTimeOffs;
     private FilteredList<Tbltimeoff> filteredListOfTimeOff;
@@ -128,41 +151,24 @@ public class TimeOffController implements Initializable {
         Tblusers currUser = userRepository.findUsername(currentUser);
         tableUserLabel.setText("Time Off Requests for " + currUser.getEmployee().getName());
 
-        //Initialize the observable list and add all the time offs to the list
+        //Initialize the observable lists
         listOfTimeOffs = FXCollections.observableArrayList();
-        listOfTimeOffs.addAll(timeOffRepository.findAllTimeOffByUser(currentUser));
-
-        //initialize the schedule dates for the current user
         scheduleData = FXCollections.observableArrayList();
-        scheduleData.addAll(scheduleRepository.findScheduleForUser(currentUser));
-        scheduleList.setItems(scheduleData);
 
-        //make a list of hours from 0 to 12 (0 if they did not select an hour)
-        hrList = FXCollections.observableArrayList();
-        hrList.addAll(IntStream.rangeClosed(0,12).boxed().collect(Collectors.toList()));
-
-        //fill the hour, minute, and AM/PM comboboxes with values
-        beginPMList.setItems(pmList);
-        endPMList.setItems(pmList);
-
-        SpinnerValueFactory<Integer> bHours =
-                new SpinnerValueFactory.ListSpinnerValueFactory<>(hrList);
-        SpinnerValueFactory<Integer> eHours =
-                new SpinnerValueFactory.ListSpinnerValueFactory<>(hrList);
-
-        beginHrList.setValueFactory(bHours);
-        endHrList.setValueFactory(eHours);
-
-        //reload table, set column data, and add listeners to buttons
+        //reload table, set data, and add listeners to buttons
+        setDataForHourPMLists();
         reloadTimeOffTableView();
         setDataForTimeOffTableView();
+        reloadScheduleList();
         addActionListenersForCrudButtons(timeOffDeleteButton);
         addActionListenersForCrudButtons(timeOffEditButton);
+        addToggleGroupForRadioButtons();
 
         timeOffTable.getSelectionModel().selectedItemProperty().addListener((obs, old, newv) -> {
             selectedTimeOff = newv;
         });
 
+<<<<<<< HEAD
         //if the user is the owner or manager, they can see buttons to approve requests or show all users
         if(userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
         || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner")){
@@ -187,145 +193,109 @@ public class TimeOffController implements Initializable {
             approveRequest.setOnAction(event ->{
                 Tbltimeoff tfApprove = selectedTimeOff;
                 selectedTimeOff.setApproved(true);
+=======
+        //set "Request Day Off" to selected by default
+        dayOffCheck.setSelected(true);
+>>>>>>> 89d229f3a2b81c242e8465b8e27d3b3ce4ba1732
 
-                timeOffRepository.save(tfApprove);
+        setButtonsForManagerOwner();
 
-                //reload table with all users if the user column is visible
-                if(userCol.isVisible()){
-                    reloadTimeOffTableViewAllUsers();
-                    setDataForTimeOffTableView();
-                }
-                else{
-                    reloadTimeOffTableView();
-                    setDataForTimeOffTableView();
-                }
-
-            });
-
-            //set up button for disapproving
-            disapproveRequest.setDisable(true);
-            addActionListenersForCrudButtons(disapproveRequest);
-            disapproveRequest.setPrefSize(submitRequestButton.getPrefWidth(), submitRequestButton.getPrefHeight());
-            disapproveRequest.setText("Deny");
-            disapproveRequest.setStyle("-fx-text-fill:white; -fx-background-color: #39a7c3;");
-            disapproveRequest.setOnAction(event ->{
-                Tbltimeoff tfApprove = selectedTimeOff;
-                selectedTimeOff.setApproved(false);
-
-                timeOffRepository.save(tfApprove);
-
-                //reload table w/ all users if the user column is visible (only visible if all users are shown)
-                if(userCol.isVisible()){
-                    reloadTimeOffTableViewAllUsers();
-                    setDataForTimeOffTableView();
-                }
-                else{
-                    reloadTimeOffTableView();
-                    setDataForTimeOffTableView();
-                }
-
-            });*/
-
-            //set up other buttons for showing all users or current user
-            showThisUser.setText("Current User");
-            showThisUser.setStyle("-fx-text-fill:white; -fx-background-color: #39a7c3;");
-            showThisUser.setOnAction(event ->{
-                reloadTimeOffTableView();
-                setDataForTimeOffTableView();
-            });
-
-            showAllUser.setText("All Users");
-            showAllUser.setStyle("-fx-text-fill:white; -fx-background-color: #39a7c3;");
-            showAllUser.setOnAction(event -> {
-                //use function to reload table showing all users
-                reloadTimeOffTableViewAllUsers();
-                setDataForTimeOffTableView();
-            });
-        }
-        else{
-            //user does not have privileges to approve requests
-            System.out.println("User is not owner or manager");
-        }
     }
 
     @FXML
-    private void submitTimeOffRequest(){
-        //check if any of the fields are empty
-            if(!(scheduleList.getSelectionModel().isEmpty() || beginHrList.getValue()==0
-            || beginPMList.getSelectionModel().isEmpty() || endHrList.getValue()==0
-            || endPMList.getSelectionModel().isEmpty() || reasonInput.getText().trim().isEmpty())) {
+    private void submitTimeOffRequestWithoutTime(){
+            if (!(scheduleList.getSelectionModel().isEmpty()
+                    || reasonInput.getText().trim().isEmpty())) {
                 Tbltimeoff newTimeOff = new Tbltimeoff();
 
-                //convert combobox values to 24 hour clock depending if AM or PM was selected
-                if (beginPMList.getSelectionModel().getSelectedItem().equals("AM")) {
-
-                    //if the beginning hour is 12 am
-                    if(beginHrList.getValue().toString().equals("12")){
-                        newTimeOff.setBeginTimeOffDate(Time.valueOf("00"
-                                + ":00:00"));
-                    }
-                    else {
-                        newTimeOff.setBeginTimeOffDate(Time.valueOf(beginHrList.getValue().toString()
-                                + ":00:00"));
-                    }
-                } else if (beginPMList.getSelectionModel().getSelectedItem().equals("PM")) {
-
-                    //if the beginning hour is 12 pm
-                    if(beginHrList.getValue().toString().equals("12")) {
-                        newTimeOff.setBeginTimeOffDate(Time.valueOf("12"
-                                + ":00:00"));
-                    }
-                    else{
-                        newTimeOff.setBeginTimeOffDate(Time.valueOf((beginHrList.getValue() + 12)
-                                + ":00:00"));
-                    }
-                }
-
-                if (endPMList.getSelectionModel().getSelectedItem().equals("AM")) {
-
-                    //if the ending hour is 12 am
-                    if(endHrList.getValue().toString().equals("12")){
-                        newTimeOff.setEndTimeOffDate(Time.valueOf("00"
-                                + ":00:00"));
-                    }
-                    else {
-                        newTimeOff.setEndTimeOffDate(Time.valueOf(endHrList.getValue().toString()
-                                + ":00:00"));
-                    }
-                } else if (endPMList.getSelectionModel().getSelectedItem().equals("PM")) {
-
-                    //if the ending hour is 12 pm
-                    if(endHrList.getValue().toString().equals("12")) {
-                        newTimeOff.setEndTimeOffDate(Time.valueOf("12"
-                                + ":00:00"));
-                    }
-                    else {
-                        newTimeOff.setEndTimeOffDate(Time.valueOf((endHrList.getValue() + 12)
-                                + ":00:00"));
-                    }
-                }
-
+                newTimeOff.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
+                newTimeOff.setBeginTimeOffDate(scheduleList.getSelectionModel().getSelectedItem().getScheduleTimeBegin());
+                newTimeOff.setEndTimeOffDate(scheduleList.getSelectionModel().getSelectedItem().getScheduleTimeEnd());
                 newTimeOff.setApproved(false);
                 newTimeOff.setReasonDesc(reasonInput.getText());
-                newTimeOff.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
 
-                //check if the time range is valid
-                if(newTimeOff.getBeginTimeOffDate().before(newTimeOff.getEndTimeOffDate())
-                        && newTimeOff.getEndTimeOffDate().after(newTimeOff.getBeginTimeOffDate())){
-                    timeOffRepository.save(newTimeOff);
-                }
-                else{
-                    ErrorMessages.showErrorMessage("Invalid time values","Time range for time" +
-                            " off request is invalid","Please edit time range for this time off request");
-                }
+                timeOffRepository.save(newTimeOff);
 
                 reloadTimeOffTableView();
-            }
-            else{
+            } else {
                 ErrorMessages.showErrorMessage("Fields are empty",
                         "There are empty fields",
                         "Please select items from drop-down menus or enter text for fields");
             }
+    }
+
+    @FXML
+    private void submitTimeOffRequestWithTime(){
+                //check if any of the fields are empty
+                if (!(scheduleList.getSelectionModel().isEmpty() || beginHrList.getValue() == 0
+                        || beginPMList.getSelectionModel().isEmpty() || endHrList.getValue() == 0
+                        || endPMList.getSelectionModel().isEmpty() || reasonInput.getText().trim().isEmpty())) {
+                    Tbltimeoff newTimeOff = new Tbltimeoff();
+
+                    //convert combobox values to 24 hour clock depending if AM or PM was selected
+                    if (beginPMList.getSelectionModel().getSelectedItem().equals("AM")) {
+
+                        //if the beginning hour is 12 am
+                        if (beginHrList.getValue().toString().equals("12")) {
+                            newTimeOff.setBeginTimeOffDate(Time.valueOf("00"
+                                    + ":00:00"));
+                        } else {
+                            newTimeOff.setBeginTimeOffDate(Time.valueOf(beginHrList.getValue().toString()
+                                    + ":00:00"));
+                        }
+                    } else if (beginPMList.getSelectionModel().getSelectedItem().equals("PM")) {
+
+                        //if the beginning hour is 12 pm
+                        if (beginHrList.getValue().toString().equals("12")) {
+                            newTimeOff.setBeginTimeOffDate(Time.valueOf("12"
+                                    + ":00:00"));
+                        } else {
+                            newTimeOff.setBeginTimeOffDate(Time.valueOf((beginHrList.getValue() + 12)
+                                    + ":00:00"));
+                        }
+                    }
+
+                    if (endPMList.getSelectionModel().getSelectedItem().equals("AM")) {
+
+                        //if the ending hour is 12 am
+                        if (endHrList.getValue().toString().equals("12")) {
+                            newTimeOff.setEndTimeOffDate(Time.valueOf("00"
+                                    + ":00:00"));
+                        } else {
+                            newTimeOff.setEndTimeOffDate(Time.valueOf(endHrList.getValue().toString()
+                                    + ":00:00"));
+                        }
+                    } else if (endPMList.getSelectionModel().getSelectedItem().equals("PM")) {
+
+                        //if the ending hour is 12 pm
+                        if (endHrList.getValue().toString().equals("12")) {
+                            newTimeOff.setEndTimeOffDate(Time.valueOf("12"
+                                    + ":00:00"));
+                        } else {
+                            newTimeOff.setEndTimeOffDate(Time.valueOf((endHrList.getValue() + 12)
+                                    + ":00:00"));
+                        }
+                    }
+
+                    newTimeOff.setApproved(false);
+                    newTimeOff.setReasonDesc(reasonInput.getText());
+                    newTimeOff.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
+
+                    //check if the time range is valid
+                    if (newTimeOff.getBeginTimeOffDate().before(newTimeOff.getEndTimeOffDate())
+                            && newTimeOff.getEndTimeOffDate().after(newTimeOff.getBeginTimeOffDate())) {
+                        timeOffRepository.save(newTimeOff);
+                    } else {
+                        ErrorMessages.showErrorMessage("Invalid time values", "Time range for time" +
+                                " off request is invalid", "Please edit time range for this time off request");
+                    }
+
+                    reloadTimeOffTableView();
+                } else {
+                    ErrorMessages.showErrorMessage("Fields are empty",
+                            "There are empty fields",
+                            "Please select items from drop-down menus or enter text for fields");
+                }
 
         }
 
@@ -356,11 +326,13 @@ public class TimeOffController implements Initializable {
             if(userCol.isVisible()){
                 reloadTimeOffTableViewAllUsers();
                 setDataForTimeOffTableView();
+                reloadScheduleList();
                 resetButtons();
             }
             else{
                 reloadTimeOffTableView();
                 setDataForTimeOffTableView();
+                reloadScheduleList();
                 resetButtons();
             }
 
@@ -480,6 +452,201 @@ public class TimeOffController implements Initializable {
         tableUserLabel.setText("Time Off Requests for " + currUser.getEmployee().getName());
     }
 
+    //used in case the schedule time range is updated after approval
+    private void reloadScheduleList(){
+        //get the current user (String) from LoginController
+        String currentUser = LoginController.userStore;
+
+        scheduleData.clear();
+        scheduleData.addAll(scheduleRepository.findScheduleThisWeekForUser(currentUser));
+
+        if(!(scheduleData.isEmpty())){
+            scheduleList.setItems(scheduleData);
+            scheduleList.setPromptText("Select Schedule");
+
+            //used to fix bug where prompt text disappears
+            scheduleList.setButtonCell(new ListCell<Tblschedule>() {
+                @Override
+                protected void updateItem(Tblschedule item, boolean empty) {
+                    super.updateItem(item, empty) ;
+                    if (empty || item == null) {
+                        setText("Select Schedule");
+                    } else {
+                        setText(String.valueOf(item));
+                    }
+                }
+            });
+        }
+        else{
+            scheduleList.setPromptText("No Schedules Exist");
+        }
+    }
+
+    private void setDataForHourPMLists(){
+        //make a list of hours from 0 to 12 (0 if they did not select an hour)
+        hrList = FXCollections.observableArrayList();
+        hrList.addAll(IntStream.rangeClosed(0,12).boxed().collect(Collectors.toList()));
+
+        //fill the hour, minute, and AM/PM comboboxes with values
+        beginPMList.setItems(pmList);
+        endPMList.setItems(pmList);
+
+        SpinnerValueFactory<Integer> bHours =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(hrList);
+        SpinnerValueFactory<Integer> eHours =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(hrList);
+
+        beginHrList.setValueFactory(bHours);
+        endHrList.setValueFactory(eHours);
+    }
+
+    private void setButtonsForManagerOwner(){
+        //get the current user (String) from LoginController
+        String currentUser = LoginController.userStore;
+
+        //if the user is the owner or manager, they can see buttons to approve requests or show all users
+        if(userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Manager")
+                || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Owner")){
+            //declare variables
+            Button showAllUser = new Button();
+            Button showThisUser = new Button();
+            /*Button approveRequest = new Button();
+            Button disapproveRequest = new Button();*/
+
+            //add buttons to panes
+            optionsPane.getChildren().add(showAllUser);
+            optionsPane2.getChildren().add(showThisUser);
+            /*optionsPane3.getChildren().add(approveRequest);
+            optionsPane4.getChildren().add(disapproveRequest);*/
+
+           /* //set style and action for approving
+            approveRequest.setDisable(true);
+            addActionListenersForCrudButtons(approveRequest);
+            approveRequest.setPrefSize(submitRequestButton.getPrefWidth(), submitRequestButton.getPrefHeight());
+            approveRequest.setText("Approve");
+            approveRequest.setStyle("-fx-text-fill:white; -fx-background-color: #39a7c3;");
+            approveRequest.setOnAction(event ->{
+                Tbltimeoff tfApprove = selectedTimeOff;
+                selectedTimeOff.setApproved(true);
+
+                timeOffRepository.save(tfApprove);
+
+                //reload table with all users if the user column is visible
+                if(userCol.isVisible()){
+                    reloadTimeOffTableViewAllUsers();
+                    setDataForTimeOffTableView();
+                }
+                else{
+                    reloadTimeOffTableView();
+                    setDataForTimeOffTableView();
+                }
+
+            });
+
+            //set up button for disapproving
+            disapproveRequest.setDisable(true);
+            addActionListenersForCrudButtons(disapproveRequest);
+            disapproveRequest.setPrefSize(submitRequestButton.getPrefWidth(), submitRequestButton.getPrefHeight());
+            disapproveRequest.setText("Deny");
+            disapproveRequest.setStyle("-fx-text-fill:white; -fx-background-color: #39a7c3;");
+            disapproveRequest.setOnAction(event ->{
+                Tbltimeoff tfApprove = selectedTimeOff;
+                selectedTimeOff.setApproved(false);
+
+                timeOffRepository.save(tfApprove);
+
+                //reload table w/ all users if the user column is visible (only visible if all users are shown)
+                if(userCol.isVisible()){
+                    reloadTimeOffTableViewAllUsers();
+                    setDataForTimeOffTableView();
+                }
+                else{
+                    reloadTimeOffTableView();
+                    setDataForTimeOffTableView();
+                }
+
+            });*/
+
+            //set up other buttons for showing all users or current user
+            showThisUser.setText("Current User");
+            showThisUser.setStyle("-fx-text-fill:white; -fx-background-color: #39a7c3;");
+            showThisUser.setOnAction(event ->{
+                reloadTimeOffTableView();
+                setDataForTimeOffTableView();
+            });
+
+            showAllUser.setText("All Users");
+            showAllUser.setStyle("-fx-text-fill:white; -fx-background-color: #39a7c3;");
+            showAllUser.setOnAction(event -> {
+                //use function to reload table showing all users
+                reloadTimeOffTableViewAllUsers();
+                setDataForTimeOffTableView();
+            });
+        }
+        else{
+            //user does not have privileges to approve requests
+            System.out.println("User is not owner or manager");
+        }
+    }
+
+    /*@FXML
+    private void showCurrentWeek(){
+        //if the user column is visible (which is only for managers/owner)
+        if(userCol.isVisible()){
+            //reload the table to show all users (only for managers/owner)
+            listOfTimeOffs.clear();
+            timeOffTable.setItems(listOfTimeOffs);
+
+            listOfTimeOffs.addAll(timeOffRepository.findTimeOffThisWeekAllUser());
+            filteredListOfTimeOff = new FilteredList<>(listOfTimeOffs);
+            timeOffTable.setItems(filteredListOfTimeOff);
+            tableUserLabel.setText("Time Off Requests This Week for All Users");
+            setDataForTimeOffTableView();
+        }
+        else{
+            String currentUser = LoginController.userStore;
+            Tblusers currUser = userRepository.findUsername(currentUser);
+
+            listOfTimeOffs.clear();
+            timeOffTable.setItems(listOfTimeOffs);
+
+            listOfTimeOffs.addAll(timeOffRepository.findTimeOffThisWeekForUser(currentUser));
+            filteredListOfTimeOff = new FilteredList<>(listOfTimeOffs);
+            timeOffTable.setItems(filteredListOfTimeOff);
+            tableUserLabel.setText("Time Off Requests This Week for " + currUser.getEmployee().getName());
+            setDataForTimeOffTableView();
+        }
+    }
+
+    @FXML
+    private void showAllWeeks(){
+        //if the user column is visible (which is only for managers/owner)
+        if(userCol.isVisible()){
+            //reload the table to show all users (only for managers/owner)
+            listOfTimeOffs.clear();
+            timeOffTable.setItems(listOfTimeOffs);
+
+            listOfTimeOffs.addAll(timeOffRepository.findAllTimeOff());
+            filteredListOfTimeOff = new FilteredList<>(listOfTimeOffs);
+            timeOffTable.setItems(filteredListOfTimeOff);
+            tableUserLabel.setText("Time Off Requests All Time for All Users");
+            setDataForTimeOffTableView();
+        }
+        else{
+            String currentUser = LoginController.userStore;
+            Tblusers currUser = userRepository.findUsername(currentUser);
+
+            listOfTimeOffs.clear();
+            timeOffTable.setItems(listOfTimeOffs);
+
+            listOfTimeOffs.addAll(timeOffRepository.findAllTimeOffByUser(currentUser));
+            filteredListOfTimeOff = new FilteredList<>(listOfTimeOffs);
+            timeOffTable.setItems(filteredListOfTimeOff);
+            tableUserLabel.setText("Time Off Requests All Time for " + currUser.getEmployee().getName());
+            setDataForTimeOffTableView();
+        }
+    }*/
+
     private void addActionListenersForCrudButtons(Button button){
         timeOffTable.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
             if(newValue != null){
@@ -491,6 +658,26 @@ public class TimeOffController implements Initializable {
     private void resetButtons(){
         timeOffEditButton.setDisable(true);
         timeOffDeleteButton.setDisable(true);
+    }
+
+    private void addToggleGroupForRadioButtons(){
+        ToggleGroup toggleGroup = new ToggleGroup();
+
+        dayOffCheck.setToggleGroup(toggleGroup);
+        changeAvailCheck.setToggleGroup(toggleGroup);
+
+    }
+
+    @FXML
+    private void dayOffChecked(){
+        timePane.setVisible(false);
+        submitRequestButton.setVisible(true);
+    }
+
+    @FXML
+    private void changeAvailabilityChecked(){
+        timePane.setVisible(true);
+        submitRequestButton.setVisible(false);
     }
 
 }

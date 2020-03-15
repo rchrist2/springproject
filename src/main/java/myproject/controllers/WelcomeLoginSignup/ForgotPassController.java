@@ -12,6 +12,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
@@ -37,11 +38,23 @@ import java.util.ResourceBundle;
 @Component
 public class ForgotPassController implements Initializable {
 
-    public AnchorPane signupAnchor;
-    public TextField signupUsernameText;
-    public Pane paneLoadTextfield;
-    public Pane paneLoadButton;
-    public Button signupButton;
+    @FXML
+    private AnchorPane signupAnchor;
+
+    @FXML
+    private TextField signupUsernameText;
+
+    @FXML
+    private Pane paneLoadTextfield;
+
+    @FXML
+    private Pane paneLoadButton;
+
+    @FXML
+    private Button signupButton;
+
+    @FXML
+    private ImageView spinner;
 
     public static String forgotPassUser;
 
@@ -77,8 +90,8 @@ public class ForgotPassController implements Initializable {
     //Follows example here: https://www.baeldung.com/spring-email
     @FXML
     private void sendCode() throws IOException, MessagingException, InterruptedException {
-        Label lb1 = new Label("Sending email...");
-        paneLoadTextfield.getChildren().add(lb1);
+        //show the loading animation
+        spinner.setVisible(true);
 
         if(!(signupUsernameText.getText().isEmpty())){
             //if the user exists in the database, then email the code to them
@@ -112,11 +125,11 @@ public class ForgotPassController implements Initializable {
                         //show the rest of the UI elements to validate the code that was emailed
                         Platform.runLater(new Runnable() {
                             public void run() {
-                                //maybe change this to a pop-up message or label
+                                paneLoadTextfield.getChildren().removeAll();
+                                spinner.setVisible(false);
+
                                 System.out.println("Email sent");
                                 ErrorMessages.showInformationMessage("Success", "Successfully sent email", "Email sent");
-
-                                paneLoadTextfield.getChildren().remove(lb1);
 
                                 TextField tf1 = new TextField();
                                 Button button = new Button();
@@ -166,7 +179,8 @@ public class ForgotPassController implements Initializable {
                         Platform.runLater(new Runnable() {
                             @Override
                             public void run() {
-                                paneLoadTextfield.getChildren().remove(lb1);
+                                paneLoadTextfield.getChildren().removeAll();
+                                spinner.setVisible(false);
                                 ErrorMessages.showErrorMessage("Failed to send email", "Email could not be sent",
                                         "Please retry or contact administrator");
                             }
@@ -177,7 +191,8 @@ public class ForgotPassController implements Initializable {
                 thread.start();
             }
             else{
-                paneLoadTextfield.getChildren().remove(lb1);
+                paneLoadTextfield.getChildren().removeAll();
+                spinner.setVisible(false);
                 ErrorMessages.showErrorMessage("User does not exist","No user exists with this email",
                         "Please enter a valid email address");
             }

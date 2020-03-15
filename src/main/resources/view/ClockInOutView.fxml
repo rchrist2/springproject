@@ -16,6 +16,10 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
+<<<<<<< HEAD
+=======
+<?import javafx.scene.control.RadioButton?>
+>>>>>>> 89d229f3a2b81c242e8465b8e27d3b3ce4ba1732
 <AnchorPane prefHeight="750.0" prefWidth="985.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.Dashboard.ClockInOut.ClockInOutController">
    <children>
       <Pane prefHeight="115.0" prefWidth="985.0" style="-fx-background-color: linear-gradient(to right, #39a7c3 , white); -fx-border-color: transparent transparent derive(black, 10%) transparent;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -57,7 +61,6 @@
                   <TableColumn fx:id="punchInCol" prefWidth="99.0" text="Punch In" />
                   <TableColumn fx:id="punchOutCol" prefWidth="99.0" text="Punch Out" />
                   <TableColumn fx:id="scheduleCol" prefWidth="99.0" text="Schedule Date" />
-                  <TableColumn fx:id="userCol" prefWidth="82.99998474121094" text="User" visible="false" />
                   <TableColumn fx:id="userCol" prefWidth="99.0" text="User" visible="false" />
                </columns>
             </TableView>
@@ -99,8 +102,8 @@
                   <Font size="15.0" />
                </font>
             </Label>
-            <CheckBox fx:id="currentWeekCheck" layoutX="68.0" layoutY="234.0" mnemonicParsing="false" onAction="#showCurrentWeek" text="Current Week" />
-            <CheckBox fx:id="allTimeCheck" layoutX="176.0" layoutY="234.0" mnemonicParsing="false" onAction="#showAllWeeks" text="All Time" />
+            <RadioButton fx:id="currentWeekCheck" layoutX="68.0" layoutY="234.0" mnemonicParsing="false" onAction="#showCurrentWeek" text="Current Week" />
+            <RadioButton fx:id="allTimeCheck" layoutX="176.0" layoutY="234.0" mnemonicParsing="false" onAction="#showAllWeeks" text="All Time" />
          </children>
       </AnchorPane>
    </children>
