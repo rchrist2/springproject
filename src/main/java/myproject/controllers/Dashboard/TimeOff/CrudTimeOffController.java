@@ -8,10 +8,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-<<<<<<< HEAD
-=======
 import myproject.controllers.WelcomeLoginSignup.LoginController;
->>>>>>> 89d229f3a2b81c242e8465b8e27d3b3ce4ba1732
 import javafx.stage.Stage;
 import myproject.ErrorMessages;
 import myproject.controllers.WelcomeLoginSignup.LoginController;
@@ -231,16 +228,9 @@ public class CrudTimeOffController implements Initializable {
         Tblschedule sch = scheduleRepository.findByScheduleId(scheduleList.getSelectionModel().getSelectedItem().getScheduleId());
 
         //check if the user has privileges to approve or deny the request
-<<<<<<< HEAD
         if (userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
                 || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner")) {
-            //save the time off with approved/denied based on selection in drop-down
-=======
-        if (userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Manager")
-                || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Owner")) {
-
             //approve or deny time off based on selection in drop-down
->>>>>>> 89d229f3a2b81c242e8465b8e27d3b3ce4ba1732
             if(approveList.getSelectionModel().getSelectedItem().equals("Approve")) {
                 isApproved = true;
 
