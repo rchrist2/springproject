@@ -223,12 +223,62 @@ public class CrudTimeOffController implements Initializable {
         Tbltimeoff tf = selectedTimeOff;
         Boolean isApproved = tf.isApproved();
 
+        //if approved, use this variable to change the time range for the selected schedule
+        Tblschedule sch = scheduleRepository.findByScheduleId(scheduleList.getSelectionModel().getSelectedItem().getScheduleId());
+
         //check if the user has privileges to approve or deny the request
         if (userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Manager")
                 || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Owner")) {
-            //save the time off with approved/denied based on selection in drop-down
+
+            //approve or deny time off based on selection in drop-down
             if(approveList.getSelectionModel().getSelectedItem().equals("Approve")) {
                 isApproved = true;
+
+                //beginning hour
+                if (beginPMList.getSelectionModel().getSelectedItem().equals("AM")) {
+                    //if the beginning hour is 12 am
+                    if(beginHrList.getValue().toString().equals("12")){
+                        sch.setScheduleTimeBegin(Time.valueOf("00"
+                                + ":00:00"));
+                    }
+                    else {
+                        sch.setScheduleTimeBegin(Time.valueOf(beginHrList.getValue().toString()
+                                + ":00:00"));
+                    }
+                } else if (beginPMList.getSelectionModel().getSelectedItem().equals("PM")) {
+                    //if the beginning hour is 12 pm
+                    if(beginHrList.getValue().toString().equals("12")) {
+                        sch.setScheduleTimeBegin(Time.valueOf("12"
+                                + ":00:00"));
+                    }
+                    else{
+                        sch.setScheduleTimeBegin(Time.valueOf((beginHrList.getValue() + 12)
+                                + ":00:00"));
+                    }
+                }
+
+                //ending hour
+                if (endPMList.getSelectionModel().getSelectedItem().equals("AM")) {
+                    //if the ending hour is 12 am
+                    if(endHrList.getValue().toString().equals("12")){
+                        sch.setScheduleTimeEnd(Time.valueOf("00"
+                                + ":00:00"));
+                    }
+                    else {
+                        sch.setScheduleTimeEnd(Time.valueOf(endHrList.getValue().toString()
+                                + ":00:00"));
+                    }
+                } else if (endPMList.getSelectionModel().getSelectedItem().equals("PM")) {
+                    //if the ending hour is 12 pm
+                    if(endHrList.getValue().toString().equals("12")) {
+                        sch.setScheduleTimeEnd(Time.valueOf("12"
+                                + ":00:00"));
+                    }
+                    else {
+                        sch.setScheduleTimeEnd(Time.valueOf((endHrList.getValue() + 12)
+                                + ":00:00"));
+                    }
+                }
             }
             else if(approveList.getSelectionModel().getSelectedItem().equals("Deny")) {
                 isApproved = false;
@@ -241,7 +291,6 @@ public class CrudTimeOffController implements Initializable {
 
         //convert spinner values to 24 hour clock depending if AM or PM was selected
         if (beginPMList.getSelectionModel().getSelectedItem().equals("AM")) {
-
             //if the beginning hour is 12 am
             if(beginHrList.getValue().toString().equals("12")){
                 tf.setBeginTimeOffDate(Time.valueOf("00"
@@ -252,7 +301,6 @@ public class CrudTimeOffController implements Initializable {
                         + ":00:00"));
             }
         } else if (beginPMList.getSelectionModel().getSelectedItem().equals("PM")) {
-
             //if the beginning hour is 12 pm
             if(beginHrList.getValue().toString().equals("12")) {
                 tf.setBeginTimeOffDate(Time.valueOf("12"
@@ -265,7 +313,6 @@ public class CrudTimeOffController implements Initializable {
         }
 
         if (endPMList.getSelectionModel().getSelectedItem().equals("AM")) {
-
             //if the ending hour is 12 am
             if(endHrList.getValue().toString().equals("12")){
                 tf.setEndTimeOffDate(Time.valueOf("00"
@@ -276,7 +323,6 @@ public class CrudTimeOffController implements Initializable {
                         + ":00:00"));
             }
         } else if (endPMList.getSelectionModel().getSelectedItem().equals("PM")) {
-
             //if the ending hour is 12 pm
             if(endHrList.getValue().toString().equals("12")) {
                 tf.setEndTimeOffDate(Time.valueOf("12"
@@ -299,10 +345,11 @@ public class CrudTimeOffController implements Initializable {
         reasonInput.getText().trim().isEmpty() ||
         scheduleList.getSelectionModel().isEmpty())) {
 
-            //check if the selected time range is valid
+            //also check if the selected time range is valid before saving
             if (tf.getBeginTimeOffDate().before(tf.getEndTimeOffDate())
                     && tf.getEndTimeOffDate().after(tf.getBeginTimeOffDate())) {
                 timeOffRepository.save(tf);
+                scheduleRepository.save(sch);
 
                 Stage stage = (Stage) saveButton.getScene().getWindow();
                 System.out.println("Saved");

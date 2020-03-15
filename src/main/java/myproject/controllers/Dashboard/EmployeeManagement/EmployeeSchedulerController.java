@@ -346,6 +346,7 @@ public class EmployeeSchedulerController implements Initializable {
         if(!errors) {
 
             if(scheduleButton.getText().equals("Update Schedule")){
+                //TODO this causes an error if time off requests/clock history exists for the schedule
                 scheduleService.deleteSchedule(selectedEmployee.getId());
             }
 

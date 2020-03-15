@@ -132,6 +132,7 @@ public class TimeOffController implements Initializable {
     public TextField reasonInput;
 
     public ObservableList<Tblschedule> scheduleData;
+    private FilteredList<Tblschedule> filteredScheduleData;
 
     private ObservableList<Tbltimeoff> listOfTimeOffs;
     private FilteredList<Tbltimeoff> filteredListOfTimeOff;
@@ -150,34 +151,15 @@ public class TimeOffController implements Initializable {
         Tblusers currUser = userRepository.findUsername(currentUser);
         tableUserLabel.setText("Time Off Requests for " + currUser.getEmployee().getName());
 
-        //Initialize the observable list and add all the time offs to the list
+        //Initialize the observable lists
         listOfTimeOffs = FXCollections.observableArrayList();
-        listOfTimeOffs.addAll(timeOffRepository.findAllTimeOffByUser(currentUser));
-
-        //initialize the schedule dates for the current user
         scheduleData = FXCollections.observableArrayList();
-        scheduleData.addAll(scheduleRepository.findScheduleForUser(currentUser));
-        scheduleList.setItems(scheduleData);
 
-        //make a list of hours from 0 to 12 (0 if they did not select an hour)
-        hrList = FXCollections.observableArrayList();
-        hrList.addAll(IntStream.rangeClosed(0,12).boxed().collect(Collectors.toList()));
-
-        //fill the hour, minute, and AM/PM comboboxes with values
-        beginPMList.setItems(pmList);
-        endPMList.setItems(pmList);
-
-        SpinnerValueFactory<Integer> bHours =
-                new SpinnerValueFactory.ListSpinnerValueFactory<>(hrList);
-        SpinnerValueFactory<Integer> eHours =
-                new SpinnerValueFactory.ListSpinnerValueFactory<>(hrList);
-
-        beginHrList.setValueFactory(bHours);
-        endHrList.setValueFactory(eHours);
-
-        //reload table, set column data, and add listeners to buttons
+        //reload table, set data, and add listeners to buttons
+        setDataForHourPMLists();
         reloadTimeOffTableView();
         setDataForTimeOffTableView();
+        reloadScheduleList();
         addActionListenersForCrudButtons(timeOffDeleteButton);
         addActionListenersForCrudButtons(timeOffEditButton);
         addToggleGroupForRadioButtons();
@@ -186,89 +168,11 @@ public class TimeOffController implements Initializable {
             selectedTimeOff = newv;
         });
 
-        //if the user is the owner or manager, they can see buttons to approve requests or show all users
-        if(userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Manager")
-        || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Owner")){
-            //declare variables
-            Button showAllUser = new Button();
-            Button showThisUser = new Button();
-            /*Button approveRequest = new Button();
-            Button disapproveRequest = new Button();*/
+        //set "Request Day Off" to selected by default
+        dayOffCheck.setSelected(true);
 
-            //add buttons to panes
-            optionsPane.getChildren().add(showAllUser);
-            optionsPane2.getChildren().add(showThisUser);
-            /*optionsPane3.getChildren().add(approveRequest);
-            optionsPane4.getChildren().add(disapproveRequest);*/
+        setButtonsForManagerOwner();
 
-           /* //set style and action for approving
-            approveRequest.setDisable(true);
-            addActionListenersForCrudButtons(approveRequest);
-            approveRequest.setPrefSize(submitRequestButton.getPrefWidth(), submitRequestButton.getPrefHeight());
-            approveRequest.setText("Approve");
-            approveRequest.setStyle("-fx-text-fill:white; -fx-background-color: #39a7c3;");
-            approveRequest.setOnAction(event ->{
-                Tbltimeoff tfApprove = selectedTimeOff;
-                selectedTimeOff.setApproved(true);
-
-                timeOffRepository.save(tfApprove);
-
-                //reload table with all users if the user column is visible
-                if(userCol.isVisible()){
-                    reloadTimeOffTableViewAllUsers();
-                    setDataForTimeOffTableView();
-                }
-                else{
-                    reloadTimeOffTableView();
-                    setDataForTimeOffTableView();
-                }
-
-            });
-
-            //set up button for disapproving
-            disapproveRequest.setDisable(true);
-            addActionListenersForCrudButtons(disapproveRequest);
-            disapproveRequest.setPrefSize(submitRequestButton.getPrefWidth(), submitRequestButton.getPrefHeight());
-            disapproveRequest.setText("Deny");
-            disapproveRequest.setStyle("-fx-text-fill:white; -fx-background-color: #39a7c3;");
-            disapproveRequest.setOnAction(event ->{
-                Tbltimeoff tfApprove = selectedTimeOff;
-                selectedTimeOff.setApproved(false);
-
-                timeOffRepository.save(tfApprove);
-
-                //reload table w/ all users if the user column is visible (only visible if all users are shown)
-                if(userCol.isVisible()){
-                    reloadTimeOffTableViewAllUsers();
-                    setDataForTimeOffTableView();
-                }
-                else{
-                    reloadTimeOffTableView();
-                    setDataForTimeOffTableView();
-                }
-
-            });*/
-
-            //set up other buttons for showing all users or current user
-            showThisUser.setText("Current User");
-            showThisUser.setStyle("-fx-text-fill:white; -fx-background-color: #39a7c3;");
-            showThisUser.setOnAction(event ->{
-                reloadTimeOffTableView();
-                setDataForTimeOffTableView();
-            });
-
-            showAllUser.setText("All Users");
-            showAllUser.setStyle("-fx-text-fill:white; -fx-background-color: #39a7c3;");
-            showAllUser.setOnAction(event -> {
-                //use function to reload table showing all users
-                reloadTimeOffTableViewAllUsers();
-                setDataForTimeOffTableView();
-            });
-        }
-        else{
-            //user does not have privileges to approve requests
-            System.out.println("User is not owner or manager");
-        }
     }
 
     @FXML
@@ -395,11 +299,13 @@ public class TimeOffController implements Initializable {
             if(userCol.isVisible()){
                 reloadTimeOffTableViewAllUsers();
                 setDataForTimeOffTableView();
+                reloadScheduleList();
                 resetButtons();
             }
             else{
                 reloadTimeOffTableView();
                 setDataForTimeOffTableView();
+                reloadScheduleList();
                 resetButtons();
             }
 
@@ -517,6 +423,143 @@ public class TimeOffController implements Initializable {
 
         //set this back to current user in case All Users were shown
         tableUserLabel.setText("Time Off Requests for " + currUser.getEmployee().getName());
+    }
+
+    //used in case the schedule time range is updated after approval
+    private void reloadScheduleList(){
+        //get the current user (String) from LoginController
+        String currentUser = LoginController.userStore;
+
+        scheduleData.clear();
+        scheduleData.addAll(scheduleRepository.findScheduleThisWeekForUser(currentUser));
+
+        if(!(scheduleData.isEmpty())){
+            scheduleList.setItems(scheduleData);
+            scheduleList.setPromptText("Select Schedule");
+
+            //used to fix bug where prompt text disappears
+            scheduleList.setButtonCell(new ListCell<Tblschedule>() {
+                @Override
+                protected void updateItem(Tblschedule item, boolean empty) {
+                    super.updateItem(item, empty) ;
+                    if (empty || item == null) {
+                        setText("Select Schedule");
+                    } else {
+                        setText(String.valueOf(item));
+                    }
+                }
+            });
+        }
+        else{
+            scheduleList.setPromptText("No Schedules Exist");
+        }
+    }
+
+    private void setDataForHourPMLists(){
+        //make a list of hours from 0 to 12 (0 if they did not select an hour)
+        hrList = FXCollections.observableArrayList();
+        hrList.addAll(IntStream.rangeClosed(0,12).boxed().collect(Collectors.toList()));
+
+        //fill the hour, minute, and AM/PM comboboxes with values
+        beginPMList.setItems(pmList);
+        endPMList.setItems(pmList);
+
+        SpinnerValueFactory<Integer> bHours =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(hrList);
+        SpinnerValueFactory<Integer> eHours =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(hrList);
+
+        beginHrList.setValueFactory(bHours);
+        endHrList.setValueFactory(eHours);
+    }
+
+    private void setButtonsForManagerOwner(){
+        //get the current user (String) from LoginController
+        String currentUser = LoginController.userStore;
+
+        //if the user is the owner or manager, they can see buttons to approve requests or show all users
+        if(userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Manager")
+                || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Owner")){
+            //declare variables
+            Button showAllUser = new Button();
+            Button showThisUser = new Button();
+            /*Button approveRequest = new Button();
+            Button disapproveRequest = new Button();*/
+
+            //add buttons to panes
+            optionsPane.getChildren().add(showAllUser);
+            optionsPane2.getChildren().add(showThisUser);
+            /*optionsPane3.getChildren().add(approveRequest);
+            optionsPane4.getChildren().add(disapproveRequest);*/
+
+           /* //set style and action for approving
+            approveRequest.setDisable(true);
+            addActionListenersForCrudButtons(approveRequest);
+            approveRequest.setPrefSize(submitRequestButton.getPrefWidth(), submitRequestButton.getPrefHeight());
+            approveRequest.setText("Approve");
+            approveRequest.setStyle("-fx-text-fill:white; -fx-background-color: #39a7c3;");
+            approveRequest.setOnAction(event ->{
+                Tbltimeoff tfApprove = selectedTimeOff;
+                selectedTimeOff.setApproved(true);
+
+                timeOffRepository.save(tfApprove);
+
+                //reload table with all users if the user column is visible
+                if(userCol.isVisible()){
+                    reloadTimeOffTableViewAllUsers();
+                    setDataForTimeOffTableView();
+                }
+                else{
+                    reloadTimeOffTableView();
+                    setDataForTimeOffTableView();
+                }
+
+            });
+
+            //set up button for disapproving
+            disapproveRequest.setDisable(true);
+            addActionListenersForCrudButtons(disapproveRequest);
+            disapproveRequest.setPrefSize(submitRequestButton.getPrefWidth(), submitRequestButton.getPrefHeight());
+            disapproveRequest.setText("Deny");
+            disapproveRequest.setStyle("-fx-text-fill:white; -fx-background-color: #39a7c3;");
+            disapproveRequest.setOnAction(event ->{
+                Tbltimeoff tfApprove = selectedTimeOff;
+                selectedTimeOff.setApproved(false);
+
+                timeOffRepository.save(tfApprove);
+
+                //reload table w/ all users if the user column is visible (only visible if all users are shown)
+                if(userCol.isVisible()){
+                    reloadTimeOffTableViewAllUsers();
+                    setDataForTimeOffTableView();
+                }
+                else{
+                    reloadTimeOffTableView();
+                    setDataForTimeOffTableView();
+                }
+
+            });*/
+
+            //set up other buttons for showing all users or current user
+            showThisUser.setText("Current User");
+            showThisUser.setStyle("-fx-text-fill:white; -fx-background-color: #39a7c3;");
+            showThisUser.setOnAction(event ->{
+                reloadTimeOffTableView();
+                setDataForTimeOffTableView();
+            });
+
+            showAllUser.setText("All Users");
+            showAllUser.setStyle("-fx-text-fill:white; -fx-background-color: #39a7c3;");
+            showAllUser.setOnAction(event -> {
+                //use function to reload table showing all users
+                reloadTimeOffTableViewAllUsers();
+                setDataForTimeOffTableView();
+            });
+        }
+        else{
+            //user does not have privileges to approve requests
+            System.out.println("User is not owner or manager");
+        }
     }
 
     /*@FXML
