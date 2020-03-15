@@ -1,5 +1,8 @@
 package myproject.models;
 
+import myproject.repositories.EmployeeRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

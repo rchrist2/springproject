@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
 import java.sql.Time;
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -51,6 +52,19 @@ public interface ScheduleRepository extends CrudRepository<Tblschedule, Integer>
             "JOIN tblemployee e ON s.employee_id = e.id " +
             "WHERE s.employee_id = :empId AND s.day_id = :dayId", nativeQuery = true)
     String findEmployeeEndHours(@Param("empId") int empId, @Param("dayId") int dayId);
+
+    @Query(value = "SELECT DISTINCT * FROM tblschedule WHERE schedule_date >= :startOfNextWeek AND schedule_date <= :endOfNextWeek AND employee_id = :employeeId",
+            nativeQuery = true)
+    Tblschedule checkEmployeeScheduleForNextWeek(@Param("employeeId") int employeeId, @Param("startOfNextWeek") String startOfNextWeek,
+                                                 @Param("endOfNextWeek") String endOfNextWeek);
+
+    @Query(value = "SELECT * FROM tblSchedule WHERE schedule_date >= :startOfNextWeek AND schedule_date <= :endOfNextWeek", nativeQuery = true)
+    List<Tblschedule> findAllEmployeeScheduleForWeek(@Param("startOfNextWeek") String startOfNextWeek,
+                                                     @Param("endOfNextWeek") String endOfNextWeek);
+
+    @Modifying
+    @Query(value = "INSERT INTO tblschedule VALUES (null, null, null, :employeeId, 1)", nativeQuery = true)
+    void insertEmployeeScheduleForNewWeek(@Param("employeeId") int employeeId);
 
     @Modifying
     @Query(value = "UPDATE tblschedule SET schedule_time_begin = :begin, schedule_time_end = :end WHERE employee_id = :empId", nativeQuery = true)

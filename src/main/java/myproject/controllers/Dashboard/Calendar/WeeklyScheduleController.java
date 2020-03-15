@@ -117,7 +117,7 @@ public class WeeklyScheduleController implements Initializable {
             for (int j = 1; j <= 7; j++) {
                 //Store the hours of the employees in a list
                 List<Tblschedule> employeeSchedule = scheduleRepository.findScheduleForEmployee(name.getId());
-                System.out.println("The size of employeeSchedule");
+                System.out.println("The size of employeeSchedule: " + employeeSchedule.size());
 
                 /*if(x < employeeSchedule.size()) {
                     Tblschedule currSchedule = employeeSchedule.get(x);
@@ -173,8 +173,6 @@ public class WeeklyScheduleController implements Initializable {
             dayOfWeek = dayOfWeek.plusDays(1);
         }
     }
-
-
 
     public void handlePreviousMonth(){
 

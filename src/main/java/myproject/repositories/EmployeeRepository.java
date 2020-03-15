@@ -23,6 +23,18 @@ public interface EmployeeRepository extends CrudRepository<Tblemployee, Integer>
             "WHERE s.schedule_id IS NULL", nativeQuery = true)
     List<Tblemployee> findAllEmployeesWithoutSchedule();
 
+    @Query(value = "SELECT e.id, e.name, e.email, e.address, e.phone, e.roles_id " +
+            "FROM tblemployee e " +
+            "EXCEPT " +
+            "SELECT em.id, em.name, em.email, em.address, em.phone, em.roles_id " +
+            "FROM tblemployee em " +
+            "JOIN tblschedule s " +
+            "ON em.id = s.employee_id " +
+            "WHERE schedule_date BETWEEN CAST(:startOfTheWeek AS DATE) AND CAST(:endOfTheWeek AS DATE)", nativeQuery = true)
+    List<Tblemployee> findAllEmployeesWithoutScheduleByWeek(@Param("startOfTheWeek") String startOfTheWeek, @Param("endOfTheWeek") String endOfTheWeek);
+
+
+
     @Query(value = "SELECT * FROM tblemployee e JOIN tblschedule s ON e.id = s.employee_id", nativeQuery = true)
     List<Tblemployee> findAllEmployeesWithSchedule();
 
@@ -35,6 +47,19 @@ public interface EmployeeRepository extends CrudRepository<Tblemployee, Integer>
     //Returns the user for an employee
     @Query(value = "SELECT * FROM tblemployee e JOIN tblusers u ON e.id=u.employee_id WHERE username = :username", nativeQuery = true)
     List<Tblemployee> findUserForEmployee(@Param("username") String user);
+
+    @Query(value = "SELECT * FROM tblemployee e " +
+                   "JOIN tblschedule s " +
+                   "ON e.id = s.employee_id " +
+                   "WHERE schedule_date >= :startOfTheWeek " +
+                   "AND schedule_date <= :endOfTheWeek AND employee_id = :employeeId", nativeQuery = true)
+    List<Tblemployee> findEmployeeByWeek(@Param("startOfTheWeek") String startOfTheWeek, @Param("endOfTheWeek") String endOfTheWeek, @Param("employeeId") int employeeId);
+
+    @Query(value = "SELECT DISTINCT e.id, e.name, e.email, e.address, e.phone, e.roles_id " +
+            "FROM tblemployee e " +
+            "JOIN tblschedule s ON e.id = s.employee_id " +
+            "WHERE schedule_date >= :startOfTheWeek AND schedule_date <= :endOfTheWeek",nativeQuery = true)
+    List<Tblemployee> findAllEmployeeByWeek(@Param("startOfTheWeek") String startOfTheWeek, @Param("endOfTheWeek") String endOfTheWeek);
 
     @Query(value = "SELECT * FROM tblemployee WHERE id = :id ", nativeQuery = true)
     Tblemployee findEmployeeById(@Param("id") int id);

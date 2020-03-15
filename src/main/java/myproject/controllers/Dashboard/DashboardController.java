@@ -9,6 +9,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -42,9 +44,6 @@ public class DashboardController implements Initializable {
             movePane;
 
     @FXML
-    private HBox calendarNavBar, employeeManagementNavBar, buttonNavBar;
-
-    @FXML
     private AnchorPane dashboardAnchorPane;
 
     @Autowired
@@ -58,12 +57,13 @@ public class DashboardController implements Initializable {
 
     public Rectangle2D screenBounds;
     private double xOffset = 0, yOffset = 0;
+    private Button newButton = new Button();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         screenBounds = Screen.getPrimary().getVisualBounds();
 
-        switchWindow("/view/CalendarView.fxml");
+        switchWindow("/view/WeeklySchedule.fxml");
 
         //Checks for the current logged in user for their role
         Tblusers currentLoggedUser = userRepository.findUsername(LoginController.userStore);
@@ -86,30 +86,45 @@ public class DashboardController implements Initializable {
         //Captures the button that was clicked
         Button clickedButton = (Button)event.getSource();
 
-        /*
-        Checks which button is pressed and changes the screen
-        to the correct window (ex. Calender button -> CalendarView.Fxml)
-         */
+        //Checks which button is pressed and changes the screen
+        //to the correct window (ex. Calender button -> CalendarView.Fxml)
         switch(clickedButton.getText()){
-            case "Calendar":
+/*            case "Calendar":
+                newButton.setDisable(false);
                 System.out.println("You clicked the calendar button");
                 switchWindow("/view/CalendarView.fxml");
-                break;
+                newButton = clickedButton;
+                newButton.setDisable(true);
+
+                break;*/
             case "Management":
+                newButton.setDisable(false);
                 System.out.println("You clicked the Employee Management button");
                 switchWindow("/view/EmployeeManagementView.fxml");
+                newButton = clickedButton;
+                newButton.setDisable(true);
+
                 break;
             case "Scheduler":
+                newButton.setDisable(false);
                 System.out.println("You clicked the Employee Scheduler button");
                 switchWindow("/view/EmployeeScheduler.fxml");
+                newButton = clickedButton;
+                newButton.setDisable(true);
                 break;
             case "Clock In/Out":
+                newButton.setDisable(false);
                 System.out.println("You clicked the Clock In/Out button");
                 switchWindow("/view/ClockInOutView.fxml");
+                newButton = clickedButton;
+                newButton.setDisable(true);
                 break;
             case "Time Off":
+                newButton.setDisable(false);
                 System.out.println("You clicked the Request Time Off button");
                 switchWindow("/view/TimeOffView.fxml");
+                newButton = clickedButton;
+                newButton.setDisable(true);
                 break;
             case "Logout":
                 System.out.println("You clicked the Return to Sign In button");
@@ -142,10 +157,14 @@ public class DashboardController implements Initializable {
 
                 break;
             case "Weekly Calendar":
+                newButton.setDisable(false);
                 switchWindow("/view/WeeklySchedule.fxml");
                 System.out.println("You clicked the Weekly Calendar button");
+                newButton = clickedButton;
+                newButton.setDisable(true);
                 break;
         }
+
     }
 
     //Function to switch windows within the pane

@@ -20,11 +20,8 @@ import myproject.ErrorMessages;
 import myproject.controllers.WelcomeLoginSignup.LoginController;
 import myproject.models.Tblschedule;
 import myproject.models.Tbltimeoff;
-<<<<<<< HEAD:src/main/java/myproject/controllers/Dashboard/TimeOff/TimeOffController.java
-=======
 import myproject.models.Tblusers;
 import myproject.repositories.EmployeeRepository;
->>>>>>> 6fe0a3d8dfdf7d260a0d2f1ea0e131850d8824f3:src/main/java/myproject/controllers/TimeOffController.java
 import myproject.repositories.ScheduleRepository;
 import myproject.repositories.TimeOffRepository;
 import myproject.repositories.UserRepository;
@@ -167,8 +164,8 @@ public class TimeOffController implements Initializable {
         });
 
         //if the user is the owner or manager, they can see buttons to approve requests or show all users
-        if(userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Manager")
-        || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Owner")){
+        if(userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
+        || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner")){
             //declare variables
             Button showAllUser = new Button();
             Button showThisUser = new Button();

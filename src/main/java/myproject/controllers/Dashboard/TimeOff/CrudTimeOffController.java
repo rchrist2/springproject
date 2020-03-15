@@ -6,13 +6,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-<<<<<<< HEAD:src/main/java/myproject/controllers/Dashboard/TimeOff/CrudTimeOffController.java
-=======
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
->>>>>>> 6fe0a3d8dfdf7d260a0d2f1ea0e131850d8824f3:src/main/java/myproject/controllers/CrudTimeOffController.java
 import javafx.stage.Stage;
 import myproject.ErrorMessages;
+import myproject.controllers.WelcomeLoginSignup.LoginController;
 import myproject.models.Tblschedule;
 import myproject.models.Tbltimeoff;
 import myproject.repositories.*;
@@ -111,8 +109,8 @@ public class CrudTimeOffController implements Initializable {
         endHrList.setValueFactory(eHours);
 
         //give only managers and owner ability to approve/disapprove
-        if (userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Manager")
-                || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Owner")) {
+        if (userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
+                || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner")) {
 
             approveList.setDisable(false);
             errorMsgPane.setVisible(false);
@@ -226,8 +224,8 @@ public class CrudTimeOffController implements Initializable {
         Boolean isApproved = tf.isApproved();
 
         //check if the user has privileges to approve or deny the request
-        if (userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Manager")
-                || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Owner")) {
+        if (userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
+                || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner")) {
             //save the time off with approved/denied based on selection in drop-down
             if(approveList.getSelectionModel().getSelectedItem().equals("Approve")) {
                 isApproved = true;
@@ -334,8 +332,8 @@ public class CrudTimeOffController implements Initializable {
         //get the current user
         String currentUser = LoginController.userStore;
 
-        if (!(userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Manager")
-                || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Owner"))) {
+        if (!(userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
+                || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner"))) {
             ErrorMessages.showErrorMessage("Insufficient privileges","Cannot approve/deny request",
                     "You do not have sufficient privileges to approve or deny this request.");
         }

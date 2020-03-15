@@ -1,3 +1,4 @@
+/*
 package myproject.controllers.Dashboard.Calendar;
 
 import javafx.fxml.FXML;
@@ -99,9 +100,11 @@ public class CalendarController implements Initializable {
         }
     }
 
-    /*
+    */
+/*
     TODO I was able to make the schedules work
-     */
+     *//*
+
     public void assignBasedOnDay(Set<Tblschedule> schedule){
         //format java.sql.Time values to 12-hr clock
         SimpleDateFormat sdfAM = new SimpleDateFormat("hh:mm a");
@@ -173,10 +176,12 @@ public class CalendarController implements Initializable {
         titleLabel.setText(monthFormat(YearMonthInstance.getInstance().getYearMonth().getMonth().toString()) + " "
                 + YearMonthInstance.getInstance().getYearMonth().getYear());
 
-        /*
+        */
+/*
         Subtracts days of the month until we reach sunday so we get
         the correct first day of the current month
-        */
+        *//*
+
         while (!localDate.getDayOfWeek().toString().equals("SUNDAY") ) {
             localDate = localDate.minusDays(1);
             offsetByPrevMonthDays++;
@@ -287,9 +292,11 @@ public class CalendarController implements Initializable {
         refreshCalendar(YearMonthInstance.getInstance().getYearMonth());
     }
 
-    /*
+    */
+/*
     Returns the month into the correct format "January, February, March..."
-     */
+     *//*
+
     private String monthFormat(String word){
         char[] month = word.toLowerCase().toCharArray();
         month[0] = Character.toUpperCase(month[0]);
@@ -297,3 +304,4 @@ public class CalendarController implements Initializable {
         return String.valueOf(month);
     }
 }
+*/

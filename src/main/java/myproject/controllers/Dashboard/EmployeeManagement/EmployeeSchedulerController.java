@@ -6,14 +6,12 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Group;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import myproject.ErrorMessages;
 import myproject.models.Tblemployee;
-import myproject.models.Tblschedule;
 import myproject.repositories.DayRepository;
 import myproject.repositories.EmployeeRepository;
 import myproject.repositories.ScheduleRepository;
@@ -33,6 +31,8 @@ import java.util.ResourceBundle;
 
 import static java.time.temporal.TemporalAdjusters.nextOrSame;
 import static java.time.temporal.TemporalAdjusters.previousOrSame;
+import static java.time.temporal.TemporalAdjusters.next;
+import static java.time.temporal.TemporalAdjusters.previous;
 
 @Component
 public class EmployeeSchedulerController implements Initializable {
@@ -67,7 +67,8 @@ public class EmployeeSchedulerController implements Initializable {
     @FXML
     private Button scheduleButton,
                 resetButton,
-                selectButton;
+                selectButton,
+                nextWeekScheduleButton;
 
     @FXML
     private GridPane scheduleGridPane;
@@ -103,7 +104,12 @@ public class EmployeeSchedulerController implements Initializable {
     private LocalDate sunday = today.with(previousOrSame(DayOfWeek.SUNDAY));
     private LocalDate saturday = today.with(nextOrSame(DayOfWeek.SATURDAY));
 
+    public LocalDate nextSunday = today.with(next(DayOfWeek.SUNDAY));
+    public LocalDate nextSaturday = today.with(next(DayOfWeek.SATURDAY));
+
     private DateTimeFormatter dayFormat = DateTimeFormatter.ofPattern("MMM dd, yyyy");
+
+    private DateTimeFormatter sqlDateTimeConvert = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     private Tblemployee selectedEmployee;
 
@@ -119,10 +125,19 @@ public class EmployeeSchedulerController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
+        /*
+        Add a way to take out the Time Off Schedules from the current list
+         */
+
+
+        sunday = today.with(previousOrSame(DayOfWeek.SUNDAY));
+        saturday = today.with(nextOrSame(DayOfWeek.SATURDAY));
+
         listOfEmployees = FXCollections.observableArrayList();
         listOfSchedules = FXCollections.observableArrayList();
 
-        listOfEmployees.setAll(employeeRepository.findAllEmployeesWithoutSchedule());
+        listOfEmployees.setAll(employeeRepository.findAllEmployeesWithoutScheduleByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert)));
 
         employeeListView.setItems(listOfEmployees);
 
@@ -135,6 +150,7 @@ public class EmployeeSchedulerController implements Initializable {
         loadDataToTable();
 
         handleEdittingEmployee();
+
     }
 
     @FXML
@@ -163,8 +179,7 @@ public class EmployeeSchedulerController implements Initializable {
         }
     }
 
-    @FXML
-    private void handleResetEmployee(){
+    public void handleResetEmployee(){
         scheduleGridPane.setDisable(true);
         scheduleButton.setDisable(true);
         employeeLabel.setText("[Schedule]");
@@ -180,6 +195,32 @@ public class EmployeeSchedulerController implements Initializable {
 
         scheduleButton.setText("Add Schedule");
 
+        resetCheckBoxes();
+        resetSpinners();
+    }
+
+    @FXML
+    private void handleNextWeekSchedule(){
+        sunday = sunday.with(next(DayOfWeek.SUNDAY));
+        saturday = saturday.with(next(DayOfWeek.SATURDAY));
+
+        dateLabel.setText(sunday.format(dayFormat) + " - " + saturday.format(dayFormat));
+        loadDataToTable();
+
+        handleResetEmployee();
+        resetCheckBoxes();
+        resetSpinners();
+    }
+
+    @FXML
+    private void handlePrevWeekSchedule(){
+        sunday = sunday.with(previous(DayOfWeek.SUNDAY));
+        saturday = saturday.with(previous(DayOfWeek.SATURDAY));
+
+        dateLabel.setText(sunday.format(dayFormat) + " - " + saturday.format(dayFormat));
+        loadDataToTable();
+
+        handleResetEmployee();
         resetCheckBoxes();
         resetSpinners();
     }
@@ -462,8 +503,15 @@ public class EmployeeSchedulerController implements Initializable {
         listOfSchedules.clear();
         listOfEmployees.clear();
 
-        listOfSchedules.addAll(employeeRepository.findAllEmployee());
-        listOfEmployees.addAll(employeeRepository.findAllEmployeesWithoutSchedule());
+        System.out.println("Sunday Date: " + sunday);
+        System.out.println("Saturday Date: " + saturday);
+
+        for (Tblemployee emp : employeeRepository.findAllEmployeeByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert))) {
+            System.out.println("Schedule: " + emp.getSchedules());
+        }
+
+        listOfSchedules.addAll(employeeRepository.findAllEmployeeByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert)));
+        listOfEmployees.addAll(employeeRepository.findAllEmployeesWithoutScheduleByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert)));
 
         filteredEmployeeList = new FilteredList<>(listOfSchedules);
 

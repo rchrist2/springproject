@@ -12,12 +12,16 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import myproject.ErrorMessages;
+import myproject.controllers.Dashboard.DashboardController;
 import myproject.models.TblRoles;
 import myproject.models.Tblemployee;
 import myproject.repositories.EmployeeRepository;
+import myproject.repositories.RoleRepository;
 import myproject.repositories.ScheduleRepository;
 import myproject.services.EmployeeService;
 import myproject.services.ScheduleService;
@@ -33,6 +37,10 @@ import java.util.ResourceBundle;
 @Component
 public class EmployeeRoleManagementController implements Initializable {
 
+
+    /*=============================
+           Employee Controls
+    =============================*/
     @FXML
     private Label titleLabel;
 
@@ -51,9 +59,18 @@ public class EmployeeRoleManagementController implements Initializable {
             emailColumn,
             addressColumn,
             phoneColumn,
-            roleColumn,
+            employeeRoleColumn,
             hoursColumn,
             daysColumn;
+
+    @FXML
+    private TabPane managementTabPane;
+
+    /*=============================
+             Role Controls
+    =============================*/
+    @FXML
+    private Label roleTitleLabel;
 
     @FXML
     private TextField roleText;
@@ -64,6 +81,16 @@ public class EmployeeRoleManagementController implements Initializable {
     @FXML
     private TableView<TblRoles> roleTableView;
 
+    @FXML
+    private Button saveRoleButton,
+            editRoleButton,
+            resetRoleButton,
+            deleteRoleButton;
+
+    @FXML
+    private TableColumn<TblRoles, String>
+            roleColumn,
+            roleDescColumn;
 
     @Autowired
     private ConfigurableApplicationContext springContext;
@@ -80,18 +107,31 @@ public class EmployeeRoleManagementController implements Initializable {
     @Autowired
     private EmployeeService employeeService;
 
+    @Autowired
+    private RoleRepository roleRepository;
+
     private ObservableList<Tblemployee> listOfEmployees;
+    private ObservableList<TblRoles> listOfRoles;
+
     private FilteredList<Tblemployee> filteredListOfEmployees;
+    private FilteredList<TblRoles> filteredListOfRoles;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         //Initialize the observable list and add all the employees to the list
         listOfEmployees = FXCollections.observableArrayList();
+        listOfRoles = FXCollections.observableArrayList();
+
         listOfEmployees.addAll(employeeRepository.findAllEmployee());
+        listOfRoles.addAll(roleRepository.findAll());
 
         reloadEmployeeTableView();
         setDataForEmployeeTableView();
         addActionListenersForCrudButtons();
+
+        reloadRoleTableView();
+        setDataForRoleTableView();
+        addActionListenersForRoleCrudButtons();
 
         //Filters the employee management view list
         searchText.setOnKeyReleased(event -> {
@@ -100,12 +140,18 @@ public class EmployeeRoleManagementController implements Initializable {
                     || emp.getAddress().toLowerCase().contains(searchText.getText().toLowerCase())
                     || emp.getPhone().contains(searchText.getText())
                     || emp.employeeSchedule().toLowerCase().contains(searchText.getText().toLowerCase())
-                    || emp.getRole().getRoleDesc().toLowerCase().contains(searchText.getText().toLowerCase()));
+                    || emp.getRole().getRoleName().toLowerCase().contains(searchText.getText().toLowerCase()));
         });
+
+        managementTabPane.getSelectionModel().selectedItemProperty().addListener((observableValue, tab, t1) -> {
+            titleLabel.setText(t1.getText() + " Management");
+        });
+
     }
 
+
     //Reloads (refreshes) the employee tableview
-    private void reloadEmployeeTableView(){
+    private void reloadEmployeeTableView() {
         listOfEmployees.clear();
 
         listOfEmployees.addAll(employeeRepository.findAllEmployee());
@@ -116,25 +162,25 @@ public class EmployeeRoleManagementController implements Initializable {
     }
 
     //Sets the data for each of the columns in the table view
-    private void setDataForEmployeeTableView(){
+    private void setDataForEmployeeTableView() {
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
         addressColumn.setCellValueFactory(new PropertyValueFactory<>("address"));
         phoneColumn.setCellValueFactory(new PropertyValueFactory<>("phone"));
-        roleColumn.setCellValueFactory(role -> new ReadOnlyStringWrapper(role.getValue().getRole().getRoleDesc()));
+        employeeRoleColumn.setCellValueFactory(role -> new ReadOnlyStringWrapper(role.getValue().getRole().getRoleName()));
     }
 
     @SuppressWarnings("Duplicates")
     @FXML
-    private void handleCrudButton(ActionEvent event){
+    private void handleCrudButton(ActionEvent event) {
         //Grab the button that was clicked
-        Button clickedButton = (Button)event.getSource();
+        Button clickedButton = (Button) event.getSource();
 
         //Hold the selected data of the employee
         Tblemployee emp = employeeTableView.getSelectionModel().getSelectedItem();
 
         //Grabs the text of the button that was clicked
-        switch(clickedButton.getText()){
+        switch (clickedButton.getText()) {
             case "Add New Employee":
                 System.out.println("Add a Employee");
                 try {
@@ -144,7 +190,7 @@ public class EmployeeRoleManagementController implements Initializable {
                     Stage stage = new Stage();
                     stage.initModality(Modality.APPLICATION_MODAL);
                     stage.initStyle(StageStyle.UNDECORATED);
-                    stage.setTitle("Add Employee");
+                    stage.setTitle("Employee Manager");
 
                     CrudEmployeeController crudEmployeeController = fxmlLoader.getController();
                     crudEmployeeController.setLabel("Add Employee", "Add");
@@ -167,7 +213,7 @@ public class EmployeeRoleManagementController implements Initializable {
                     Stage stage = new Stage();
                     stage.initModality(Modality.APPLICATION_MODAL);
                     stage.initStyle(StageStyle.UNDECORATED);
-                    stage.setTitle("Edit Employee");
+                    stage.setTitle("Employee Manager");
 
                     CrudEmployeeController crudEmployeeController = fxmlLoader.getController();
                     crudEmployeeController.setLabel("Edit Employee", "Save");
@@ -192,7 +238,7 @@ public class EmployeeRoleManagementController implements Initializable {
                 alert.setContentText("You are about to delete: " + emp.getName());
 
                 Optional<ButtonType> choice = alert.showAndWait();
-                if(choice.get() == ButtonType.OK) {
+                if (choice.get() == ButtonType.OK) {
                     if (emp != null) {
 
                         /*
@@ -207,17 +253,15 @@ public class EmployeeRoleManagementController implements Initializable {
                     reloadEmployeeTableView();
                     resetButtons();
                     System.out.println("Table View reloaded!");
-                } else {
-
                 }
                 break;
         }
     }
 
     //This will enable/disable the edit and delete buttons if a employee was chosen from the table view
-    private void addActionListenersForCrudButtons(){
+    private void addActionListenersForCrudButtons() {
         employeeTableView.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
-            if(newValue != null){
+            if (newValue != null) {
                 editEmployeeButton.setDisable(false);
                 deleteEmployeeButton.setDisable(false);
             }
@@ -225,7 +269,7 @@ public class EmployeeRoleManagementController implements Initializable {
     }
 
     //Resets the buttons back to its default value (disable = true)
-    private void resetButtons(){
+    private void resetButtons() {
         editEmployeeButton.setDisable(true);
         deleteEmployeeButton.setDisable(true);
     }
@@ -235,26 +279,118 @@ public class EmployeeRoleManagementController implements Initializable {
                 Role Management
      ====================================*/
 
-    private void reloadRoleTableView(){
+    private void reloadRoleTableView() {
+        listOfRoles.clear();
 
+        listOfRoles.addAll(roleRepository.findAll());
+
+        filteredListOfRoles = new FilteredList<>(listOfRoles);
+
+        roleTableView.setItems(filteredListOfRoles);
+    }
+
+    private void setDataForRoleTableView() {
+        roleColumn.setCellValueFactory(new PropertyValueFactory<>("roleName"));
+        roleDescColumn.setCellValueFactory(new PropertyValueFactory<>("roleDesc"));
     }
 
     @FXML
-    private void handleSaveRole(){
-        System.out.println("Save a role");
+    private void handleSaveRole(ActionEvent event) {
+        Button button = (Button) event.getSource();
 
+        TblRoles role = roleTableView.getSelectionModel().getSelectedItem();
+
+        switch (button.getText()) {
+            case "+ Create Role":
+                try {
+                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/CrudRole.fxml"));
+                    fxmlLoader.setControllerFactory(springContext::getBean);
+                    Parent parent = fxmlLoader.load();
+                    Stage stage = new Stage();
+                    stage.initModality(Modality.APPLICATION_MODAL);
+                    stage.initStyle(StageStyle.UNDECORATED);
+                    stage.setTitle("Role Manager");
+
+                    CrudRoleController crudRoleController = fxmlLoader.getController();
+                    crudRoleController.setLabel("Add Role", "Add");
+                    crudRoleController.setController(this);
+
+                    stage.setScene(new Scene(parent));
+                    stage.showAndWait();
+                    reloadRoleTableView();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            case "Edit Role":
+                try {
+                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/CrudRole.fxml"));
+                    fxmlLoader.setControllerFactory(springContext::getBean);
+                    Parent parent = fxmlLoader.load();
+                    Stage stage = new Stage();
+                    stage.initModality(Modality.APPLICATION_MODAL);
+                    stage.initStyle(StageStyle.UNDECORATED);
+                    stage.setTitle("Role Manager");
+
+                    CrudRoleController crudRoleController = fxmlLoader.getController();
+                    crudRoleController.setLabel("Edit Role", "Update");
+                    crudRoleController.setRole(role);
+                    crudRoleController.setController(this);
+
+                    stage.setScene(new Scene(parent));
+                    stage.showAndWait();
+                    reloadRoleTableView();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            case "Delete":
+                System.out.println("Delete a Employee");
+
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Delete Role");
+                alert.setHeaderText("Are you sure?");
+                alert.setContentText("You are about to delete: " + role.getRoleName());
+
+                Optional<ButtonType> choice = alert.showAndWait();
+                if (choice.get() == ButtonType.OK) {
+                    if (role != null && roleRepository.findAllEmployeeWithRoleId(role.getRoleId()).isEmpty()) {
+
+                        /*
+                          ON DELETE CASCADE works in a way we can't apply, so we have to delete
+                          each row in order
+                        */
+                        roleRepository.delete(role);
+
+                        reloadRoleTableView();
+                    } else {
+                        StringBuilder roleError = new StringBuilder();
+                        for (String name : roleRepository.findAllEmployeeWithRoleId(role.getRoleId())) {
+                            roleError.append("\t- " + name + "\n");
+                        }
+
+                        ErrorMessages.showWarningMessage("Warning!", "Please make sure no employees have this role.",
+                                "The following employees have this role: \n" + roleError);
+                    }
+                }
+                break;
+        }
     }
 
     @FXML
-    private void handleEditRole(){
-        System.out.println("Edit a role");
-
+    private void handleResetRole(){
+        roleTableView.getSelectionModel().clearSelection();
+        editRoleButton.setDisable(true);
+        deleteRoleButton.setDisable(true);
     }
 
-    @FXML
-    private void handleDeleteRole(){
-        System.out.println("Delete a role");
-
+    private void addActionListenersForRoleCrudButtons() {
+        roleTableView.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue != null) {
+                resetRoleButton.setDisable(false);
+                editRoleButton.setDisable(false);
+                deleteRoleButton.setDisable(false);
+            }
+        });
     }
-
 }

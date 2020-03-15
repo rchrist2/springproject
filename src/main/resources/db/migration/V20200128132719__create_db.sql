@@ -3,7 +3,8 @@ use [4375db]
 create table tblroles
 (
     Role_ID   int IDENTITY (1, 1) NOT NULL PRIMARY KEY,
-    Role_Desc varchar(36)         NOT NULL
+    Role_Name varchar(100)        NOT NULL,
+    Role_Desc varchar(200)        NOT NULL
 );
 
 create table tblday
@@ -24,12 +25,12 @@ CREATE TABLE tblemployee
 
 create table tblschedule
 (
-    schedule_id         int      not null identity (1,1) primary key,
-    schedule_time_begin time     NOT NULL,
-    schedule_time_end   time     NOT NULL,
-    schedule_date       datetime NOT NULL,
-    employee_id         int      not null FOREIGN KEY REFERENCES tblemployee (id),
-    day_id              int      not null FOREIGN KEY REFERENCES tblday (day_id)
+    schedule_id         int      NOT NULL identity (1,1) primary key,
+    schedule_time_begin time     NULL,
+    schedule_time_end   time     NULL,
+    schedule_date       datetime NULL,
+    employee_id         int      NOT null FOREIGN KEY REFERENCES tblemployee (id),
+    day_id              int      NOT null FOREIGN KEY REFERENCES tblday (day_id)
 );
 
 create table tblclock
@@ -61,9 +62,9 @@ CREATE TABLE tbltimeoff
 
 
 INSERT INTO tblroles
-VALUES ('Manager');
+VALUES ('Manager', 'Someone who manages and who decides life or death');
 INSERT INTO tblroles
-VALUES ('Employee');
+VALUES ('Employee', 'Underling and replaceable');
 
 INSERT INTO tblemployee
 VALUES ('Kevin', 'Kevin@gmail.com', '1111 First St.', '281-487-3829', 1);

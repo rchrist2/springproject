@@ -2,15 +2,26 @@ package myproject.models;
 
 import javax.persistence.*;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
-@Table(name = "tblroles", schema = "dbo", catalog = "4375db")
-public class TblrolesNew {
+@Table(name = "tblroles")
+public class TblRoles {
     private int roleId;
     private String roleName;
     private String roleDesc;
+    private Set<Tblemployee> employees;
+
+    public TblRoles() {
+    }
+
+    public TblRoles(String roleName, String roleDesc) {
+        this.roleName = roleName;
+        this.roleDesc = roleDesc;
+    }
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Role_ID")
     public int getRoleId() {
         return roleId;
@@ -40,11 +51,22 @@ public class TblrolesNew {
         this.roleDesc = roleDesc;
     }
 
+    //one role can belong to many employees
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "role",cascade = CascadeType.ALL)
+    public Set<Tblemployee> getEmployee() {
+        return employees;
+    }
+
+    public void setEmployee(Set<Tblemployee> employees) {
+        this.employees = employees;
+    }
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        TblrolesNew that = (TblrolesNew) o;
+        TblRoles that = (TblRoles) o;
         return roleId == that.roleId &&
                 Objects.equals(roleName, that.roleName) &&
                 Objects.equals(roleDesc, that.roleDesc);
