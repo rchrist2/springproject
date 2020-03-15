@@ -14,7 +14,6 @@ create table tblclock(
 	schedule_id int not null FOREIGN KEY REFERENCES tblschedule(schedule_id)
 );
 
---same
 create table tblroles(
     role_id int NOT NULL identity(1,1) PRIMARY KEY,
     role_desc varchar(36) NOT NULL
@@ -27,7 +26,6 @@ create table tblusers(
     employee_id int FOREIGN KEY REFERENCES tblemployee(id)
 );
 
---same
 create table tblday(
     day_id int NOT NULL identity(1,1) PRIMARY KEY,
     day_desc varchar(25)
@@ -63,3 +61,17 @@ CREATE TABLE tbltimeoff(
 
 ## Check Constraints as of 3/10/2020
 alter table tblusers add constraint username_is_email check (username like '%_@__%.__%');
+
+## References
+https://stackoverflow.com/questions/50569330/how-to-reset-combobox-and-display-prompttext
+https://stackoverflow.com/questions/42909287/how-do-i-use-radio-buttons-groups-in-javafx
+https://stackoverflow.com/questions/275711/add-leading-zeroes-to-number-in-java
+https://stackoverflow.com/questions/33027549/sql-max-only-returns-1-row-if-column-has-several-max-values
+https://stackoverflow.com/questions/24578517/javafx-multithreading-joining-threads-wont-update-the-ui
+https://www.tutorialspoint.com/javaexamples/thread_check.htm
+https://stackoverflow.com/questions/46197243/how-to-retrieve-data-for-a-javafx-table-from-a-jpa-entity-in-relation-with-anoth
+https://stackoverflow.com/questions/32435096/mysql-date-format-in-javafx-tableview
+https://www.geeksforgeeks.org/generate-random-string-of-given-size-in-java/
+https://stackoverflow.com/questions/47771296/how-to-reset-a-counter-column-to-zero-in-a-table-every-month
+https://stackoverflow.com/questions/538739/best-way-to-store-time-hhmm-in-a-database
+https://www.baeldung.com/spring-email
