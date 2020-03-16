@@ -478,8 +478,8 @@ public class TimeOffController implements Initializable {
         String currentUser = LoginController.userStore;
 
         //if the user is the owner or manager, they can see buttons to approve requests or show all users
-        if(userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Manager")
-                || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleDesc().equals("Owner")){
+        if(userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
+                || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner")){
             //declare variables
             Button showAllUser = new Button();
             Button showThisUser = new Button();

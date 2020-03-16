@@ -86,37 +86,14 @@ public class CrudTimeOffController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        //get the current user
-        String currentUser = LoginController.userStore;
-
         //initialize drop down menus and their observable lists
         approveData = FXCollections.observableArrayList(Arrays.asList("Approve", "Deny"));
         approveList.setItems(approveData);
 
-        //make a list of hours from 1 to 12
         hrList = FXCollections.observableArrayList();
-        hrList.addAll(IntStream.rangeClosed(1, 12).boxed().collect(Collectors.toList()));
 
-        //fill the hour, minute, and AM/PM drop-downs or spinners with values
-        beginPMList.setItems(pmList);
-        endPMList.setItems(pmList);
-
-        SpinnerValueFactory<Integer> bHours =
-                new SpinnerValueFactory.ListSpinnerValueFactory<>(hrList);
-        SpinnerValueFactory<Integer> eHours =
-                new SpinnerValueFactory.ListSpinnerValueFactory<>(hrList);
-
-        beginHrList.setValueFactory(bHours);
-        endHrList.setValueFactory(eHours);
-
-        //give only managers and owner ability to approve/disapprove
-        if (userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
-                || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner")) {
-
-            approveList.setDisable(false);
-            errorMsgPane.setVisible(false);
-
-        }
+        setDataForHourPMLists();
+        enableApproveList();
     }
 
     @Autowired
@@ -383,6 +360,36 @@ public class CrudTimeOffController implements Initializable {
                 || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner"))) {
             ErrorMessages.showErrorMessage("Insufficient privileges","Cannot approve/deny request",
                     "You do not have sufficient privileges to approve or deny this request.");
+        }
+    }
+
+    private void setDataForHourPMLists(){
+        //make a list of hours from 1 to 12
+        hrList.addAll(IntStream.rangeClosed(1, 12).boxed().collect(Collectors.toList()));
+
+        //fill the hour, minute, and AM/PM drop-downs or spinners with values
+        beginPMList.setItems(pmList);
+        endPMList.setItems(pmList);
+
+        SpinnerValueFactory<Integer> bHours =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(hrList);
+        SpinnerValueFactory<Integer> eHours =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(hrList);
+
+        beginHrList.setValueFactory(bHours);
+        endHrList.setValueFactory(eHours);
+    }
+
+    private void enableApproveList(){
+        //get the current user
+        String currentUser = LoginController.userStore;
+
+        //give only managers and owner ability to approve/disapprove
+        if (userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
+                || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner")) {
+
+            approveList.setDisable(false);
+            errorMsgPane.setVisible(false);
         }
     }
 

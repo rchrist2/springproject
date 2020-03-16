@@ -80,36 +80,10 @@ public class CrudClockController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle){
         //initialize drop down menus lists
         hrList = FXCollections.observableArrayList();
-        hrList.addAll(IntStream.rangeClosed(1,12).boxed().collect(Collectors.toList()));
-
         minList = FXCollections.observableArrayList();
-        List<Integer> minListInt = IntStream.rangeClosed(0,59).boxed().collect(Collectors.toList());
 
-        //make a list of minutes with leading zeroes for single-digit numbers
-        List<String> minListString = new ArrayList<String>(minListInt.size());
-        for (Integer myInt : minListInt) {
-            minListString.add(String.format("%02d", myInt));
-        }
+        setDataForHourPMLists();
 
-        minList.addAll(minListString);
-
-        //fill the hour, minute, and AM/PM drop-downs or spinners with values
-        beginPMList.setItems(pmList);
-        endPMList.setItems(pmList);
-
-        SpinnerValueFactory<Integer> bHours =
-                new SpinnerValueFactory.ListSpinnerValueFactory<>(hrList);
-        SpinnerValueFactory<String> bMins =
-                new SpinnerValueFactory.ListSpinnerValueFactory<>(minList);
-        SpinnerValueFactory<Integer> eHours =
-                new SpinnerValueFactory.ListSpinnerValueFactory<>(hrList);
-        SpinnerValueFactory<String> eMins =
-                new SpinnerValueFactory.ListSpinnerValueFactory<>(minList);
-
-        beginHrList.setValueFactory(bHours);
-        beginMinList.setValueFactory(bMins);
-        endHrList.setValueFactory(eHours);
-        endMinList.setValueFactory(eMins);
     }
 
     @Autowired
@@ -302,5 +276,36 @@ public class CrudClockController implements Initializable {
         Stage currStage = (Stage)cancelButton.getScene().getWindow();
 
         currStage.close();
+    }
+
+    private void setDataForHourPMLists(){
+        hrList.addAll(IntStream.rangeClosed(1,12).boxed().collect(Collectors.toList()));
+        List<Integer> minListInt = IntStream.rangeClosed(0,59).boxed().collect(Collectors.toList());
+
+        //make a list of minutes with leading zeroes for single-digit numbers
+        List<String> minListString = new ArrayList<String>(minListInt.size());
+        for (Integer myInt : minListInt) {
+            minListString.add(String.format("%02d", myInt));
+        }
+
+        minList.addAll(minListString);
+
+        //fill the hour, minute, and AM/PM drop-downs or spinners with values
+        beginPMList.setItems(pmList);
+        endPMList.setItems(pmList);
+
+        SpinnerValueFactory<Integer> bHours =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(hrList);
+        SpinnerValueFactory<String> bMins =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(minList);
+        SpinnerValueFactory<Integer> eHours =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(hrList);
+        SpinnerValueFactory<String> eMins =
+                new SpinnerValueFactory.ListSpinnerValueFactory<>(minList);
+
+        beginHrList.setValueFactory(bHours);
+        beginMinList.setValueFactory(bMins);
+        endHrList.setValueFactory(eHours);
+        endMinList.setValueFactory(eMins);
     }
 }
