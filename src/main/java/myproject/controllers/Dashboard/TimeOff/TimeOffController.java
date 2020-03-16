@@ -12,6 +12,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -67,6 +68,24 @@ public class TimeOffController implements Initializable {
 
     @FXML
     private Pane optionsPane4;*/
+
+    @FXML
+    private AnchorPane anchorTimeOff;
+
+    @FXML
+    private AnchorPane anchorLog;
+
+    @FXML
+    private AnchorPane fullPane;
+
+    @FXML
+    private Tab logTab;
+
+    @FXML
+    private Tab timeOffTab;
+
+    @FXML
+    private TabPane timeOffTabPane;
 
     @FXML
     public Label tableUserLabel;
@@ -274,84 +293,114 @@ public class TimeOffController implements Initializable {
 
     @FXML
     private void editTimeOff(){
-        try {
-            //open the CRUD form
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/CrudTimeOff.fxml"));
-            fxmlLoader.setControllerFactory(springContext::getBean);
-            Parent parent = fxmlLoader.load();
-            Stage stage = new Stage();
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.initStyle(StageStyle.UNDECORATED);
-            stage.setTitle("Edit Time Off Request");
+        String currentUser = LoginController.userStore;
 
-            CrudTimeOffController crudTimeOffController = fxmlLoader.getController();
-            crudTimeOffController.setLabel("Edit Time Off for "
-                    + selectedTimeOff.getSchedule().getEmployee().getName());
-            crudTimeOffController.setTimeOff(selectedTimeOff);
-            crudTimeOffController.setController(this);
+        //can only edit an approved request if you are manager or owner
+        if((userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
+                || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner")
+                && selectedTimeOff.isApproved()) || !(selectedTimeOff.isApproved())) {
+            try {
+                //open the CRUD form
+                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/CrudTimeOff.fxml"));
+                fxmlLoader.setControllerFactory(springContext::getBean);
+                Parent parent = fxmlLoader.load();
+                Stage stage = new Stage();
+                stage.initModality(Modality.APPLICATION_MODAL);
+                stage.initStyle(StageStyle.UNDECORATED);
+                stage.setTitle("Edit Time Off Request");
 
-            stage.setScene(new Scene(parent));
+                CrudTimeOffController crudTimeOffController = fxmlLoader.getController();
+                crudTimeOffController.setLabel("Edit Time Off for "
+                        + selectedTimeOff.getSchedule().getEmployee().getName());
+                crudTimeOffController.setTimeOff(selectedTimeOff);
+                crudTimeOffController.setController(this);
 
-            stage.showAndWait();
-            parent.requestFocus();
+                stage.setScene(new Scene(parent));
 
-            //reload table w/ all users if the user column is visible (only visible if all users are shown)
-            if(userCol.isVisible()){
-                reloadTimeOffTableViewAllUsers();
-                setDataForTimeOffTableView();
-                reloadScheduleList();
-                resetButtons();
+                stage.showAndWait();
+                parent.requestFocus();
+
+                //reload table w/ all users if the user column is visible (only visible if all users are shown)
+                if (userCol.isVisible()) {
+                    reloadTimeOffTableViewAllUsers();
+                    setDataForTimeOffTableView();
+                    reloadScheduleList();
+                    resetButtons();
+                } else {
+                    reloadTimeOffTableView();
+                    setDataForTimeOffTableView();
+                    reloadScheduleList();
+                    resetButtons();
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            else{
-                reloadTimeOffTableView();
-                setDataForTimeOffTableView();
-                reloadScheduleList();
-                resetButtons();
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
+        }
+        else{
+            ErrorMessages.showErrorMessage("Insufficient privileges to edit","Cannot edit an approved request",
+                        "You do not have the privileges to edit an already approved request");
         }
     }
 
     @FXML
+    private void editTimeOffLog(){
+
+    }
+
+    @FXML
     private void deleteTimeOff(){
+        String currentUser = LoginController.userStore;
+
         //get the selected entry from the table
         Tbltimeoff tf = selectedTimeOff;
-        SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
 
-        //get the selected entry's user
-        String selectedUser = tf.getSchedule().getEmployee().getUser().getUsername();
+        //can only delete an approved request if you are manager or owner
+        if((userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
+                || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner")
+                && selectedTimeOff.isApproved())  || !(selectedTimeOff.isApproved())) {
+            SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
 
-        //ask the user if they are sure about the deletion
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Delete Time Off Request");
-        alert.setHeaderText("Are you sure?");
-        alert.setContentText("You are about to delete time off request for: " + selectedUser + " on " +
-                tf.getSchedule().getScheduleDate() + " " +
-                timeFormat.format(tf.getBeginTimeOffDate()) + " to " + timeFormat.format(tf.getEndTimeOffDate()));
+            //get the selected entry's user
+            String selectedUser = tf.getSchedule().getEmployee().getUser().getUsername();
 
-        Optional<ButtonType> choice = alert.showAndWait();
+            //ask the user if they are sure about the deletion
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Delete Time Off Request");
+            alert.setHeaderText("Are you sure?");
+            alert.setContentText("You are about to delete time off request for: " + selectedUser + " on " +
+                    tf.getSchedule().getScheduleDate() + " " +
+                    timeFormat.format(tf.getBeginTimeOffDate()) + " to " + timeFormat.format(tf.getEndTimeOffDate()));
 
-        //if the user clicks "OK", delete the entry
-        if(choice.get() == ButtonType.OK) {
-            timeOffRepository.delete(tf);
+            Optional<ButtonType> choice = alert.showAndWait();
+
+            //if the user clicks "OK", delete the entry
+            if (choice.get() == ButtonType.OK) {
+                timeOffRepository.delete(tf);
+            } else {
+                System.out.println("Delete cancelled");
+            }
+
+            //reload table with all users if the user column is visible
+            if (userCol.isVisible()) {
+                reloadTimeOffTableViewAllUsers();
+                setDataForTimeOffTableView();
+                resetButtons();
+            } else {
+                reloadTimeOffTableView();
+                setDataForTimeOffTableView();
+                resetButtons();
+            }
         }
-        else{
-            System.out.println("Delete cancelled");
+        else {
+            ErrorMessages.showErrorMessage("Insufficient privileges to delete","Cannot delete an approved request",
+                        "You do not have the privileges to delete an already approved request");
         }
+    }
 
-        //reload table with all users if the user column is visible
-        if(userCol.isVisible()){
-            reloadTimeOffTableViewAllUsers();
-            setDataForTimeOffTableView();
-            resetButtons();
-        }
-        else{
-            reloadTimeOffTableView();
-            setDataForTimeOffTableView();
-            resetButtons();
-        }
+    @FXML
+    private void deleteTimeOffLog(){
+
     }
 
 
@@ -480,6 +529,11 @@ public class TimeOffController implements Initializable {
         //if the user is the owner or manager, they can see buttons to approve requests or show all users
         if(userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
                 || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner")){
+
+            //enable logs tab (remove then add to prevent duplicate tab)
+            timeOffTabPane.getTabs().remove(logTab);
+            timeOffTabPane.getTabs().add(logTab);
+
             //declare variables
             Button showAllUser = new Button();
             Button showThisUser = new Button();
@@ -559,6 +613,13 @@ public class TimeOffController implements Initializable {
         else{
             //user does not have privileges to approve requests
             System.out.println("User is not owner or manager");
+
+            //hide logs tab
+            timeOffTabPane.getTabs().remove(logTab);
+
+            fullPane.getChildren().remove(timeOffTabPane);
+            fullPane.getChildren().add(anchorTimeOff);
+            timeOffTable.setPrefHeight(339);
         }
     }
 

@@ -118,6 +118,7 @@ public class ClockInOutController implements Initializable {
         scheduleData = FXCollections.observableArrayList();
         scheduleData.addAll(scheduleRepository.findScheduleThisWeekForUser(currentUser));
 
+        //TODO can possibly remove this
         if(!(scheduleData.isEmpty())){
             scheduleList.setItems(scheduleData);
         }
