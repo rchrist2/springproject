@@ -81,7 +81,8 @@ public interface ScheduleRepository extends CrudRepository<Tblschedule, Integer>
     void deleteEmployeeSchedule(@Param("empId") int employeeId);
 
     @Modifying
-    @Query(value = "INSERT INTO tblschedule VALUES (:startTime, :endTime, :scheduleDate, :empId, :dayId)", nativeQuery = true)
-    void insertEmployeeSchedule(@Param("startTime") Time startTime, @Param("endTime") Time endTime, @Param("scheduleDate") Date scheduleDate, @Param("empId") int empId, @Param("dayId") int day);
+    @Query(value = "INSERT INTO tblschedule VALUES (:startTime, :endTime, :scheduleDate, :dayOff, :empId, :dayId)", nativeQuery = true)
+    void insertEmployeeSchedule(@Param("startTime") Time startTime, @Param("endTime") Time endTime, @Param("scheduleDate") Date scheduleDate, @Param("dayOff") boolean dayOff, @Param("empId") int empId, @Param("dayId") int day);
+
 }
 
