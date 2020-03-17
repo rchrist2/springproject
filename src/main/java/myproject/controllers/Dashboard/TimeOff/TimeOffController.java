@@ -69,7 +69,7 @@ public class TimeOffController implements Initializable {
     @FXML
     private Pane optionsPane4;*/
 
-    @FXML
+    /*@FXML
     private AnchorPane anchorTimeOff;
 
     @FXML
@@ -85,7 +85,7 @@ public class TimeOffController implements Initializable {
     private Tab timeOffTab;
 
     @FXML
-    private TabPane timeOffTabPane;
+    private TabPane timeOffTabPane;*/
 
     @FXML
     public Label tableUserLabel;
@@ -121,7 +121,7 @@ public class TimeOffController implements Initializable {
     private TableColumn<Tbltimeoff, String> userCol;
 
     @FXML
-    public TableColumn<Tbltimeoff, java.sql.Date> scheduleDateCol;
+    public TableColumn<Tbltimeoff, String> scheduleDateCol;
 
     @FXML
     public TableColumn<Tbltimeoff, String> beginTimeCol;
@@ -131,6 +131,9 @@ public class TimeOffController implements Initializable {
 
     @FXML
     public TableColumn<Tbltimeoff, String> approveTimeOffCol;
+
+    @FXML
+    public TableColumn<Tbltimeoff, String> dayOffCol;
 
     @FXML
     public TableColumn<Tbltimeoff, String> reasonTimeOffCol;
@@ -205,8 +208,16 @@ public class TimeOffController implements Initializable {
             newTimeOff.setEndTimeOffDate(scheduleList.getSelectionModel().getSelectedItem().getScheduleTimeEnd());
             newTimeOff.setApproved(false);
             newTimeOff.setReasonDesc(reasonInput.getText());
+            newTimeOff.setDayOff(true);
 
-            timeOffRepository.save(newTimeOff);
+            if(scheduleList.getSelectionModel().getSelectedItem().getTimeOffs() == null){
+                timeOffRepository.save(newTimeOff);
+            }
+            else{
+                ErrorMessages.showErrorMessage("Cannot add request to selected schedule",
+                        "This schedule already has a time off request",
+                        "Please select a schedule you have not made a time off request for.");
+            }
 
             reloadTimeOffTableView();
         } else {
@@ -272,11 +283,19 @@ public class TimeOffController implements Initializable {
             newTimeOff.setApproved(false);
             newTimeOff.setReasonDesc(reasonInput.getText());
             newTimeOff.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
+            newTimeOff.setDayOff(false);
 
             //check if the time range is valid
             if (newTimeOff.getBeginTimeOffDate().before(newTimeOff.getEndTimeOffDate())
                     && newTimeOff.getEndTimeOffDate().after(newTimeOff.getBeginTimeOffDate())) {
-                timeOffRepository.save(newTimeOff);
+                if(scheduleList.getSelectionModel().getSelectedItem().getTimeOffs() == null){
+                    timeOffRepository.save(newTimeOff);
+                }
+                else{
+                    ErrorMessages.showErrorMessage("Cannot add request to selected schedule",
+                            "This schedule already has a time off request",
+                            "Please select a schedule you have not made a time off request for.");
+                }
             } else {
                 ErrorMessages.showErrorMessage("Invalid time values", "Time range for time" +
                         " off request is invalid", "Please edit time range for this time off request");
@@ -344,11 +363,6 @@ public class TimeOffController implements Initializable {
     }
 
     @FXML
-    private void editTimeOffLog(){
-
-    }
-
-    @FXML
     private void deleteTimeOff(){
         String currentUser = LoginController.userStore;
 
@@ -398,14 +412,19 @@ public class TimeOffController implements Initializable {
         }
     }
 
-    @FXML
-    private void deleteTimeOffLog(){
-
-    }
-
-
     private void setDataForTimeOffTableView(){
-        scheduleDateCol.setCellValueFactory(new PropertyValueFactory<>("schedule"));
+        //scheduleDateCol.setCellValueFactory(new PropertyValueFactory<>("schedule"));
+        scheduleDateCol.setCellValueFactory(Tbltimeoff -> {
+            SimpleStringProperty property = new SimpleStringProperty();
+            if(Tbltimeoff.getValue().getSchedule() == null){
+                property.setValue("Deleted");
+            }
+            else{
+                property.setValue(String.valueOf(Tbltimeoff.getValue().getSchedule()));
+            }
+
+            return property;
+        });
 
         //using lambda to display with AM and PM
         beginTimeCol.setCellValueFactory(Tbltimeoff -> {
@@ -434,6 +453,18 @@ public class TimeOffController implements Initializable {
             return property;
         });
 
+        //change "true" and "false" to "Yes" and "No" in the Approved column
+        dayOffCol.setCellValueFactory(Tbltimeoff -> {
+            SimpleStringProperty property = new SimpleStringProperty();
+            if(Tbltimeoff.getValue().isDayOff()){
+                property.setValue("Yes");
+            }
+            else{
+                property.setValue("No");
+            }
+            return property;
+        });
+
         reasonTimeOffCol.setCellValueFactory(new PropertyValueFactory<>("reasonDesc"));
 
         //show the users for each time off request using SimpleObjectProperty
@@ -448,8 +479,9 @@ public class TimeOffController implements Initializable {
         userCol.setVisible(true);
 
         listOfTimeOffs.addAll(timeOffRepository.findAllTimeOff());
-        filteredListOfTimeOff = new FilteredList<>(listOfTimeOffs);
-        timeOffTable.setItems(filteredListOfTimeOff);
+        //filteredListOfTimeOff = new FilteredList<>(listOfTimeOffs);
+
+        timeOffTable.setItems(listOfTimeOffs);
         tableUserLabel.setText("Time Off Requests for All Users");
         setDataForTimeOffTableView();
     }
@@ -466,9 +498,9 @@ public class TimeOffController implements Initializable {
         userCol.setVisible(false);
 
         listOfTimeOffs.addAll(timeOffRepository.findAllTimeOffByUser(currentUser));
-        filteredListOfTimeOff = new FilteredList<>(listOfTimeOffs);
+        //filteredListOfTimeOff = new FilteredList<>(listOfTimeOffs);
 
-        timeOffTable.setItems(filteredListOfTimeOff);
+        timeOffTable.setItems(listOfTimeOffs);
 
         //set this back to current user in case All Users were shown
         tableUserLabel.setText("Time Off Requests for " + currUser.getEmployee().getName());
@@ -531,8 +563,8 @@ public class TimeOffController implements Initializable {
                 || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner")){
 
             //enable logs tab (remove then add to prevent duplicate tab)
-            timeOffTabPane.getTabs().remove(logTab);
-            timeOffTabPane.getTabs().add(logTab);
+            /*timeOffTabPane.getTabs().remove(logTab);
+            timeOffTabPane.getTabs().add(logTab);*/
 
             //declare variables
             Button showAllUser = new Button();
@@ -615,11 +647,11 @@ public class TimeOffController implements Initializable {
             System.out.println("User is not owner or manager");
 
             //hide logs tab
-            timeOffTabPane.getTabs().remove(logTab);
+            /*timeOffTabPane.getTabs().remove(logTab);
 
             fullPane.getChildren().remove(timeOffTabPane);
             fullPane.getChildren().add(anchorTimeOff);
-            timeOffTable.setPrefHeight(339);
+            timeOffTable.setPrefHeight(339);*/
         }
     }
 

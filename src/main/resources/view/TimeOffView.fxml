@@ -7,8 +7,6 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.Spinner?>
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
@@ -46,148 +44,89 @@
             </VBox>
          </children>
       </Pane>
-      <AnchorPane fx:id="fullPane" layoutY="115.0">
+      <AnchorPane layoutY="115.0" prefHeight="638.0" prefWidth="985.0" style="-fx-background-color: white;">
          <children>
-            <TabPane fx:id="timeOffTabPane" prefHeight="639.0" prefWidth="985.0" tabClosingPolicy="UNAVAILABLE">
-               <tabs>
-                  <Tab fx:id="timeOffTab" style="-fx-pref-width: 100; -fx-pref-height: 40; -fx-font-size: 16;" text="Time Off">
-                     <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="985.0">
-                           <children>
-                              <AnchorPane fx:id="anchorTimeOff" prefHeight="638.0" prefWidth="985.0" style="-fx-background-color: white;">
-                                 <children>
-                                    <TableView fx:id="timeOffTable" layoutX="66.0" layoutY="263.0" prefHeight="295.0" prefWidth="808.0">
-                                      <columns>
-                                        <TableColumn fx:id="scheduleDateCol" prefWidth="99.0" text="Schedule Date" />
-                                          <TableColumn fx:id="beginTimeCol" prefWidth="99.0" text="Begin Time" />
-                                          <TableColumn fx:id="endTimeCol" prefWidth="99.0" text="End Time" />
-                                        <TableColumn fx:id="approveTimeOffCol" prefWidth="82.99998474121094" text="Approved" />
-                                          <TableColumn fx:id="reasonTimeOffCol" prefWidth="82.99998474121094" text="Reason" />
-                                          <TableColumn fx:id="userCol" prefWidth="82.99998474121094" text="User" visible="false" />
-                                      </columns>
-                                    </TableView>
-                                    <Label fx:id="tableUserLabel" layoutX="66.0" layoutY="231.0" text="Time Off Requests for User">
-                                       <font>
-                                          <Font size="15.0" />
-                                       </font>
-                                    </Label>
-                                    <Pane fx:id="formPane" layoutX="209.0" layoutY="58.0">
-                                       <children>
-                                          <Label layoutX="2.0" layoutY="48.0" prefHeight="27.0" prefWidth="123.0" text="Explain Reason:">
-                                             <font>
-                                                <Font name="System Italic" size="18.0" />
-                                             </font>
-                                          </Label>
-                                          <ComboBox fx:id="scheduleList" layoutX="132.0" layoutY="1.0" prefWidth="150.0" promptText="Select Schedule" />
-                                          <Label layoutX="2.0" text="Select Schedule:">
-                                             <font>
-                                                <Font name="System Italic" size="18.0" />
-                                             </font>
-                                          </Label>
-                                          <Pane fx:id="timePane" layoutX="1.0" layoutY="93.0" prefHeight="33.0" prefWidth="583.0" visible="false">
-                                             <children>
-                                                <Button fx:id="submitRequestButton1" layoutX="515.0" layoutY="1.0" mnemonicParsing="false" onAction="#submitTimeOffRequestWithTime" style="-fx-background-color: #39a7c3;" text="Submit" textFill="WHITE">
-                                                   <cursor>
-                                                      <Cursor fx:constant="HAND" />
-                                                   </cursor>
-                                                </Button>
-                                                <ComboBox fx:id="beginPMList" layoutX="205.0" layoutY="1.0" prefHeight="25.0" prefWidth="92.0" promptText="AM/PM" />
-                                                <ComboBox fx:id="endPMList" layoutX="408.0" layoutY="1.0" prefHeight="25.0" prefWidth="92.0" promptText="AM/PM" />
-                                                <Label layoutX="308.0" layoutY="3.0" text="to">
-                                                   <font>
-                                                      <Font name="System Italic" size="15.0" />
-                                                   </font>
-                                                </Label>
-                                                <Label text="Select Time:">
-                                                   <font>
-                                                      <Font name="System Italic" size="18.0" />
-                                                   </font>
-                                                </Label>
-                                                <Spinner fx:id="beginHrList" layoutX="130.0" layoutY="1.0" prefHeight="25.0" prefWidth="70.0" />
-                                                <Spinner fx:id="endHrList" layoutX="332.0" layoutY="1.0" prefHeight="25.0" prefWidth="70.0" />
-                                             </children>
-                                          </Pane>
-                                          <Button fx:id="submitRequestButton" layoutX="516.0" layoutY="49.0" mnemonicParsing="false" onAction="#submitTimeOffRequestWithoutTime" style="-fx-background-color: #39a7c3;" text="Submit" textFill="WHITE">
-                                             <cursor>
-                                                <Cursor fx:constant="HAND" />
-                                             </cursor>
-                                          </Button>
-                                          <TextField fx:id="reasonInput" layoutX="133.0" layoutY="49.0" prefHeight="25.0" prefWidth="368.0" />
-                                       </children>
-                                    </Pane>
-                                    <Pane fx:id="optionsPane" layoutX="605.0" layoutY="229.0" prefHeight="25.0" prefWidth="70.0" />
-                                    <Pane fx:id="optionsPane2" layoutX="675.0" layoutY="229.0" prefHeight="25.0" prefWidth="70.0">
-                                       <padding>
-                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                       </padding>
-                                    </Pane>
-                                    <Button fx:id="timeOffDeleteButton" disable="true" layoutX="811.0" layoutY="229.0" mnemonicParsing="false" onAction="#deleteTimeOff" style="-fx-background-color: red;" text="Delete" textFill="WHITE">
-                                       <cursor>
-                                          <Cursor fx:constant="HAND" />
-                                       </cursor>
-                                    </Button>
-                                    <Button fx:id="timeOffEditButton" disable="true" layoutX="765.0" layoutY="229.0" mnemonicParsing="false" onAction="#editTimeOff" style="-fx-background-color: #39a7c3;" text="Edit" textFill="WHITE">
-                                       <cursor>
-                                          <Cursor fx:constant="HAND" />
-                                       </cursor>
-                                    </Button>
-                                    <RadioButton fx:id="dayOffCheck" layoutX="209.0" layoutY="23.0" mnemonicParsing="false" onAction="#dayOffChecked" text="Request Day Off">
-                                       <toggleGroup>
-                                          <ToggleGroup fx:id="toggleGroup" />
-                                       </toggleGroup>
-                                    </RadioButton>
-                                    <RadioButton fx:id="changeAvailCheck" layoutX="335.0" layoutY="23.0" mnemonicParsing="false" onAction="#changeAvailabilityChecked" text="Change Availability" toggleGroup="$toggleGroup" />
-                                 </children>
-                              </AnchorPane>
-                           </children>
-                        </AnchorPane>
-                     </content>
-                  </Tab>
-                  <Tab fx:id="logTab" style="-fx-pref-width: 100; -fx-pref-height: 40; -fx-font-size: 16;" text="View Logs">
-                     <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                           <children>
-                              <AnchorPane fx:id="anchorLog" prefHeight="638.0" prefWidth="985.0" style="-fx-background-color: white;">
-                                 <children>
-                                    <TableView fx:id="timeOffLogTable" layoutX="66.0" layoutY="108.0" prefHeight="450.0" prefWidth="808.0">
-                                       <columns>
-                                          <TableColumn fx:id="scheduleDateLogCol" prefWidth="99.0" text="Schedule Date" />
-                                          <TableColumn fx:id="beginTimeLogCol" prefWidth="99.0" text="Begin Time" />
-                                          <TableColumn fx:id="endTimeLogCol" prefWidth="99.0" text="End Time" />
-                                          <TableColumn fx:id="approveTimeOffLogCol" prefWidth="82.99998474121094" text="Approved" />
-                                          <TableColumn fx:id="reasonTimeOffLogCol" prefWidth="82.99998474121094" text="Reason" />
-                                          <TableColumn fx:id="userCol1" prefWidth="82.99998474121094" text="User" visible="false" />
-                                       </columns>
-                                    </TableView>
-                                    <Label fx:id="tableUserLabelLog" layoutX="66.0" layoutY="76.0" text="Time Off Request Log">
-                                       <font>
-                                          <Font size="15.0" />
-                                       </font>
-                                    </Label>
-                                    <Pane fx:id="optionsPane1" layoutX="605.0" layoutY="74.0" prefHeight="25.0" prefWidth="70.0" />
-                                    <Pane fx:id="optionsPane21" layoutX="675.0" layoutY="74.0" prefHeight="25.0" prefWidth="70.0">
-                                       <padding>
-                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                       </padding>
-                                    </Pane>
-                                    <Button fx:id="timeOffLogDeleteButton" disable="true" layoutX="811.0" layoutY="74.0" mnemonicParsing="false" onAction="#deleteTimeOffLog" style="-fx-background-color: red;" text="Delete" textFill="WHITE">
-                                       <cursor>
-                                          <Cursor fx:constant="HAND" />
-                                       </cursor>
-                                    </Button>
-                                    <Button fx:id="timeOffLogEditButton" disable="true" layoutX="765.0" layoutY="74.0" mnemonicParsing="false" onAction="#editTimeOffLog" style="-fx-background-color: #39a7c3;" text="Edit" textFill="WHITE">
-                                       <cursor>
-                                          <Cursor fx:constant="HAND" />
-                                       </cursor>
-                                    </Button>
-                                 </children>
-                              </AnchorPane>
-                           </children>
-                        </AnchorPane>
-                     </content>
-                  </Tab>
-               </tabs>
-            </TabPane>
+            <TableView fx:id="timeOffTable" layoutX="66.0" layoutY="263.0" prefHeight="339.0" prefWidth="808.0">
+              <columns>
+                <TableColumn fx:id="scheduleDateCol" prefWidth="99.0" text="Schedule Date" />
+                  <TableColumn fx:id="beginTimeCol" prefWidth="99.0" text="Begin Time" />
+                  <TableColumn fx:id="endTimeCol" prefWidth="99.0" text="End Time" />
+                <TableColumn fx:id="approveTimeOffCol" prefWidth="82.99998474121094" text="Approved" />
+                  <TableColumn fx:id="dayOffCol" prefWidth="110.0" text="For Entire Day?" />
+                  <TableColumn fx:id="reasonTimeOffCol" prefWidth="82.99998474121094" text="Reason" />
+                  <TableColumn fx:id="userCol" prefWidth="82.99998474121094" text="User" visible="false" />
+              </columns>
+            </TableView>
+            <Label fx:id="tableUserLabel" layoutX="66.0" layoutY="231.0" text="Time Off Requests for User">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+            <Pane fx:id="formPane" layoutX="209.0" layoutY="58.0">
+               <children>
+                  <Label layoutX="2.0" layoutY="48.0" prefHeight="27.0" prefWidth="123.0" text="Explain Reason:">
+                     <font>
+                        <Font name="System Italic" size="18.0" />
+                     </font>
+                  </Label>
+                  <ComboBox fx:id="scheduleList" layoutX="132.0" layoutY="1.0" prefWidth="150.0" promptText="Select Schedule" />
+                  <Label layoutX="2.0" text="Select Schedule:">
+                     <font>
+                        <Font name="System Italic" size="18.0" />
+                     </font>
+                  </Label>
+                  <Pane fx:id="timePane" layoutX="1.0" layoutY="93.0" prefHeight="33.0" prefWidth="583.0" visible="false">
+                     <children>
+                        <Button fx:id="submitRequestButton1" layoutX="515.0" layoutY="1.0" mnemonicParsing="false" onAction="#submitTimeOffRequestWithTime" style="-fx-background-color: #39a7c3;" text="Submit" textFill="WHITE">
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </Button>
+                        <ComboBox fx:id="beginPMList" layoutX="205.0" layoutY="1.0" prefHeight="25.0" prefWidth="92.0" promptText="AM/PM" />
+                        <ComboBox fx:id="endPMList" layoutX="408.0" layoutY="1.0" prefHeight="25.0" prefWidth="92.0" promptText="AM/PM" />
+                        <Label layoutX="308.0" layoutY="3.0" text="to">
+                           <font>
+                              <Font name="System Italic" size="15.0" />
+                           </font>
+                        </Label>
+                        <Label text="Select Time:">
+                           <font>
+                              <Font name="System Italic" size="18.0" />
+                           </font>
+                        </Label>
+                        <Spinner fx:id="beginHrList" layoutX="130.0" layoutY="1.0" prefHeight="25.0" prefWidth="70.0" />
+                        <Spinner fx:id="endHrList" layoutX="332.0" layoutY="1.0" prefHeight="25.0" prefWidth="70.0" />
+                     </children>
+                  </Pane>
+                  <Button fx:id="submitRequestButton" layoutX="516.0" layoutY="49.0" mnemonicParsing="false" onAction="#submitTimeOffRequestWithoutTime" style="-fx-background-color: #39a7c3;" text="Submit" textFill="WHITE">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+                  <TextField fx:id="reasonInput" layoutX="133.0" layoutY="49.0" prefHeight="25.0" prefWidth="368.0" />
+               </children>
+            </Pane>
+            <Pane fx:id="optionsPane" layoutX="605.0" layoutY="229.0" prefHeight="25.0" prefWidth="70.0" />
+            <Pane fx:id="optionsPane2" layoutX="675.0" layoutY="229.0" prefHeight="25.0" prefWidth="70.0">
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </Pane>
+            <Button fx:id="timeOffDeleteButton" disable="true" layoutX="811.0" layoutY="229.0" mnemonicParsing="false" onAction="#deleteTimeOff" style="-fx-background-color: red;" text="Delete" textFill="WHITE">
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </Button>
+            <Button fx:id="timeOffEditButton" disable="true" layoutX="765.0" layoutY="229.0" mnemonicParsing="false" onAction="#editTimeOff" style="-fx-background-color: #39a7c3;" text="Edit" textFill="WHITE">
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </Button>
+            <RadioButton fx:id="dayOffCheck" layoutX="209.0" layoutY="23.0" mnemonicParsing="false" onAction="#dayOffChecked" text="Request Day Off">
+               <toggleGroup>
+                  <ToggleGroup fx:id="toggleGroup" />
+               </toggleGroup></RadioButton>
+            <RadioButton fx:id="changeAvailCheck" layoutX="335.0" layoutY="23.0" mnemonicParsing="false" onAction="#changeAvailabilityChecked" text="Change Availability" toggleGroup="$toggleGroup" />
          </children>
       </AnchorPane>
    </children>

@@ -4,7 +4,7 @@ Uses JDK 13, SQL Server, flyway, see pom.xml
 After cloning, import the maven changes and go to exec:java and make a new run configuration using 
 "compile exec:java -f pom.xml" in the Command Line box (this probably isn't needed, the program should also run using Main)
 
-## Updated SQL Scripts 3/15/2020 (edit file to see with correct formatting):
+## Updated SQL Scripts 3/17/2020 (edit file to see with correct formatting):
 
 create table tblclock(
 	clock_id int NOT NULL identity(1,1) PRIMARY KEY,
@@ -37,6 +37,7 @@ create table tblschedule(
     schedule_time_begin time NOT NULL,
     schedule_time_end time NOT NULL,
     schedule_date datetime NOT NULL,
+    day_off bit null,
 	employee_id int not null FOREIGN KEY REFERENCES tblemployee(id),
     day_id int not null FOREIGN KEY REFERENCES tblday(day_id)
 );
@@ -56,8 +57,9 @@ CREATE TABLE tbltimeoff(
 	begin_time_off_date time not null,
 	end_time_off_date time not null,
 	approved bit NOT NULL,
+	day_off bit not null,
 	reason_desc varchar(128) not null,
-	schedule_id int not null FOREIGN KEY REFERENCES tblschedule(schedule_id)
+	schedule_id int null UNIQUE FOREIGN KEY REFERENCES tblschedule(schedule_id)
 );
 
 ## Check Constraints as of 3/10/2020

@@ -393,7 +393,7 @@ public class EmployeeSchedulerController implements Initializable {
 
             for (String day : listOfDays) {
                     scheduleService.insertSchedule(Time.valueOf(listOfTimes.get(timeIndex++)), Time.valueOf(listOfTimes.get(timeIndex++)),
-                            Date.valueOf(listOfDates.get(i++)), selectedEmployee.getId(), dayRepository.findDay(day).getDayId());
+                            Date.valueOf(listOfDates.get(i++)), false, selectedEmployee.getId(), dayRepository.findDay(day).getDayId());
             }
 
             ErrorMessages.showInformationMessage("Successful", "Saved Schedule", selectedEmployee + "'s schedule was saved successfully");

@@ -322,20 +322,29 @@ public class CrudTimeOffController implements Initializable {
         reasonInput.getText().trim().isEmpty() ||
         scheduleList.getSelectionModel().isEmpty())) {
 
-            //also check if the selected time range is valid before saving
-            if (tf.getBeginTimeOffDate().before(tf.getEndTimeOffDate())
-                    && tf.getEndTimeOffDate().after(tf.getBeginTimeOffDate())) {
-                timeOffRepository.save(tf);
-                scheduleRepository.save(sch);
+                //if they want to take the day off, change day_off to true in schedule
+                if(tf.isDayOff()){
+                    sch.setDayOff(true);
+                    scheduleRepository.save(sch);
+                    timeOffRepository.save(tf);
+                }
+                else{ //if day off is false, change the availability
+                    //check if the selected time range is valid before saving
+                    if (tf.getBeginTimeOffDate().before(tf.getEndTimeOffDate())
+                            && tf.getEndTimeOffDate().after(tf.getBeginTimeOffDate())) {
+                        scheduleRepository.save(sch);
+                        timeOffRepository.save(tf);
+                    }
+                    else {
+                        ErrorMessages.showErrorMessage("Invalid time values", "Time range for time" +
+                                " off request is invalid", "Please edit time range for this time off request");
+                    }
+                }
 
                 Stage stage = (Stage) saveButton.getScene().getWindow();
                 System.out.println("Saved");
                 stage.close();
-            } else {
-                ErrorMessages.showErrorMessage("Invalid time values", "Time range for time" +
-                        " off request is invalid", "Please edit time range for this time off request");
             }
-        }
         else{
             ErrorMessages.showErrorMessage("Fields are empty",
                     "Selections missing or text fields are blank",

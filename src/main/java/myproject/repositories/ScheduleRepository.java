@@ -70,15 +70,22 @@ public interface ScheduleRepository extends CrudRepository<Tblschedule, Integer>
     void insertEmployeeScheduleForNewWeek(@Param("employeeId") int employeeId);
 
     @Modifying
-    @Query(value = "UPDATE tblschedule SET schedule_time_begin = :begin, schedule_time_end = :end WHERE employee_id = :empId", nativeQuery = true)
-    void updateSchedule(@Param("begin") Time begin, @Param("end") Time end, @Param("empId") int empId);
+    @Query(value = "UPDATE tblschedule SET schedule_time_begin = :begin, schedule_time_end = :end, schedule_date = :scheduleDate, " +
+            "employee_id = :empId, day_id = :dayId WHERE employee_id = :empId", nativeQuery = true)
+    void updateSchedule(@Param("begin") Time begin, @Param("end") Time end,  @Param("scheduleDate") Date scheduleDate, @Param("empId") int empId, @Param("dayId") int day);
 
     @Modifying
     @Query(value = "DELETE FROM tblschedule WHERE employee_id = :empId", nativeQuery = true)
     void deleteEmployeeSchedule(@Param("empId") int employeeId);
 
     @Modifying
-    @Query(value = "INSERT INTO tblschedule VALUES (:startTime, :endTime, :scheduleDate, :empId, :dayId)", nativeQuery = true)
-    void insertEmployeeSchedule(@Param("startTime") Time startTime, @Param("endTime") Time endTime, @Param("scheduleDate") Date scheduleDate, @Param("empId") int empId, @Param("dayId") int day);
+    @Query(value = "INSERT INTO tblschedule VALUES (:startTime, :endTime, :scheduleDate, :dayOff, :empId, :dayId)", nativeQuery = true)
+    void insertEmployeeSchedule(@Param("startTime") Time startTime, @Param("endTime") Time endTime, @Param("scheduleDate") Date scheduleDate, @Param("dayOff") boolean dayOff, @Param("empId") int empId, @Param("dayId") int day);
+
+    @Query(value = "SELECT * FROM tblschedule s " +
+            "JOIN tblemployee e ON s.employee_id = e.id " +
+            "WHERE employee_id = :employeeId", nativeQuery = true)
+    Tblschedule findSingleScheduleForEmployee(@Param("employeeId") int employeeId);
+
 }
 

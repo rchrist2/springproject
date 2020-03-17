@@ -12,11 +12,12 @@ public class Tbltimeoff {
     private java.sql.Time beginTimeOffDate;
     private java.sql.Time endTimeOffDate;
     private boolean approved;
+    private boolean dayOff;
     private String reasonDesc;
     private Tblschedule schedule;
 
-    //many time off requests can belong to only one schedule
-    @ManyToOne(fetch = FetchType.EAGER)
+    //only one time off request can belong to only one schedule
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "schedule_id", referencedColumnName = "schedule_id")
     public Tblschedule getSchedule() {
         return schedule;
@@ -65,6 +66,16 @@ public class Tbltimeoff {
 
     public void setApproved(boolean approved) {
         this.approved = approved;
+    }
+
+    @Basic
+    @Column(name = "day_off")
+    public boolean isDayOff() {
+        return dayOff;
+    }
+
+    public void setDayOff(boolean dayOff) {
+        this.dayOff = dayOff;
     }
 
     @Basic
