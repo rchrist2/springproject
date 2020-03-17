@@ -114,35 +114,11 @@ public class ClockInOutController implements Initializable {
         listOfClock = FXCollections.observableArrayList();
         listOfClock.addAll(clockRepository.findClockThisWeekForUser(currentUser));
 
-        //show the last clock in/out action for this user
-        if(!(listOfClock.isEmpty())) {
-            Tblclock recentClockForUser = clockRepository.findRecentClockForUser(currentUser);
-            SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
-            SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
-
-            //get the recent clock in/out details
-            String recentDay = recentClockForUser.getSchedule().getDay().getDayDesc();
-            String recentDate = dateFormat.format(recentClockForUser.getSchedule().getScheduleDate());
-
-            if(recentClockForUser.getPunchOut().equals(Time.valueOf("00:00:00"))){
-                lastActionLabel.setText("Last Action \"In\" on " + recentDay + ", " +
-                        recentDate + " at " +
-                        timeFormat.format(recentClockForUser.getPunchIn()));
-            }
-            else if(!(recentClockForUser.getPunchOut().equals(Time.valueOf("00:00:00")))){
-                lastActionLabel.setText("Last Action \"Out\" on " + recentDay + ", " +
-                        recentDate + " at " +
-                        timeFormat.format(recentClockForUser.getPunchOut()));
-            }
-        }
-        else{
-            lastActionLabel.setText("");
-        }
-
         //initialize the schedule drop down menu for current week
         scheduleData = FXCollections.observableArrayList();
         scheduleData.addAll(scheduleRepository.findScheduleThisWeekForUser(currentUser));
 
+        //TODO can possibly remove this
         if(!(scheduleData.isEmpty())){
             scheduleList.setItems(scheduleData);
         }
@@ -150,6 +126,7 @@ public class ClockInOutController implements Initializable {
             scheduleList.setItems(null);
         }
 
+        setLastActionLabel();
         reloadClockTable();
         setDataForClockTableView();
         addActionListenersForCrudButtons(clockDeleteButton);
@@ -160,39 +137,7 @@ public class ClockInOutController implements Initializable {
             selectedClock = newv;
         });
 
-        //if the user is the owner or manager, they can see buttons to edit requests or show all users
-        if(userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
-                || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner")) {
-
-            //only managers/owner can edit or delete clock history
-            clockEditButton.setVisible(true);
-            clockDeleteButton.setVisible(true);
-
-            //declare variables
-            Button showAllUser = new Button();
-            Button showThisUser = new Button();
-
-            //add buttons to panes
-            optionsPane.getChildren().add(showAllUser);
-            optionsPane2.getChildren().add(showThisUser);
-
-            //set up other buttons for showing all users or current user
-            showThisUser.setText("Current User");
-            showThisUser.setStyle("-fx-text-fill:white; -fx-background-color: #39a7c3;");
-            showThisUser.setOnAction(event ->{
-                reloadClockTable();
-                setDataForClockTableView();
-            });
-
-            showAllUser.setText("All Users");
-            showAllUser.setStyle("-fx-text-fill:white; -fx-background-color: #39a7c3;");
-            showAllUser.setOnAction(event -> {
-                //use function to reload table showing all users
-                reloadClockTableAllUsers();
-                setDataForClockTableView();
-            });
-
-        }
+        setButtonsForOwnerManager();
     }
 
     @FXML
@@ -499,5 +444,72 @@ public class ClockInOutController implements Initializable {
         currentWeekCheck.setToggleGroup(toggleGroup);
         allTimeCheck.setToggleGroup(toggleGroup);
 
+    }
+
+    private void setButtonsForOwnerManager(){
+        String currentUser = LoginController.userStore;
+
+        //if the user is the owner or manager, they can see buttons to edit requests or show all users
+        if(userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
+                || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner")) {
+
+            //only managers/owner can edit or delete clock history
+            clockEditButton.setVisible(true);
+            clockDeleteButton.setVisible(true);
+
+            //declare variables
+            Button showAllUser = new Button();
+            Button showThisUser = new Button();
+
+            //add buttons to panes
+            optionsPane.getChildren().add(showAllUser);
+            optionsPane2.getChildren().add(showThisUser);
+
+            //set up other buttons for showing all users or current user
+            showThisUser.setText("Current User");
+            showThisUser.setStyle("-fx-text-fill:white; -fx-background-color: #39a7c3;");
+            showThisUser.setOnAction(event ->{
+                reloadClockTable();
+                setDataForClockTableView();
+            });
+
+            showAllUser.setText("All Users");
+            showAllUser.setStyle("-fx-text-fill:white; -fx-background-color: #39a7c3;");
+            showAllUser.setOnAction(event -> {
+                //use function to reload table showing all users
+                reloadClockTableAllUsers();
+                setDataForClockTableView();
+            });
+
+        }
+    }
+
+    private void setLastActionLabel(){
+        String currentUser = LoginController.userStore;
+
+        //show the last clock in/out action for this user
+        if(!(listOfClock.isEmpty())) {
+            Tblclock recentClockForUser = clockRepository.findRecentClockForUser(currentUser);
+            SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+
+            //get the recent clock in/out details
+            String recentDay = recentClockForUser.getSchedule().getDay().getDayDesc();
+            String recentDate = dateFormat.format(recentClockForUser.getSchedule().getScheduleDate());
+
+            if(recentClockForUser.getPunchOut().equals(Time.valueOf("00:00:00"))){
+                lastActionLabel.setText("Last Action \"In\" on " + recentDay + ", " +
+                        recentDate + " at " +
+                        timeFormat.format(recentClockForUser.getPunchIn()));
+            }
+            else if(!(recentClockForUser.getPunchOut().equals(Time.valueOf("00:00:00")))){
+                lastActionLabel.setText("Last Action \"Out\" on " + recentDay + ", " +
+                        recentDate + " at " +
+                        timeFormat.format(recentClockForUser.getPunchOut()));
+            }
+        }
+        else{
+            lastActionLabel.setText("");
+        }
     }
 }
