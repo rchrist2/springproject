@@ -46,7 +46,14 @@ public class WeeklyScheduleController implements Initializable {
     @FXML
     private Label titleLabel,
                 monthYearLabel,
-                weekLabel;
+                weekLabel,
+                sundayLabel,
+                mondayLabel,
+                tuesdayLabel,
+                wednesdayLabel,
+                thursdayLabel,
+                fridayLabel,
+                saturdayLabel;
 
     @FXML
     private VBox titleVBox;
@@ -71,6 +78,9 @@ public class WeeklyScheduleController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        sunday = today.with(previousOrSame(DayOfWeek.SUNDAY));
+        saturday = today.with(nextOrSame(DayOfWeek.SATURDAY));
+
         listOfEmployees = employeeRepository.findAllEmployee();
         gridpaneScrollPane.setFitToHeight(true);
 
@@ -164,21 +174,63 @@ public class WeeklyScheduleController implements Initializable {
     private void refreshDayLabels(){
         LocalDate dayOfWeek = sunday;
 
-        for (int i = 1; i <= 7 ; i++) {
+/*        for (int i = 1; i <= 7 ; i++) {
             Label day = new Label();
             day.setText(days.get(i - 1) + " " + dayOfWeek.format(dayFormat));
             day.setFont(Font.font("System", FontPosture.ITALIC, 16));
 
             dayGridPane.add(day, i, 0);
             dayOfWeek = dayOfWeek.plusDays(1);
-        }
+        }*/
+
+        sundayLabel.setText("Sun " + dayOfWeek.format(dayFormat));
+        dayOfWeek = dayOfWeek.plusDays(1);
+        mondayLabel.setText("Mon " + dayOfWeek.format(dayFormat));
+        dayOfWeek = dayOfWeek.plusDays(1);
+        tuesdayLabel.setText("Tues " + dayOfWeek.format(dayFormat));
+        dayOfWeek = dayOfWeek.plusDays(1);
+        wednesdayLabel.setText("Wed " + dayOfWeek.format(dayFormat));
+        dayOfWeek = dayOfWeek.plusDays(1);
+        thursdayLabel.setText("Thur " + dayOfWeek.format(dayFormat));
+        dayOfWeek = dayOfWeek.plusDays(1);
+        fridayLabel.setText("Fri " + dayOfWeek.format(dayFormat));
+        dayOfWeek = dayOfWeek.plusDays(1);
+        saturdayLabel.setText("Sat " + dayOfWeek.format(dayFormat));
     }
 
-    public void handlePreviousMonth(){
-
-    }
-
+    @SuppressWarnings("Duplicates")
     public void handleNextMonth(){
+        sunday = sunday.with(next(DayOfWeek.SUNDAY));
+        saturday = saturday.with(next(DayOfWeek.SATURDAY));
 
+        if(!sunday.getMonth().toString().equals(saturday.getMonth().toString())){
+            monthYearLabel.setText(sunday.getMonth().toString() + " to " + saturday.getMonth().toString() + ", " + sunday.getYear());
+            if(sunday.getYear() != saturday.getYear()){
+                monthYearLabel.setText(sunday.getMonth().toString() + ", " + sunday.getYear() + " to " + saturday.getMonth().toString() + ", " + saturday.getYear());
+            }
+        } else {
+            monthYearLabel.setText(sunday.getMonth().toString() + ", " + saturday.getYear());
+        }
+
+        weekLabel.setText(sunday.format(dateFormat) + ", " + saturday.format(dateFormat));
+        refreshDayLabels();
+    }
+
+    @SuppressWarnings("Duplicates")
+    public void handlePreviousMonth(){
+        sunday = sunday.with(previous(DayOfWeek.SUNDAY));
+        saturday = saturday.with(previous(DayOfWeek.SATURDAY));
+
+        if(!sunday.getMonth().toString().equals(saturday.getMonth().toString())){
+            monthYearLabel.setText(sunday.getMonth().toString() + " to " + saturday.getMonth().toString() + ", " + sunday.getYear());
+            if(sunday.getYear() != saturday.getYear()){
+                monthYearLabel.setText(sunday.getMonth().toString() + ", " + sunday.getYear() + " to " + saturday.getMonth().toString() + ", " + saturday.getYear());
+            }
+        } else {
+            monthYearLabel.setText(sunday.getMonth().toString() + ", " + saturday.getYear());
+        }
+
+        weekLabel.setText(sunday.format(dateFormat) + ", " + saturday.format(dateFormat));
+        refreshDayLabels();
     }
 }

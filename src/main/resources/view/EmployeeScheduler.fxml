@@ -80,7 +80,7 @@
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </Label>
-                  <Spinner fx:id="sundayStartSpinner" disable="true" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                  <Spinner fx:id="sundayStartSpinner" disable="true" editable="true" GridPane.columnIndex="2" GridPane.rowIndex="1" />
                   <Spinner fx:id="sundayEndSpinner" disable="true" GridPane.columnIndex="4" GridPane.rowIndex="1" />
                   <Spinner fx:id="mondayStartSpinner" disable="true" GridPane.columnIndex="2" GridPane.rowIndex="2" />
                   <Spinner fx:id="tuesdayStartSpinner" disable="true" GridPane.columnIndex="2" GridPane.rowIndex="3" />

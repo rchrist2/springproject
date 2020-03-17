@@ -98,7 +98,7 @@ public class CrudEmployeeController implements Initializable {
         listOfRoleObs = FXCollections.observableArrayList();
 
         listOfDaysObs.setAll(dayRepository.findAllDays());
-        listOfRoleObs.setAll(roleRepository.findAllRoleDesc());
+        listOfRoleObs.setAll(roleRepository.findAllRoleName());
 
         roleComboBox.setItems(listOfRoleObs);
 
