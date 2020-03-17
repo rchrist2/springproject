@@ -369,7 +369,6 @@ public class CrudTimeOffController implements Initializable {
     @FXML
     private void handleCancel(){
         Stage currStage = (Stage)cancelButton.getScene().getWindow();
-
         currStage.close();
     }
 

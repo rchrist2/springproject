@@ -65,48 +65,51 @@ public class Tblemployee {
     }
 
     //Returns the list of days the employee works for the tableview
-    public String employeeSchedule(){
+    public String employeeSchedule(Date startOfTheWeek, Date endOfTheWeek){
         List<String> listOfDays = new ArrayList<>();
 
         for (Tblschedule schedule : this.schedules) {
-            //System.out.println(schedule);
-            listOfDays.add(schedule.getDay().getDayDesc());
+            if(schedule.getScheduleDate().compareTo(startOfTheWeek) >= 0 && schedule.getScheduleDate().compareTo(endOfTheWeek) <= 0)
+                listOfDays.add(schedule.getDay().getDayDesc());
         }
 
         return String.join("\n", listOfDays);
     }
 
-    public String employeeDates(){
+    public String employeeDates(Date startOfTheWeek, Date endOfTheWeek){
         List<String> listOfDates = new ArrayList<>();
 
         for (Tblschedule tblschedule : this.schedules){
-            listOfDates.add(tblschedule.getScheduleDate().toString());
+            if(tblschedule.getScheduleDate().compareTo(startOfTheWeek) >= 0 && tblschedule.getScheduleDate().compareTo(endOfTheWeek) <= 0)
+                listOfDates.add(tblschedule.getScheduleDate().toString());
         }
 
         return String.join("\n", listOfDates);
     }
 
-    public String employeeStartHours(){
+    public String employeeStartHours(Date startOfTheWeek, Date endOfTheWeek){
         List<String> listOfHours = new ArrayList<>();
 
         String strDateFormat = "HH:mm a";
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(strDateFormat);
 
         for (Tblschedule hours : this.schedules) {
-            listOfHours.add(hours.getScheduleTimeBegin().toLocalTime().format(timeFormatter));
+            if(hours.getScheduleDate().compareTo(startOfTheWeek) >= 0 && hours.getScheduleDate().compareTo(endOfTheWeek) <= 0)
+                listOfHours.add(hours.getScheduleTimeBegin().toLocalTime().format(timeFormatter));
         }
 
         return String.join("\n", listOfHours);
     }
 
-    public String employeeEndHours(){
+    public String employeeEndHours(Date startOfTheWeek, Date endOfTheWeek){
         List<String> listOfHours = new ArrayList<>();
 
         String strDateFormat = "HH:mm a";
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(strDateFormat);
 
         for(Tblschedule hours : this.schedules) {
-            listOfHours.add(hours.getScheduleTimeEnd().toLocalTime().format(timeFormatter));
+            if(hours.getScheduleDate().compareTo(startOfTheWeek) >= 0 && hours.getScheduleDate().compareTo(endOfTheWeek) <= 0)
+                listOfHours.add(hours.getScheduleTimeEnd().toLocalTime().format(timeFormatter));
         }
         return String.join("\n", listOfHours);
     }

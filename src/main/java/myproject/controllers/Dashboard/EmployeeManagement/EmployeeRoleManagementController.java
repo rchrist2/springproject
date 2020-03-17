@@ -31,8 +31,14 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Date;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.ResourceBundle;
+
+import static java.time.temporal.TemporalAdjusters.nextOrSame;
+import static java.time.temporal.TemporalAdjusters.previousOrSame;
 
 @Component
 public class EmployeeRoleManagementController implements Initializable {
@@ -116,6 +122,10 @@ public class EmployeeRoleManagementController implements Initializable {
     private FilteredList<Tblemployee> filteredListOfEmployees;
     private FilteredList<TblRoles> filteredListOfRoles;
 
+    private LocalDate today = LocalDate.now();
+    public LocalDate sunday = today.with(previousOrSame(DayOfWeek.SUNDAY));
+    public LocalDate saturday = today.with(nextOrSame(DayOfWeek.SATURDAY));
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         //Initialize the observable list and add all the employees to the list
@@ -139,7 +149,7 @@ public class EmployeeRoleManagementController implements Initializable {
                     || emp.getEmail().toLowerCase().contains(searchText.getText().toLowerCase())
                     || emp.getAddress().toLowerCase().contains(searchText.getText().toLowerCase())
                     || emp.getPhone().contains(searchText.getText())
-                    || emp.employeeSchedule().toLowerCase().contains(searchText.getText().toLowerCase())
+                    || emp.employeeSchedule(Date.valueOf(sunday), Date.valueOf(saturday)).toLowerCase().contains(searchText.getText().toLowerCase())
                     || emp.getRole().getRoleName().toLowerCase().contains(searchText.getText().toLowerCase()));
         });
 

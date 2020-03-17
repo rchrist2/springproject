@@ -22,7 +22,7 @@
                   <HBox alignment="CENTER">
                      <children>
                         <Button fx:id="previousMonthButton" layoutX="968.0" layoutY="10.0" mnemonicParsing="false" onAction="#handlePreviousMonth" prefHeight="40.0" prefWidth="80.0" style="-fx-background-color: #39a7c3; -fx-border-color: black; -fx-border-radius: 20 20 20 20; -fx-background-radius: 20 20 20 20;" text="&lt;&lt;&lt;&lt;" />
-                        <VBox fx:id="titleVBox" alignment="CENTER" prefHeight="75.0" prefWidth="350.0">
+                        <VBox fx:id="titleVBox" alignment="CENTER" prefHeight="75.0" prefWidth="510.0">
                            <children>
                               <Label fx:id="monthYearLabel" text="[Month], [Year]">
                                  <font>
@@ -73,6 +73,41 @@
             <Label alignment="CENTER" prefHeight="27.0" prefWidth="160.0" text="Employee">
                <font>
                   <Font name="System Italic" size="18.0" />
+               </font>
+            </Label>
+            <Label fx:id="sundayLabel" text="Sun" GridPane.columnIndex="1">
+               <font>
+                  <Font name="System Italic" size="16.0" />
+               </font>
+            </Label>
+            <Label fx:id="mondayLabel" text="Mon" GridPane.columnIndex="2">
+               <font>
+                  <Font name="System Italic" size="16.0" />
+               </font>
+            </Label>
+            <Label fx:id="tuesdayLabel" text="Tues" GridPane.columnIndex="3">
+               <font>
+                  <Font name="System Italic" size="16.0" />
+               </font>
+            </Label>
+            <Label fx:id="wednesdayLabel" text="Wed" GridPane.columnIndex="4">
+               <font>
+                  <Font name="System Italic" size="16.0" />
+               </font>
+            </Label>
+            <Label fx:id="thursdayLabel" text="Thur" GridPane.columnIndex="5">
+               <font>
+                  <Font name="System Italic" size="16.0" />
+               </font>
+            </Label>
+            <Label fx:id="fridayLabel" text="Fri" GridPane.columnIndex="6">
+               <font>
+                  <Font name="System Italic" size="16.0" />
+               </font>
+            </Label>
+            <Label fx:id="saturdayLabel" text="Sat" GridPane.columnIndex="7">
+               <font>
+                  <Font name="System Italic" size="16.0" />
                </font>
             </Label>
          </children>

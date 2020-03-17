@@ -15,8 +15,8 @@ public class ScheduleService {
     private ScheduleRepository scheduleRepository;
 
     @Transactional
-    public void updateSchedule(Time begin, Time end, int employeeId){
-        scheduleRepository.updateSchedule(begin, end, employeeId);
+    public void updateSchedule(Time begin, Time end, int employeeId, int dayId){
+        scheduleRepository.updateSchedule(begin, end, employeeId, dayId);
     }
 
     @Transactional
