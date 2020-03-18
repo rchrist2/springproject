@@ -56,6 +56,7 @@ CREATE TABLE tbltimeoff
     begin_time_off_date datetime     not null,
     end_time_off_date   datetime     not null,
     approved            bit          NOT NULL,
+    day_off             bit          not null,
     reason_desc         varchar(128) not null,
     schedule_id         int          not null FOREIGN KEY REFERENCES tblschedule (schedule_id)
 );

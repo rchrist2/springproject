@@ -25,7 +25,7 @@ public class ScheduleService {
     }
 
     @Transactional
-    public void insertSchedule(Time startTime, Time startEnd, Date todayDate, boolean dayOff, int empId, int dayId){
-        scheduleRepository.insertEmployeeSchedule(startTime, startEnd, todayDate, dayOff, empId, dayId);
+    public void insertSchedule(Time startTime, Time startEnd, Date todayDate, int empId, int dayId){
+        scheduleRepository.insertEmployeeSchedule(startTime, startEnd, todayDate, empId, dayId);
     }
 }

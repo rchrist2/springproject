@@ -69,7 +69,9 @@ public class Tblemployee {
         List<String> listOfDays = new ArrayList<>();
 
         for (Tblschedule schedule : this.schedules) {
+            //Grabs the schedule within the week
             if(schedule.getScheduleDate().compareTo(startOfTheWeek) >= 0 && schedule.getScheduleDate().compareTo(endOfTheWeek) <= 0)
+                //Checks if time off is null OR if employee doesn't have a day off AND time off is not approved
                 if(schedule.getTimeOffs() == null || !(schedule.getTimeOffs().isDayOff() && schedule.getTimeOffs().isApproved())){
                     listOfDays.add(schedule.getDay().getDayDesc());
             }

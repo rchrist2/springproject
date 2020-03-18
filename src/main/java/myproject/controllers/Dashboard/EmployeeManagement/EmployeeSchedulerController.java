@@ -159,9 +159,6 @@ public class EmployeeSchedulerController implements Initializable {
         loadDataToTable();
 
         handleEdittingEmployee();
-
-        sundayStartSpinner.getValueFactory().setValue("10:00:00");
-
     }
 
 
@@ -397,94 +394,17 @@ public class EmployeeSchedulerController implements Initializable {
         int timeIndex = 0, i = 0;
 
         if(!errors) {
-            //variables used for method 1 below
-            /*int id = 0;
-            int timeOffId = 0;
-            int clockId = 0;
-
-            List<Tbltimeoff> tfs = new ArrayList<>();
-            List<Tblclock> cls = new ArrayList<>();
-            List<Tblschedule> schedList = scheduleRepository.findScheduleForEmployee(selectedEmployee.getId());
-            List<Integer> idList = new ArrayList<>();
-            List<Integer> idListTimeOff = new ArrayList<>();
-            List<Integer> idListClock = new ArrayList<>();*/
             if(scheduleButton.getText().equals("Update Schedule")) {
-                //TODO deleting causes an error if time off requests/clock history exists for the schedule
-
-                //TODO can try method 1 below:
-                /*get id of schedule to be deleted
-                //find related rows and set their schedule_ids to null
-                //determine their new schedule_id and set that as the new one
-                for(Tblschedule sch : schedList){
-                    id = sch.getScheduleId();
-                    if(timeOffRepository.findScheduleTimeOff(id) != null){
-                        tfs.add(timeOffRepository.findScheduleTimeOff(id));
-                        tfs.forEach((t) -> t.setSchedule(null));
-                        for(Tbltimeoff t : tfs){
-                            timeOffRepository.save(t);
-                            //timeOffId = id + 1;
-                            //idListTimeOff.add(timeOffId);
-                        }
-                    }
-                    if(clockRepository.findScheduleClock(id) != null){
-                        cls = clockRepository.findScheduleClock(id);
-
-                        cls.forEach((c) -> c.setSchedule(null));
-                        for(Tblclock c : cls){
-                            clockRepository.save(c);
-                            //clockId = id + 1;
-                            //idListClock.add(clockId);
-                        }
-                    }
-
-                   //TODO determine what new schedule IDs would be and set those for the related clock & timeoff records
-                    id = id + 1; //doesn't work since id can increment by more than 1
-                    idList.add(id);
-                }*/
-
-                //TODO or make list of selected schedules and update each one similar to alt. insert method below
-                //List<Tblschedule> scheduleToUpdate = scheduleRepository.findScheduleForEmployee(selectedEmployee.getId());
-
+                //Delete the original schedule (Pre-updated schedule)
+                System.out.println("Schedule to delete: " + selectedEmployee.getSchedules());
                 scheduleService.deleteSchedule(selectedEmployee.getId());
-                }
+            }
 
-                //alt. insert method, can change back to old one since both work the same
-                for (String day : listOfDays) {
-                    Tblschedule s = new Tblschedule();
-                    s.setScheduleTimeBegin(Time.valueOf(listOfTimes.get(timeIndex++)));
-                    s.setScheduleTimeEnd(Time.valueOf(listOfTimes.get(timeIndex++)));
-                    s.setScheduleDate(Date.valueOf(listOfDates.get(i++)));
-                    //s.setDayOff(false);
-                    s.setEmployee(employeeRepository.findEmployeeById(selectedEmployee.getId()));
-                    s.setDay(dayRepository.findDayByID(dayRepository.findDay(day).getDayId()));
-                    scheduleRepository.save(s);
-                }
-
-                //previous method to insert
-                /*
-                for (String day : listOfDays) {
-                    scheduleService.insertSchedule(Time.valueOf(listOfTimes.get(timeIndex++)), Time.valueOf(listOfTimes.get(timeIndex++)),
-                            Date.valueOf(listOfDates.get(i++)), false, selectedEmployee.getId(), dayRepository.findDay(day).getDayId());
-                 */
-
-            //TODO this does not work yet since new ids cannot be determined correctly
-            /*//give related clock and time off records the new schedule ids
-            if(!(schedList.isEmpty())){
-                for(Integer d : idListTimeOff){
-                    //currently, this is violating unique constraints in time off since it gives all the same id
-                    for(Tbltimeoff t : tfs){
-                        t.setSchedule(scheduleRepository.findByScheduleId(d));
-                        timeOffRepository.save(t);
-                    }
-                }
-                for(Integer k : idListClock){
-                    for(Tblclock c : cls){
-                        c.setSchedule(scheduleRepository.findByScheduleId(k));
-                        clockRepository.save(c);
-                    }
-                }
-            }*/
-
+            //Add the new schedule (Post-updated schedule)
+            for (String day : listOfDays) {
+                scheduleService.insertSchedule(Time.valueOf(listOfTimes.get(timeIndex++)), Time.valueOf(listOfTimes.get(timeIndex++)),
+                        Date.valueOf(listOfDates.get(i++)), selectedEmployee.getId(), dayRepository.findDay(day).getDayId());
+            }
 
             ErrorMessages.showInformationMessage("Successful", "Saved Schedule", selectedEmployee + "'s schedule was saved successfully");
             loadDataToTable();
