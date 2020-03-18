@@ -64,6 +64,9 @@ CREATE TABLE tbltimeoff(
 
 ## Check Constraints as of 3/10/2020
 alter table tblusers add constraint username_is_email check (username like '%_@__%.__%');
+CREATE UNIQUE NONCLUSTERED INDEX idx_time_off_schedule_id_notnull
+ON tbltimeoff(schedule_id)
+WHERE schedule_id IS NOT NULL;
 
 ## References
 https://stackoverflow.com/questions/50569330/how-to-reset-combobox-and-display-prompttext
