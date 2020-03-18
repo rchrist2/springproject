@@ -25,7 +25,8 @@ public interface ScheduleRepository extends CrudRepository<Tblschedule, Integer>
     TblAvailability findTblAvailabilitiesByUserAndDay(@Param("username") String user, @Param("dayDesc") String dayDesc);
     */
 
-
+    @Query(value = "SELECT * FROM tblschedule WHERE schedule_id = :id", nativeQuery = true)
+    List<Tblschedule> findScheduleNotDayOff();
 
 
 

@@ -4,7 +4,7 @@ Uses JDK 13, SQL Server, flyway, see pom.xml
 After cloning, import the maven changes and go to exec:java and make a new run configuration using 
 "compile exec:java -f pom.xml" in the Command Line box (this probably isn't needed, the program should also run using Main)
 
-## Updated SQL Scripts 3/17/2020 (edit file to see with correct formatting):
+## Updated SQL Scripts 3/18/2020 (edit file to see with correct formatting):
 
 create table tblclock(
   	clock_id int NOT NULL identity(1,1) PRIMARY KEY,
@@ -37,7 +37,6 @@ create table tblschedule(
     schedule_time_begin time NOT NULL,
     schedule_time_end time NOT NULL,
     schedule_date datetime NOT NULL,
-    day_off bit null,
 	employee_id int not null FOREIGN KEY REFERENCES tblemployee(id),
     day_id int not null FOREIGN KEY REFERENCES tblday(day_id)
 );
@@ -62,8 +61,11 @@ CREATE TABLE tbltimeoff(
 	schedule_id int null UNIQUE FOREIGN KEY REFERENCES tblschedule(schedule_id)
 );
 
-## Check Constraints as of 3/10/2020
+## Check/Other Constraints as of 3/18/2020
 alter table tblusers add constraint username_is_email check (username like '%_@__%.__%');
+CREATE UNIQUE NONCLUSTERED INDEX idx_time_off_schedule_id_notnull
+ON tbltimeoff(schedule_id)
+WHERE schedule_id IS NOT NULL;
 
 ## References
 https://stackoverflow.com/questions/50569330/how-to-reset-combobox-and-display-prompttext

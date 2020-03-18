@@ -324,7 +324,7 @@ public class CrudTimeOffController implements Initializable {
 
                 //if they want to take the day off, change day_off to true in schedule
                 if(tf.isDayOff()){
-                    sch.setDayOff(true);
+                    //sch.setDayOff(true);
                     scheduleRepository.save(sch);
                     timeOffRepository.save(tf);
                 }

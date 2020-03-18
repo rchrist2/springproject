@@ -454,7 +454,7 @@ public class EmployeeSchedulerController implements Initializable {
                     s.setScheduleTimeBegin(Time.valueOf(listOfTimes.get(timeIndex++)));
                     s.setScheduleTimeEnd(Time.valueOf(listOfTimes.get(timeIndex++)));
                     s.setScheduleDate(Date.valueOf(listOfDates.get(i++)));
-                    s.setDayOff(false);
+                    //s.setDayOff(false);
                     s.setEmployee(employeeRepository.findEmployeeById(selectedEmployee.getId()));
                     s.setDay(dayRepository.findDayByID(dayRepository.findDay(day).getDayId()));
                     scheduleRepository.save(s);

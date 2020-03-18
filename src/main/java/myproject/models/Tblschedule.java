@@ -15,18 +15,6 @@ public class Tblschedule {
     private Time scheduleTimeBegin;
     private Time scheduleTimeEnd;
     private Date scheduleDate;
-
-    @Basic
-    @Column(name = "day_off")
-    public boolean isDayOff() {
-        return dayOff;
-    }
-
-    public void setDayOff(boolean dayOff) {
-        this.dayOff = dayOff;
-    }
-
-    private boolean dayOff;
     private Tbltimeoff timeOffs;
     private Set<Tblclock> clocks;
 
@@ -51,7 +39,8 @@ public class Tblschedule {
     }
 
     //a schedule can have only one time off request
-    @OneToOne(fetch = FetchType.LAZY,mappedBy = "schedule",cascade = CascadeType.ALL)
+    //uses cascade REMOVE to allow deletions of related time offs
+    @OneToOne(fetch = FetchType.LAZY,mappedBy = "schedule",cascade = CascadeType.REMOVE)
     public Tbltimeoff getTimeOffs() {
         return timeOffs;
     }

@@ -70,7 +70,9 @@ public class Tblemployee {
 
         for (Tblschedule schedule : this.schedules) {
             if(schedule.getScheduleDate().compareTo(startOfTheWeek) >= 0 && schedule.getScheduleDate().compareTo(endOfTheWeek) <= 0)
-                listOfDays.add(schedule.getDay().getDayDesc());
+                if(schedule.getTimeOffs() == null || !(schedule.getTimeOffs().isDayOff() && schedule.getTimeOffs().isApproved())){
+                    listOfDays.add(schedule.getDay().getDayDesc());
+            }
         }
 
         return String.join("\n", listOfDays);
@@ -81,7 +83,9 @@ public class Tblemployee {
 
         for (Tblschedule tblschedule : this.schedules){
             if(tblschedule.getScheduleDate().compareTo(startOfTheWeek) >= 0 && tblschedule.getScheduleDate().compareTo(endOfTheWeek) <= 0)
-                listOfDates.add(tblschedule.getScheduleDate().toString());
+                if(tblschedule.getTimeOffs() == null || !(tblschedule.getTimeOffs().isDayOff() && tblschedule.getTimeOffs().isApproved())){
+                    listOfDates.add(tblschedule.getScheduleDate().toString());
+                }
         }
 
         return String.join("\n", listOfDates);
@@ -95,7 +99,9 @@ public class Tblemployee {
 
         for (Tblschedule hours : this.schedules) {
             if(hours.getScheduleDate().compareTo(startOfTheWeek) >= 0 && hours.getScheduleDate().compareTo(endOfTheWeek) <= 0)
-                listOfHours.add(hours.getScheduleTimeBegin().toLocalTime().format(timeFormatter));
+                if(hours.getTimeOffs() == null || !(hours.getTimeOffs().isDayOff() && hours.getTimeOffs().isApproved())){
+                    listOfHours.add(hours.getScheduleTimeBegin().toLocalTime().format(timeFormatter));
+                }
         }
 
         return String.join("\n", listOfHours);
@@ -109,7 +115,9 @@ public class Tblemployee {
 
         for(Tblschedule hours : this.schedules) {
             if(hours.getScheduleDate().compareTo(startOfTheWeek) >= 0 && hours.getScheduleDate().compareTo(endOfTheWeek) <= 0)
-                listOfHours.add(hours.getScheduleTimeEnd().toLocalTime().format(timeFormatter));
+                if(hours.getTimeOffs() == null || !(hours.getTimeOffs().isDayOff() && hours.getTimeOffs().isApproved())){
+                    listOfHours.add(hours.getScheduleTimeEnd().toLocalTime().format(timeFormatter));
+                }
         }
         return String.join("\n", listOfHours);
     }
