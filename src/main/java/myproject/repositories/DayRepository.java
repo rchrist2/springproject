@@ -11,6 +11,9 @@ import java.util.List;
 @Repository
 public interface DayRepository extends CrudRepository<TblDay, Integer> {
 
+    @Query(value = "SELECT * FROM tblday WHERE day_id = :dayPar", nativeQuery = true)
+    TblDay findDayByID(@Param("dayPar") int dayId);
+
     @Query(value = "SELECT * FROM tblday WHERE Day_Desc = :dayPar", nativeQuery = true)
     TblDay findDay(@Param("dayPar") String day);
 

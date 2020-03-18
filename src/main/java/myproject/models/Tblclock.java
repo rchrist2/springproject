@@ -82,4 +82,9 @@ public class Tblclock {
     public int hashCode() {
         return Objects.hash(clockId, punchIn, punchOut);
     }
+
+    @Override
+    public String toString(){
+        return this.getSchedule().toString();
+    }
 }

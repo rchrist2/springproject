@@ -13,6 +13,10 @@ import java.util.List;
 @Repository
 public interface ClockRepository extends CrudRepository<Tblclock, Integer> {
     @Query(value = "SELECT * FROM tblclock c JOIN tblschedule s ON c.schedule_id=s.schedule_id " +
+            "WHERE c.schedule_id = :id", nativeQuery = true)
+    List<Tblclock> findScheduleClock(@Param("id") Integer id);
+
+    @Query(value = "SELECT * FROM tblclock c JOIN tblschedule s ON c.schedule_id=s.schedule_id " +
             "JOIN tblemployee e ON s.employee_id=e.id " +
             "JOIN tblusers u ON e.id=u.employee_id WHERE Username = :username " +
             "AND DATEPART(week, s.schedule_date) = DATEPART(week, GETDATE());", nativeQuery = true)

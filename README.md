@@ -7,12 +7,12 @@ After cloning, import the maven changes and go to exec:java and make a new run c
 ## Updated SQL Scripts 3/17/2020 (edit file to see with correct formatting):
 
 create table tblclock(
-	clock_id int NOT NULL identity(1,1) PRIMARY KEY,
-    punch_in time NOT NULL,
-	punch_out time NOT NULL,
-	date_created datetime NOT NULL,
-	schedule_id int not null FOREIGN KEY REFERENCES tblschedule(schedule_id)
-);
+  	clock_id int NOT NULL identity(1,1) PRIMARY KEY,
+      punch_in time NOT NULL,
+  	punch_out time NOT NULL,
+  	date_created datetime NOT NULL,
+  	schedule_id int null FOREIGN KEY REFERENCES tblschedule(schedule_id)
+  );
 
 create table tblroles(
     role_id int NOT NULL identity(1,1) PRIMARY KEY,

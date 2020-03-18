@@ -105,4 +105,8 @@ public class Tbltimeoff {
         return Objects.hash(timeOffId, beginTimeOffDate, endTimeOffDate, approved, reasonDesc);
     }
 
+    @Override
+    public String toString(){
+        return this.getSchedule().toString();
+    }
 }

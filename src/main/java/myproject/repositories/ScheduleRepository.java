@@ -1,7 +1,9 @@
 package myproject.repositories;
 
+import myproject.models.Tblclock;
 import myproject.models.Tblemployee;
 import myproject.models.Tblschedule;
+import myproject.models.Tbltimeoff;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -22,6 +24,10 @@ public interface ScheduleRepository extends CrudRepository<Tblschedule, Integer>
             "WHERE Username = :username AND Day_Desc = :dayDesc", nativeQuery = true)
     TblAvailability findTblAvailabilitiesByUserAndDay(@Param("username") String user, @Param("dayDesc") String dayDesc);
     */
+
+
+
+
 
     @Query(value = "SELECT * FROM tblschedule WHERE schedule_id = :id", nativeQuery = true)
     Tblschedule findByScheduleId(@Param("id") Integer id);
