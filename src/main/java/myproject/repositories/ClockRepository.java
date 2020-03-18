@@ -28,7 +28,7 @@ public interface ClockRepository extends CrudRepository<Tblclock, Integer> {
     List<Tblclock> findClockThisWeekAllUser();
 
     @Query(value = "SELECT clock_id, punch_in, " +
-            "punch_out, c.schedule_id, date_created FROM tblclock c " +
+            "punch_out, c.schedule_id, date_created, day_desc FROM tblclock c " +
             "JOIN tblschedule s ON c.schedule_id=s.schedule_id " +
             "JOIN tblemployee e ON s.employee_id=e.id JOIN " +
             "tblusers u ON e.id=u.employee_id " +
@@ -37,11 +37,11 @@ public interface ClockRepository extends CrudRepository<Tblclock, Integer> {
             "JOIN tblemployee e ON s.employee_id=e.id JOIN " +
             "tblusers u ON e.id=u.employee_id " +
             "WHERE c.schedule_id = :schedule) " +
-            "GROUP BY clock_id, punch_in, punch_out, c.schedule_id, date_created;", nativeQuery = true)
+            "GROUP BY clock_id, punch_in, punch_out, c.schedule_id, date_created, day_desc;", nativeQuery = true)
     Tblclock findRecentClockForSchedule(@Param("schedule") Integer schedule);
 
     @Query(value = "SELECT clock_id, punch_in, " +
-            "punch_out, c.schedule_id, date_created FROM tblclock c " +
+            "punch_out, c.schedule_id, date_created, day_desc FROM tblclock c " +
             "JOIN tblschedule s ON c.schedule_id=s.schedule_id " +
             "JOIN tblemployee e ON s.employee_id=e.id JOIN " +
             "tblusers u ON e.id=u.employee_id " +
@@ -50,7 +50,7 @@ public interface ClockRepository extends CrudRepository<Tblclock, Integer> {
             "JOIN tblemployee e ON s.employee_id=e.id JOIN " +
             "tblusers u ON e.id=u.employee_id " +
             "WHERE username = :username) " +
-            "GROUP BY clock_id, punch_in, punch_out, c.schedule_id, date_created;", nativeQuery = true)
+            "GROUP BY clock_id, punch_in, punch_out, c.schedule_id, date_created, day_desc;", nativeQuery = true)
     Tblclock findRecentClockForUser(@Param("username") String username);
 
     @Query(value = "SELECT * FROM tblclock c JOIN tblschedule s ON c.schedule_id=s.schedule_id " +

@@ -394,20 +394,81 @@ public class EmployeeSchedulerController implements Initializable {
         int timeIndex = 0, i = 0;
 
         if(!errors) {
+            //variables used for method below
+            int id = 0;
+            List<Tbltimeoff> tfs = new ArrayList<>();
+            List<Tblclock> cls = new ArrayList<>();
+            List<Tblschedule> schedList = scheduleRepository.findScheduleForEmployee(selectedEmployee.getId());
+            List<Integer> idList = new ArrayList<>();
             if(scheduleButton.getText().equals("Update Schedule")) {
+                //find related rows and set their schedule_ids to null
+                for(Tblschedule sch : schedList){
+                    id = sch.getScheduleId();
+                    if(timeOffRepository.findScheduleTimeOff(id) != null){
+                        tfs.add(timeOffRepository.findScheduleTimeOff(id));
+                        tfs.forEach((t) -> t.setSchedule(null));
+                        for(Tbltimeoff t : tfs){
+                            timeOffRepository.save(t);
+                        }
+                    }
+                    if(clockRepository.findScheduleClock(id) != null){
+                        cls.addAll(clockRepository.findScheduleClock(id));
+                        cls.forEach((c) -> c.setSchedule(null));
+                        for(Tblclock c : cls){
+                            clockRepository.save(c);
+                        }
+                    }
+                }
+
                 //Delete the original schedule (Pre-updated schedule)
                 System.out.println("Schedule to delete: " + selectedEmployee.getSchedules());
                 scheduleService.deleteSchedule(selectedEmployee.getId());
             }
 
-            //Add the new schedule (Post-updated schedule)
+            //alt. insert method, allows new ids to be saved to an id list
             for (String day : listOfDays) {
-                scheduleService.insertSchedule(Time.valueOf(listOfTimes.get(timeIndex++)), Time.valueOf(listOfTimes.get(timeIndex++)),
-                        Date.valueOf(listOfDates.get(i++)), selectedEmployee.getId(), dayRepository.findDay(day).getDayId());
+                Tblschedule s = new Tblschedule();
+                s.setScheduleTimeBegin(Time.valueOf(listOfTimes.get(timeIndex++)));
+                s.setScheduleTimeEnd(Time.valueOf(listOfTimes.get(timeIndex++)));
+                s.setScheduleDate(Date.valueOf(listOfDates.get(i++)));
+                s.setEmployee(employeeRepository.findEmployeeById(selectedEmployee.getId()));
+                s.setDay(dayRepository.findDayByID(dayRepository.findDay(day).getDayId()));
+                scheduleRepository.save(s);
+
+                int newId = s.getScheduleId();
+                idList.add(newId);
             }
 
-            ErrorMessages.showInformationMessage("Successful", "Saved Schedule", selectedEmployee + "'s schedule was saved successfully");
-            loadDataToTable();
+            //give related clock and time off records the new schedule ids
+            if(!(schedList.isEmpty())){
+                //loop through each new id
+                for(Integer d : idList){
+                    //find the schedule with each new id
+                    Tblschedule newSched = scheduleRepository.findByScheduleId(d);
+
+                    //if the schedule day matches the day of the related time offs, set the id
+                    for(Tbltimeoff t : tfs){
+                        if(newSched.getDay().getDayDesc().equals(t.getDayDesc())){
+                            t.setSchedule(newSched);
+                            timeOffRepository.save(t);
+                        }
+                    }
+                }
+
+                //do the same for clock ins/outs
+                for(Integer k : idList){
+                    Tblschedule newSched2 = scheduleRepository.findByScheduleId(k);
+                    for(Tblclock c : cls){
+                        if(newSched2.getDay().getDayDesc().equals(c.getDayDesc())){
+                            c.setSchedule(newSched2);
+                            clockRepository.save(c);
+                        }
+                    }
+                }
+            }
+
+        ErrorMessages.showInformationMessage("Successful", "Saved Schedule", selectedEmployee + "'s schedule was saved successfully");
+        loadDataToTable();
         }
 
         resetCheckBoxes();

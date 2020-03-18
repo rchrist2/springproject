@@ -8,9 +8,10 @@ After cloning, import the maven changes and go to exec:java and make a new run c
 
 create table tblclock(
   	clock_id int NOT NULL identity(1,1) PRIMARY KEY,
-      punch_in time NOT NULL,
+    punch_in time NOT NULL,
   	punch_out time NOT NULL,
   	date_created datetime NOT NULL,
+  	day_desc varchar(36) null,
   	schedule_id int null FOREIGN KEY REFERENCES tblschedule(schedule_id)
   );
 
@@ -58,6 +59,7 @@ CREATE TABLE tbltimeoff(
 	approved bit NOT NULL,
 	day_off bit not null,
 	reason_desc varchar(128) not null,
+	day_desc varchar(36) null,
 	schedule_id int null UNIQUE FOREIGN KEY REFERENCES tblschedule(schedule_id)
 );
 

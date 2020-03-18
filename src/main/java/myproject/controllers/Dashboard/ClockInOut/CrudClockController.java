@@ -245,6 +245,7 @@ public class CrudClockController implements Initializable {
         }
 
         cl.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
+        cl.setDayDesc(scheduleList.getSelectionModel().getSelectedItem().getDay().getDayDesc());
 
         //check if any fields were empty or using default selection of "Hour"
         if(!(beginPMList.getSelectionModel().isEmpty() ||

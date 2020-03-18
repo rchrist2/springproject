@@ -118,7 +118,6 @@ public class ClockInOutController implements Initializable {
         scheduleData = FXCollections.observableArrayList();
         scheduleData.addAll(scheduleRepository.findScheduleThisWeekForUser(currentUser));
 
-        //TODO can possibly remove this
         if(!(scheduleData.isEmpty())){
             scheduleList.setItems(scheduleData);
         }
@@ -160,6 +159,7 @@ public class ClockInOutController implements Initializable {
                 newClock.setPunchOut(java.sql.Time.valueOf("00:00:00"));
                 newClock.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
                 newClock.setDateCreated(new java.sql.Timestamp(new java.util.Date().getTime()));
+                newClock.setDayDesc(scheduleList.getSelectionModel().getSelectedItem().getDay().getDayDesc());
 
                 //save the new clock-in
                 clockRepository.save(newClock);
@@ -494,7 +494,7 @@ public class ClockInOutController implements Initializable {
             SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
 
             //get the recent clock in/out details
-            String recentDay = recentClockForUser.getSchedule().getDay().getDayDesc();
+            String recentDay = recentClockForUser.getDayDesc();
             String recentDate = dateFormat.format(recentClockForUser.getSchedule().getScheduleDate());
 
             if(recentClockForUser.getPunchOut().equals(Time.valueOf("00:00:00"))){

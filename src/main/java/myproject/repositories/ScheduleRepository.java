@@ -54,7 +54,7 @@ public interface ScheduleRepository extends CrudRepository<Tblschedule, Integer>
                    "FROM tblday d " +
                    "JOIN tblSchedule s " +
                    "ON d.Day_id = s.day_id WHERE employee_id = :id " +
-                   "EXCEPT " +
+                   "UNION " +
                    "SELECT d.Day_Desc " +
                    "FROM tblday d " +
                    "JOIN tblSchedule s " +
@@ -67,7 +67,7 @@ public interface ScheduleRepository extends CrudRepository<Tblschedule, Integer>
 
     @Query(value = "SELECT s.schedule_time_begin " +
                    "FROM tblschedule s WHERE s.employee_id = :empId AND s.day_id = :dayId  " +
-                   "EXCEPT " +
+                   "UNION " +
                    "SELECT sm.schedule_time_begin " +
                    "FROM tblschedule sm " +
                    "JOIN tblemployee e " +
@@ -80,7 +80,7 @@ public interface ScheduleRepository extends CrudRepository<Tblschedule, Integer>
 
     @Query(value = "SELECT s.schedule_time_end " +
             "FROM tblschedule s WHERE s.employee_id = :empId AND s.day_id = :dayId " +
-            "EXCEPT " +
+            "UNION " +
             "SELECT sm.schedule_time_end " +
             "FROM tblschedule  sm " +
             "JOIN tblemployee e " +

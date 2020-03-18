@@ -13,6 +13,18 @@ public class Tbltimeoff {
     private java.sql.Time endTimeOffDate;
     private boolean approved;
     private boolean dayOff;
+
+    @Basic
+    @Column(name = "day_desc")
+    public String getDayDesc() {
+        return dayDesc;
+    }
+
+    public void setDayDesc(String dayDesc) {
+        this.dayDesc = dayDesc;
+    }
+
+    private String dayDesc;
     private String reasonDesc;
     private Tblschedule schedule;
 

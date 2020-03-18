@@ -209,6 +209,7 @@ public class TimeOffController implements Initializable {
             newTimeOff.setApproved(false);
             newTimeOff.setReasonDesc(reasonInput.getText());
             newTimeOff.setDayOff(true);
+            newTimeOff.setDayDesc(scheduleList.getSelectionModel().getSelectedItem().getDay().getDayDesc());
 
             if(scheduleList.getSelectionModel().getSelectedItem().getTimeOffs() == null){
                 timeOffRepository.save(newTimeOff);
@@ -284,6 +285,7 @@ public class TimeOffController implements Initializable {
             newTimeOff.setReasonDesc(reasonInput.getText());
             newTimeOff.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
             newTimeOff.setDayOff(false);
+            newTimeOff.setDayDesc(scheduleList.getSelectionModel().getSelectedItem().getDay().getDayDesc());
 
             //check if the time range is valid
             if (newTimeOff.getBeginTimeOffDate().before(newTimeOff.getEndTimeOffDate())

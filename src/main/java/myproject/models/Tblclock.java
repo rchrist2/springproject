@@ -13,7 +13,19 @@ public class Tblclock {
     private java.sql.Time punchIn;
     private java.sql.Time punchOut;
     private Timestamp dateCreated;
+    private String dayDesc;
     Tblschedule schedule;
+
+    @Basic
+    @Column(name = "day_desc")
+    public String getDayDesc() {
+        return dayDesc;
+    }
+
+    public void setDayDesc(String dayDesc) {
+        this.dayDesc = dayDesc;
+    }
+
 
     //many clock-ins/outs can be used for one schedule
     @ManyToOne(fetch = FetchType.EAGER)
@@ -85,6 +97,6 @@ public class Tblclock {
 
     @Override
     public String toString(){
-        return this.getSchedule().toString();
+        return this.getDayDesc();
     }
 }

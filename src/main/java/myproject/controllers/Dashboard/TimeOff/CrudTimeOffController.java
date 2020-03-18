@@ -314,6 +314,7 @@ public class CrudTimeOffController implements Initializable {
         tf.setApproved(isApproved);
         tf.setReasonDesc(reasonInput.getText());
         tf.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
+        tf.setDayDesc(scheduleList.getSelectionModel().getSelectedItem().getDay().getDayDesc());
 
         //check if any fields are empty, probably not necessary since these are set already
         if(!(approveList.getSelectionModel().isEmpty() ||
