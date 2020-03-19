@@ -45,49 +45,49 @@ public interface ScheduleRepository extends CrudRepository<Tblschedule, Integer>
             "tblusers u ON e.id=u.employee_id WHERE Username = :username", nativeQuery = true)
     List<Tblschedule> findScheduleForUser(@Param("username") String user);
 
-    @Query(value = "SELECT * FROM tblschedule s " +
+    @Query(value = "SELECT * FROM tblschedule s LEFT JOIN tbltimeoff t ON s.schedule_id=t.schedule_id " +
             "JOIN tblemployee e ON s.employee_id = e.id " +
-            "WHERE employee_id = :employeeId", nativeQuery = true)
+            "WHERE employee_id = :employeeId AND t.schedule_id IS NULL OR NOT (t.approved=1 AND t.day_off=1)", nativeQuery = true)
     List<Tblschedule> findScheduleForEmployee(@Param("employeeId") int employeeId);
 
     @Query(value = "SELECT d.Day_Desc " +
                    "FROM tblday d " +
                    "JOIN tblSchedule s " +
                    "ON d.Day_id = s.day_id WHERE employee_id = :id " +
-                   "UNION " +
+                   "EXCEPT " +
                    "SELECT d.Day_Desc " +
                    "FROM tblday d " +
                    "JOIN tblSchedule s " +
                    "ON d.Day_id = s.day_id " +
                    "JOIN tbltimeoff t " +
                    "ON s.schedule_id = t.schedule_id " +
-                   "WHERE s.employee_id = :id " +
+                   "WHERE s.employee_id = :id AND t.approved=1 AND t.day_off=1 " +
                    "AND s.schedule_date >= :startOfTheWeek AND s.schedule_date <= :endOfTheWeek", nativeQuery = true)
     List<String> findEmployeeDays(@Param("id") int id, @Param("startOfTheWeek") String startOfTheWeek, @Param("endOfTheWeek") String endOfTheWeek);
 
     @Query(value = "SELECT s.schedule_time_begin " +
                    "FROM tblschedule s WHERE s.employee_id = :empId AND s.day_id = :dayId  " +
-                   "UNION " +
+                   "EXCEPT " +
                    "SELECT sm.schedule_time_begin " +
                    "FROM tblschedule sm " +
                    "JOIN tblemployee e " +
                    "ON sm.employee_id = e.id " +
                    "JOIN tbltimeoff t " +
                    "ON sm.schedule_id = t.schedule_id " +
-                   "WHERE sm.employee_id = :empId AND sm.day_id = :dayId " +
+                   "WHERE sm.employee_id = :empId AND sm.day_id = :dayId AND t.approved=1 AND t.day_off=1 " +
                    "AND sm.schedule_date >= :startOfTheWeek AND sm.schedule_date <= :endOfTheWeek", nativeQuery = true)
     String findEmployeeStartHours(@Param("empId") int empId, @Param("dayId") int dayId, @Param("startOfTheWeek") String startOfTheWeek, @Param("endOfTheWeek") String endOfTheWeek);
 
     @Query(value = "SELECT s.schedule_time_end " +
             "FROM tblschedule s WHERE s.employee_id = :empId AND s.day_id = :dayId " +
-            "UNION " +
+            "EXCEPT " +
             "SELECT sm.schedule_time_end " +
             "FROM tblschedule  sm " +
             "JOIN tblemployee e " +
             "ON sm.employee_id = e.id " +
             "JOIN tbltimeoff t " +
             "ON sm.schedule_id = t.schedule_id " +
-            "WHERE sm.employee_id = :empId AND sm.day_id = :dayId " +
+            "WHERE sm.employee_id = :empId AND sm.day_id = :dayId AND t.approved=1 AND t.day_off=1 " +
             "AND sm.schedule_date >= :startOfTheWeek AND sm.schedule_date <= :endOfTheWeek", nativeQuery = true)
     String findEmployeeEndHours(@Param("empId") int empId, @Param("dayId") int dayId, @Param("startOfTheWeek") String startOfTheWeek, @Param("endOfTheWeek") String endOfTheWeek);
 
@@ -113,6 +113,10 @@ public interface ScheduleRepository extends CrudRepository<Tblschedule, Integer>
     @Modifying
     @Query(value = "DELETE FROM tblschedule WHERE employee_id = :empId", nativeQuery = true)
     void deleteEmployeeSchedule(@Param("empId") int employeeId);
+
+    @Modifying
+    @Query(value = "DELETE FROM tblschedule WHERE schedule_id = :id", nativeQuery = true)
+    void deleteSchedule(@Param("id") int id);
 
     @Modifying
     @Query(value = "INSERT INTO tblschedule VALUES (:startTime, :endTime, :scheduleDate, :empId, :dayId)", nativeQuery = true)

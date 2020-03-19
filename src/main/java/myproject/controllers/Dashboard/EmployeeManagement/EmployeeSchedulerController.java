@@ -405,11 +405,12 @@ public class EmployeeSchedulerController implements Initializable {
                 for(Tblschedule sch : schedList){
                     id = sch.getScheduleId();
                     if(timeOffRepository.findScheduleTimeOff(id) != null){
-                        tfs.add(timeOffRepository.findScheduleTimeOff(id));
-                        tfs.forEach((t) -> t.setSchedule(null));
-                        for(Tbltimeoff t : tfs){
-                            timeOffRepository.save(t);
-                        }
+                            tfs.add(timeOffRepository.findScheduleTimeOff(id));
+                            tfs.forEach((t) -> t.setSchedule(null));
+                            for(Tbltimeoff t : tfs){
+                                timeOffRepository.save(t);
+                            }
+
                     }
                     if(clockRepository.findScheduleClock(id) != null){
                         cls.addAll(clockRepository.findScheduleClock(id));
@@ -421,8 +422,11 @@ public class EmployeeSchedulerController implements Initializable {
                 }
 
                 //Delete the original schedule (Pre-updated schedule)
-                System.out.println("Schedule to delete: " + selectedEmployee.getSchedules());
-                scheduleService.deleteSchedule(selectedEmployee.getId());
+                System.out.println("Schedule to delete: " + schedList);
+                for(Tblschedule sh : schedList){
+                        scheduleService.deleteScheduleByID(sh.getScheduleId());
+                        System.out.println("Deleted");
+                }
             }
 
             //alt. insert method, allows new ids to be saved to an id list

@@ -25,6 +25,11 @@ public class ScheduleService {
     }
 
     @Transactional
+    public void deleteScheduleByID(int id){
+        scheduleRepository.deleteSchedule(id);
+    }
+
+    @Transactional
     public void insertSchedule(Time startTime, Time startEnd, Date todayDate, int empId, int dayId){
         scheduleRepository.insertEmployeeSchedule(startTime, startEnd, todayDate, empId, dayId);
     }
