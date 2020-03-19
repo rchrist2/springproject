@@ -83,3 +83,4 @@ https://stackoverflow.com/questions/47771296/how-to-reset-a-counter-column-to-ze
 https://stackoverflow.com/questions/538739/best-way-to-store-time-hhmm-in-a-database
 https://www.baeldung.com/spring-email
 https://loading.io/license/
+https://stackoverflow.com/questions/45778386/in-javafx-how-to-remove-a-specific-node-from-a-gridpane-with-the-coordinate-of

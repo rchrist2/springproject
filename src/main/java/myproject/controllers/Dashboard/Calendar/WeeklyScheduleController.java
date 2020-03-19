@@ -1,5 +1,6 @@
 package myproject.controllers.Dashboard.Calendar;
 
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -22,6 +23,7 @@ import static java.time.temporal.TemporalAdjusters.*;
 
 import java.lang.reflect.Array;
 import java.net.URL;
+import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.Duration;
@@ -125,30 +127,17 @@ public class WeeklyScheduleController implements Initializable {
             //Loop through the days of the week and check if the employee
             //is working on that day
             for (int j = 1; j <= 7; j++) {
+
+                //Delete the existing label from gridpane for the new week
+                removeLabelFromPreviousDates(i, j, weeklyCalendarGridPane);
+
                 //Store the hours of the employees in a list
                 List<Tblschedule> employeeSchedule = scheduleRepository.findScheduleForEmployee(name.getId());
-                System.out.println("The size of employeeSchedule: " + employeeSchedule.size());
-
-                /*if(x < employeeSchedule.size()) {
-                    Tblschedule currSchedule = employeeSchedule.get(x);
-
-                    if (currSchedule.getDay().getDayDesc().toLowerCase().equals(currentDay.getDayOfWeek().toString().toLowerCase())) {
-                        Label hours = new Label();
-                        hours.setText(currSchedule.getScheduleTimeBegin().toLocalTime().format(dateTimeFormatter) + " - "
-                                + currSchedule.getScheduleTimeEnd().toLocalTime().format(dateTimeFormatter));
-
-                        hours.setFont(Font.font("System", 11));
-                        hours.setStyle("-fx-padding: 0 0 0 5");
-
-                        weeklyCalendarGridPane.add(hours, j, i);
-                        x++;
-                    }
-                }*/
-
 
                 for (Tblschedule tblSchedule : employeeSchedule){
                     //Check to see if the current day matches the day in the employee schedule
-                    if(tblSchedule.getDay().getDayDesc().toLowerCase().equals(currentDay.getDayOfWeek().toString().toLowerCase())){
+                    if(tblSchedule.getDay().getDayDesc().toLowerCase().equals(currentDay.getDayOfWeek().toString().toLowerCase()) && tblSchedule.getTimeOffs() == null
+                        && tblSchedule.getScheduleDate().compareTo(Date.valueOf(sunday)) >= 0 && tblSchedule.getScheduleDate().compareTo(Date.valueOf(saturday)) <= 0){
                         Label hours = new Label();
                         hours.setText(tblSchedule.getScheduleTimeBegin().toLocalTime().format(dateTimeFormatter) + " - "
                                 + tblSchedule.getScheduleTimeEnd().toLocalTime().format(dateTimeFormatter));
@@ -169,6 +158,21 @@ public class WeeklyScheduleController implements Initializable {
         Duration timeElapsed = Duration.between(start, end);
 
         System.out.println("The time elapsed is: " + timeElapsed);
+    }
+
+    private void removeLabelFromPreviousDates(final int row, final int column, GridPane gridPane){
+        //Add all nodes of gridpane into a observable list
+        ObservableList<Node> labelsInGridPane = gridPane.getChildren();
+
+        //Go through each node to check if they exist in a [row][col] of Gridpane
+        for(Node node : labelsInGridPane){
+            //If node exists then delete from gridpane
+            if(node instanceof Label && gridPane.getRowIndex(node) == row && gridPane.getColumnIndex(node) == column){
+                Label currentLabel = (Label) node;
+                gridPane.getChildren().remove(currentLabel);
+                break;
+            }
+        }
     }
 
     private void refreshDayLabels(){
@@ -214,6 +218,7 @@ public class WeeklyScheduleController implements Initializable {
 
         weekLabel.setText(sunday.format(dateFormat) + ", " + saturday.format(dateFormat));
         refreshDayLabels();
+        populateWeeklyCalendar();
     }
 
     @SuppressWarnings("Duplicates")
@@ -232,5 +237,6 @@ public class WeeklyScheduleController implements Initializable {
 
         weekLabel.setText(sunday.format(dateFormat) + ", " + saturday.format(dateFormat));
         refreshDayLabels();
+        populateWeeklyCalendar();
     }
 }

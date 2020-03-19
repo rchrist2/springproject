@@ -38,6 +38,7 @@ create table tblclock
     clock_id    int  NOT NULL identity (1,1) PRIMARY KEY,
     punch_in    time NOT NULL,
     punch_out   time NOT NULL,
+    day_desc varchar(36) null,
     date_created datetime NOT NULL,
     schedule_id int  not null FOREIGN KEY REFERENCES tblschedule (schedule_id)
 );
@@ -57,6 +58,7 @@ CREATE TABLE tbltimeoff
     end_time_off_date   datetime     not null,
     approved            bit          NOT NULL,
     day_off             bit          not null,
+    day_desc            varchar(36)  null,
     reason_desc         varchar(128) not null,
     schedule_id         int          not null FOREIGN KEY REFERENCES tblschedule (schedule_id)
 );

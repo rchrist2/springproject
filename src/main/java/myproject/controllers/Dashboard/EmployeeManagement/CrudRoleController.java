@@ -65,7 +65,7 @@ public class CrudRoleController implements Initializable {
 
     private void setTextFieldsForEdit(TblRoles roles){
         roleText.setText(roles.getRoleName());
-        roleDescTextA.setText(roles.getRoleName());
+        roleDescTextA.setText(roles.getRoleDesc());
     }
 
     //This will act as adding a new role and updating a role
