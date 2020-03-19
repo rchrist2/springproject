@@ -26,6 +26,7 @@ import myproject.repositories.EmployeeRepository;
 import myproject.repositories.ScheduleRepository;
 import myproject.repositories.TimeOffRepository;
 import myproject.repositories.UserRepository;
+import myproject.services.TimeOffService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
@@ -53,6 +54,9 @@ public class TimeOffController implements Initializable {
 
     @Autowired
     private ScheduleRepository scheduleRepository;
+
+    @Autowired
+    private TimeOffService timeOffService;
 
     @FXML
     private Pane optionsPane;
@@ -88,7 +92,7 @@ public class TimeOffController implements Initializable {
     private TabPane timeOffTabPane;*/
 
     @FXML
-    public Label tableUserLabel;
+    private Label tableUserLabel;
 
     @FXML
     private Button timeOffDeleteButton;
@@ -103,10 +107,10 @@ public class TimeOffController implements Initializable {
     private Button submitRequestButton1;
 
     @FXML
-    public RadioButton dayOffCheck;
+    private RadioButton dayOffCheck;
 
     @FXML
-    public RadioButton changeAvailCheck;
+    private RadioButton changeAvailCheck;
 
     /*@FXML
     public RadioButton allTimeCheck;
@@ -115,45 +119,45 @@ public class TimeOffController implements Initializable {
     public RadioButton currentWeekCheck;*/
 
     @FXML
-    public TableView<Tbltimeoff> timeOffTable;
+    private TableView<Tbltimeoff> timeOffTable;
 
     @FXML
     private TableColumn<Tbltimeoff, String> userCol;
 
     @FXML
-    public TableColumn<Tbltimeoff, String> scheduleDateCol;
+    private TableColumn<Tbltimeoff, String> scheduleDateCol;
 
     @FXML
-    public TableColumn<Tbltimeoff, String> beginTimeCol;
+    private TableColumn<Tbltimeoff, String> beginTimeCol;
 
     @FXML
     public TableColumn<Tbltimeoff, String> endTimeCol;
 
     @FXML
-    public TableColumn<Tbltimeoff, String> approveTimeOffCol;
+    private TableColumn<Tbltimeoff, String> approveTimeOffCol;
 
     @FXML
-    public TableColumn<Tbltimeoff, String> dayOffCol;
+    private TableColumn<Tbltimeoff, String> dayOffCol;
 
     @FXML
-    public TableColumn<Tbltimeoff, String> reasonTimeOffCol;
+    private TableColumn<Tbltimeoff, String> reasonTimeOffCol;
 
     @FXML
-    public ComboBox<Tblschedule> scheduleList;
+    private ComboBox<Tblschedule> scheduleList;
     @FXML
-    public ComboBox<String> beginPMList;
+    private ComboBox<String> beginPMList;
     @FXML
-    public ComboBox<String> endPMList;
+    private ComboBox<String> endPMList;
 
     @FXML
-    public Spinner<Integer> beginHrList;
+    private Spinner<Integer> beginHrList;
     @FXML
-    public Spinner<Integer> endHrList;
+    private Spinner<Integer> endHrList;
 
     @FXML
-    public TextField reasonInput;
+    private TextField reasonInput;
 
-    public ObservableList<Tblschedule> scheduleData;
+    private ObservableList<Tblschedule> scheduleData;
     private FilteredList<Tblschedule> filteredScheduleData;
 
     private ObservableList<Tbltimeoff> listOfTimeOffs;
@@ -164,7 +168,7 @@ public class TimeOffController implements Initializable {
     private ObservableList<String> pmList =
             FXCollections.observableArrayList(Arrays.asList("AM","PM"));
 
-    public Tbltimeoff selectedTimeOff;
+    private Tbltimeoff selectedTimeOff;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -209,7 +213,7 @@ public class TimeOffController implements Initializable {
             newTimeOff.setApproved(false);
             newTimeOff.setReasonDesc(reasonInput.getText());
             newTimeOff.setDayOff(true);
-            newTimeOff.setDayDesc(scheduleList.getSelectionModel().getSelectedItem().getDay().getDayDesc());
+            newTimeOff.setDay(scheduleList.getSelectionModel().getSelectedItem().getDay());
 
             if(scheduleList.getSelectionModel().getSelectedItem().getTimeOffs() == null){
                 timeOffRepository.save(newTimeOff);
@@ -285,7 +289,7 @@ public class TimeOffController implements Initializable {
             newTimeOff.setReasonDesc(reasonInput.getText());
             newTimeOff.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
             newTimeOff.setDayOff(false);
-            newTimeOff.setDayDesc(scheduleList.getSelectionModel().getSelectedItem().getDay().getDayDesc());
+            newTimeOff.setDay(scheduleList.getSelectionModel().getSelectedItem().getDay());
 
             //check if the time range is valid
             if (newTimeOff.getBeginTimeOffDate().before(newTimeOff.getEndTimeOffDate())
@@ -392,7 +396,7 @@ public class TimeOffController implements Initializable {
 
             //if the user clicks "OK", delete the entry
             if (choice.get() == ButtonType.OK) {
-                timeOffRepository.delete(tf);
+                timeOffService.deleteTimeOff(tf.getTimeOffId());
             } else {
                 System.out.println("Delete cancelled");
             }

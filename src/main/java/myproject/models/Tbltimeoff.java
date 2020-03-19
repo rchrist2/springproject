@@ -13,8 +13,22 @@ public class Tbltimeoff {
     private java.sql.Time endTimeOffDate;
     private boolean approved;
     private boolean dayOff;
+    private TblDay day;
+    //private String dayDesc;
+    private String reasonDesc;
+    private Tblschedule schedule;
 
-    @Basic
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "day_id", referencedColumnName = "day_id")
+    public TblDay getDay() {
+        return day;
+    }
+
+    public void setDay(TblDay day) {
+        this.day = day;
+    }
+
+    /*@Basic
     @Column(name = "day_desc")
     public String getDayDesc() {
         return dayDesc;
@@ -22,11 +36,7 @@ public class Tbltimeoff {
 
     public void setDayDesc(String dayDesc) {
         this.dayDesc = dayDesc;
-    }
-
-    private String dayDesc;
-    private String reasonDesc;
-    private Tblschedule schedule;
+    }*/
 
     //only one time off request can belong to only one schedule
     @OneToOne(fetch = FetchType.EAGER)

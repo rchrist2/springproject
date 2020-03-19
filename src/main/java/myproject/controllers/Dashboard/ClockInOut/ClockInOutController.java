@@ -27,6 +27,7 @@ import myproject.repositories.ClockRepository;
 import myproject.repositories.ScheduleRepository;
 import myproject.repositories.DayRepository;
 import myproject.repositories.UserRepository;
+import myproject.services.ClockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
@@ -54,8 +55,11 @@ public class ClockInOutController implements Initializable {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ClockService clockService;
+
     @FXML
-    public ComboBox<Tblschedule> scheduleList;
+    private ComboBox<Tblschedule> scheduleList;
 
     @FXML
     private Pane optionsPane;
@@ -70,38 +74,38 @@ public class ClockInOutController implements Initializable {
     private Button clockEditButton;
 
     @FXML
-    public Label tableUserLabel;
+    private Label tableUserLabel;
 
     @FXML
-    public Label lastActionLabel;
+    private Label lastActionLabel;
 
     @FXML
-    public RadioButton allTimeCheck;
+    private RadioButton allTimeCheck;
 
     @FXML
-    public RadioButton currentWeekCheck;
+    private RadioButton currentWeekCheck;
 
     @FXML
-    public TableView<Tblclock> clockTable;
+    private TableView<Tblclock> clockTable;
 
     @FXML
-    public TableColumn<Tblclock, String> punchInCol;
+    private TableColumn<Tblclock, String> punchInCol;
 
     @FXML
-    public TableColumn<Tblclock, String> punchOutCol;
+    private TableColumn<Tblclock, String> punchOutCol;
 
     @FXML
-    public TableColumn<Tblclock, java.sql.Date> scheduleCol;
+    private TableColumn<Tblclock, java.sql.Date> scheduleCol;
 
     @FXML
-    public TableColumn<Tblclock, String> userCol;
+    private TableColumn<Tblclock, String> userCol;
 
-    public Tblclock selectedClock;
+    private Tblclock selectedClock;
 
     private ObservableList<Tblclock> listOfClock;
     private FilteredList<Tblclock> filteredListOfClock;
 
-    public ObservableList<Tblschedule> scheduleData;
+    private ObservableList<Tblschedule> scheduleData;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -159,7 +163,7 @@ public class ClockInOutController implements Initializable {
                 newClock.setPunchOut(java.sql.Time.valueOf("00:00:00"));
                 newClock.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
                 newClock.setDateCreated(new java.sql.Timestamp(new java.util.Date().getTime()));
-                newClock.setDayDesc(scheduleList.getSelectionModel().getSelectedItem().getDay().getDayDesc());
+                newClock.setDay(scheduleList.getSelectionModel().getSelectedItem().getDay());
 
                 //save the new clock-in
                 clockRepository.save(newClock);
@@ -296,7 +300,7 @@ public class ClockInOutController implements Initializable {
 
         //if the user clicks "OK", delete the entry
         if(choice.get() == ButtonType.OK) {
-            clockRepository.delete(cl);
+            clockService.deleteClock(cl.getClockId());
         }
         else{
             System.out.println("Delete cancelled");
@@ -494,7 +498,7 @@ public class ClockInOutController implements Initializable {
             SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
 
             //get the recent clock in/out details
-            String recentDay = recentClockForUser.getDayDesc();
+            String recentDay = recentClockForUser.getDay().getDayDesc();
             String recentDate = dateFormat.format(recentClockForUser.getSchedule().getScheduleDate());
 
             if(recentClockForUser.getPunchOut().equals(Time.valueOf("00:00:00"))){

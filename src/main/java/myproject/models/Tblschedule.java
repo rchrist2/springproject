@@ -40,7 +40,7 @@ public class Tblschedule {
 
     //a schedule can have only one time off request
     //uses cascade REMOVE to allow deletions of related time offs
-    @OneToOne(fetch = FetchType.EAGER,mappedBy = "schedule",cascade = CascadeType.REMOVE)
+    @OneToOne(fetch = FetchType.EAGER,mappedBy = "schedule",cascade = CascadeType.ALL)
     public Tbltimeoff getTimeOffs() {
         return timeOffs;
     }

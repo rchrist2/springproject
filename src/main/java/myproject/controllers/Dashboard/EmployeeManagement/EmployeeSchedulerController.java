@@ -452,7 +452,7 @@ public class EmployeeSchedulerController implements Initializable {
 
                     //if the schedule day matches the day of the related time offs, set the id
                     for(Tbltimeoff t : tfs){
-                        if(newSched.getDay().getDayDesc().equals(t.getDayDesc())){
+                        if(newSched.getDay().getDayDesc().equals(t.getDay().getDayDesc())){
                             t.setSchedule(newSched);
                             timeOffRepository.save(t);
                         }
@@ -463,7 +463,7 @@ public class EmployeeSchedulerController implements Initializable {
                 for(Integer k : idList){
                     Tblschedule newSched2 = scheduleRepository.findByScheduleId(k);
                     for(Tblclock c : cls){
-                        if(newSched2.getDay().getDayDesc().equals(c.getDayDesc())){
+                        if(newSched2.getDay().getDayDesc().equals(c.getDay().getDayDesc())){
                             c.setSchedule(newSched2);
                             clockRepository.save(c);
                         }

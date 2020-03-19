@@ -54,23 +54,29 @@ public class CrudTimeOffController implements Initializable {
     private Button cancelButton;
 
     @FXML
-    public Spinner<Integer> beginHrList;
+    private Spinner<Integer> beginHrList;
     @FXML
-    public Spinner<Integer> endHrList;
+    private Spinner<Integer> endHrList;
 
     @FXML
-    public ComboBox<Tblschedule> scheduleList;
+    private ComboBox<Tblschedule> scheduleList;
     @FXML
-    public ComboBox<String> beginPMList;
+    private ComboBox<String> beginPMList;
     @FXML
     public ComboBox<String> endPMList;
     @FXML
-    public ComboBox<String> approveList;
+    private ComboBox<String> approveList;
 
     @FXML
-    public TextArea reasonInput;
+    private TextArea reasonInput;
 
-    public ObservableList<Tblschedule> scheduleData;
+    @FXML
+    private RadioButton dayOffCheck;
+
+    @FXML
+    private RadioButton changeAvailCheck;
+
+    private ObservableList<Tblschedule> scheduleData;
 
     private ObservableList<Integer> hrList;
 
@@ -94,6 +100,7 @@ public class CrudTimeOffController implements Initializable {
 
         setDataForHourPMLists();
         enableApproveList();
+        addToggleGroupForRadioButtons();
     }
 
     @Autowired
@@ -190,6 +197,13 @@ public class CrudTimeOffController implements Initializable {
         approveList.getSelectionModel().select(approveSelect);
 
         reasonInput.setText(tf1.getReasonDesc());
+
+        if(tf1.isDayOff()){
+            dayOffCheck.setSelected(true);
+        }
+        else{
+            changeAvailCheck.setSelected(true);
+        }
 
     }
 
@@ -314,7 +328,14 @@ public class CrudTimeOffController implements Initializable {
         tf.setApproved(isApproved);
         tf.setReasonDesc(reasonInput.getText());
         tf.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
-        tf.setDayDesc(scheduleList.getSelectionModel().getSelectedItem().getDay().getDayDesc());
+        tf.setDay(scheduleList.getSelectionModel().getSelectedItem().getDay());
+
+        if(dayOffCheck.isSelected()){
+            tf.setDayOff(true);
+        }
+        else if(changeAvailCheck.isSelected()){
+            tf.setDayOff(false);
+        }
 
         //check if any fields are empty, probably not necessary since these are set already
         if(!(approveList.getSelectionModel().isEmpty() ||
@@ -325,8 +346,6 @@ public class CrudTimeOffController implements Initializable {
 
                 //if they want to take the day off, change day_off to true in schedule
                 if(tf.isDayOff()){
-                    //sch.setDayOff(true);
-                    scheduleRepository.save(sch);
                     timeOffRepository.save(tf);
                 }
                 else{ //if day off is false, change the availability
@@ -400,6 +419,14 @@ public class CrudTimeOffController implements Initializable {
             approveList.setDisable(false);
             errorMsgPane.setVisible(false);
         }
+    }
+
+    private void addToggleGroupForRadioButtons(){
+        ToggleGroup toggleGroup = new ToggleGroup();
+
+        dayOffCheck.setToggleGroup(toggleGroup);
+        changeAvailCheck.setToggleGroup(toggleGroup);
+
     }
 
 }

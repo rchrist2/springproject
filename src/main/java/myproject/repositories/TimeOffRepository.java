@@ -3,6 +3,7 @@ package myproject.repositories;
 import myproject.models.Tblclock;
 import myproject.models.Tblschedule;
 import myproject.models.Tbltimeoff;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -36,5 +37,9 @@ public interface TimeOffRepository extends CrudRepository<Tbltimeoff, Integer> {
     //Returns a list of all time offs
     @Query(value = "SELECT * FROM tbltimeoff ", nativeQuery = true)
     List<Tbltimeoff> findAllTimeOff();
+
+    @Modifying
+    @Query(value = "DELETE FROM tbltimeoff WHERE time_off_id = :id", nativeQuery = true)
+    void deleteTimeOff(@Param("id") int id);
 
 }

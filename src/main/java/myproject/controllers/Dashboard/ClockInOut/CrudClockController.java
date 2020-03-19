@@ -47,22 +47,22 @@ public class CrudClockController implements Initializable {
     private Button cancelButton;
 
     @FXML
-    public ComboBox<Tblschedule> scheduleList;
+    private ComboBox<Tblschedule> scheduleList;
 
     @FXML
-    public Spinner<Integer> beginHrList;
+    private Spinner<Integer> beginHrList;
     @FXML
-    public Spinner<String> beginMinList;
+    private Spinner<String> beginMinList;
     @FXML
     public Spinner<Integer> endHrList;
     @FXML
-    public Spinner<String> endMinList;
+    private Spinner<String> endMinList;
     @FXML
-    public ComboBox<String> beginPMList;
+    private ComboBox<String> beginPMList;
     @FXML
-    public ComboBox<String> endPMList;
+    private ComboBox<String> endPMList;
 
-    public ObservableList<Tblschedule> scheduleData;
+    private ObservableList<Tblschedule> scheduleData;
 
     private ObservableList<Integer> hrList;
 
@@ -245,7 +245,7 @@ public class CrudClockController implements Initializable {
         }
 
         cl.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
-        cl.setDayDesc(scheduleList.getSelectionModel().getSelectedItem().getDay().getDayDesc());
+        cl.setDay(scheduleList.getSelectionModel().getSelectedItem().getDay());
 
         //check if any fields were empty or using default selection of "Hour"
         if(!(beginPMList.getSelectionModel().isEmpty() ||
