@@ -1,5 +1,6 @@
 package myproject.controllers.Dashboard.Calendar;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -127,6 +128,8 @@ public class WeeklyScheduleController implements Initializable {
             //Loop through the days of the week and check if the employee
             //is working on that day
             for (int j = 1; j <= 7; j++) {
+                //set hour formatting for 12-hr clock
+                SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
 
                 //Delete the existing label from gridpane for the new week
                 removeLabelFromPreviousDates(i, j, weeklyCalendarGridPane);
@@ -136,11 +139,11 @@ public class WeeklyScheduleController implements Initializable {
 
                 for (Tblschedule tblSchedule : employeeSchedule){
                     //Check to see if the current day matches the day in the employee schedule
-                    if(tblSchedule.getDay().getDayDesc().toLowerCase().equals(currentDay.getDayOfWeek().toString().toLowerCase()) && tblSchedule.getTimeOffs() == null
+                    if(tblSchedule.getDay().getDayDesc().toLowerCase().equals(currentDay.getDayOfWeek().toString().toLowerCase())
                         && tblSchedule.getScheduleDate().compareTo(Date.valueOf(sunday)) >= 0 && tblSchedule.getScheduleDate().compareTo(Date.valueOf(saturday)) <= 0){
                         Label hours = new Label();
-                        hours.setText(tblSchedule.getScheduleTimeBegin().toLocalTime().format(dateTimeFormatter) + " - "
-                                + tblSchedule.getScheduleTimeEnd().toLocalTime().format(dateTimeFormatter));
+                        hours.setText(timeFormat.format(tblSchedule.getScheduleTimeBegin()) + " - "
+                                + timeFormat.format(tblSchedule.getScheduleTimeEnd()));
 
                         hours.setFont(Font.font("System", 11));
                         hours.setStyle("-fx-padding: 0 0 0 5");

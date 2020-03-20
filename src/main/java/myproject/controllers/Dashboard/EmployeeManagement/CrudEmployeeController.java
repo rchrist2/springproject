@@ -63,7 +63,7 @@ public class CrudEmployeeController implements Initializable {
 
     private ConfigurableApplicationContext springContext;
     private EmployeeRepository employeeRepository;
-    private EmployeeRoleManagementController employeeRoleManagementController;
+    private EmployeeRoleUserManagementController employeeRoleManagementController;
     private EmployeeService employeeService;
     private RoleRepository roleRepository;
     private ScheduleRepository scheduleRepository;
@@ -89,7 +89,7 @@ public class CrudEmployeeController implements Initializable {
         this.scheduleService = scheduleService;
     }
 
-    public void setController(EmployeeRoleManagementController employeeRoleManagementController) {
+    public void setController(EmployeeRoleUserManagementController employeeRoleManagementController) {
         this.employeeRoleManagementController = employeeRoleManagementController;
     }
 

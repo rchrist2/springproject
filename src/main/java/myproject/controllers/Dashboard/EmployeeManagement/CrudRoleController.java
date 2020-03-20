@@ -47,7 +47,7 @@ public class CrudRoleController implements Initializable {
     private RoleService roleService;
 
     private ObservableList<String> roleObservableList;
-    private EmployeeRoleManagementController employeeRoleManagementController;
+    private EmployeeRoleUserManagementController employeeRoleManagementController;
     private TblRoles selectedRole;
 
     @Override
@@ -67,7 +67,7 @@ public class CrudRoleController implements Initializable {
         });
     }
 
-    public void setController(EmployeeRoleManagementController employeeRoleManagementController) {
+    public void setController(EmployeeRoleUserManagementController employeeRoleManagementController) {
         this.employeeRoleManagementController = employeeRoleManagementController;
     }
 
