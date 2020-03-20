@@ -66,6 +66,7 @@ public class EmployeeRoleManagementController implements Initializable {
             addressColumn,
             phoneColumn,
             employeeRoleColumn,
+            descriptionColumn,
             hoursColumn,
             daysColumn;
 
@@ -150,7 +151,8 @@ public class EmployeeRoleManagementController implements Initializable {
                     || emp.getAddress().toLowerCase().contains(searchText.getText().toLowerCase())
                     || emp.getPhone().contains(searchText.getText())
                     || emp.employeeSchedule(Date.valueOf(sunday), Date.valueOf(saturday)).toLowerCase().contains(searchText.getText().toLowerCase())
-                    || emp.getRole().getRoleName().toLowerCase().contains(searchText.getText().toLowerCase()));
+                    || emp.getRole().getRoleName().toLowerCase().contains(searchText.getText().toLowerCase())
+                    || emp.getRole().getRoleDesc().toLowerCase().contains(searchText.getText().toLowerCase()));
         });
 
         managementTabPane.getSelectionModel().selectedItemProperty().addListener((observableValue, tab, t1) -> {
@@ -178,6 +180,7 @@ public class EmployeeRoleManagementController implements Initializable {
         addressColumn.setCellValueFactory(new PropertyValueFactory<>("address"));
         phoneColumn.setCellValueFactory(new PropertyValueFactory<>("phone"));
         employeeRoleColumn.setCellValueFactory(role -> new ReadOnlyStringWrapper(role.getValue().getRole().getRoleName()));
+        descriptionColumn.setCellValueFactory(desc -> new ReadOnlyStringWrapper(desc.getValue().getRole().getRoleDesc()));
     }
 
     @SuppressWarnings("Duplicates")

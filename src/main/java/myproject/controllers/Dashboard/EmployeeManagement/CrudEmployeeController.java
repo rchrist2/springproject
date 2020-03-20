@@ -58,7 +58,8 @@ public class CrudEmployeeController implements Initializable {
             endCombo;
 
     @FXML
-    private Label crudEmployeeLabel;
+    private Label crudEmployeeLabel,
+                descriptionLabel;
 
     private ConfigurableApplicationContext springContext;
     private EmployeeRepository employeeRepository;
@@ -102,6 +103,10 @@ public class CrudEmployeeController implements Initializable {
 
         roleComboBox.setItems(listOfRoleObs);
 
+        roleComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldV, newV) -> {
+            if(newV != null)
+                descriptionLabel.setText(roleRepository.findRoleDescFromRoleId(roleComboBox.getSelectionModel().getSelectedIndex() + 1));
+        });
     }
 
     public void setLabel(String string, String buttonLabel){

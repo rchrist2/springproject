@@ -80,7 +80,8 @@ public class EmployeeSchedulerController implements Initializable {
                                         startTimeColumn,
                                         endTimeColumn,
                                         dayColumn,
-                                        dateColumn;
+                                        dateColumn,
+                                        descriptionColumn;
 
     @FXML
     private TableView<Tblemployee> scheduleTableView;

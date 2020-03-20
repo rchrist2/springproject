@@ -50,8 +50,6 @@ public class CrudRoleController implements Initializable {
     private EmployeeRoleManagementController employeeRoleManagementController;
     private TblRoles selectedRole;
 
-
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         roleObservableList = FXCollections.observableArrayList(Arrays.asList("Manager", "Employee"));
@@ -131,7 +129,6 @@ public class CrudRoleController implements Initializable {
             case "Update":
                 try{
                     System.out.println("Update a role");
-
 
                     roleService.updateRole(roleText.getText(), roleDescTextA.getText(),
                             selectedRole.getRoleId());
