@@ -1,66 +1,60 @@
 use [4375db]
 
-create table tblroles
-(
-    Role_ID   int IDENTITY (1, 1) NOT NULL PRIMARY KEY,
-    Role_Name varchar(100)        NOT NULL,
-    Role_Desc varchar(200)        NOT NULL
+create table tblroles(
+    role_id int NOT NULL identity(1,1) PRIMARY KEY,
+    role_name varchar(100) NOT NULL,
+    role_desc varchar(200) NOT NULL
 );
 
-create table tblday
-(
-    Day_id   int IDENTITY (1, 1) NOT NULL PRIMARY KEY,
-    Day_Desc varchar(25)
+create table tblday(
+    day_id int NOT NULL identity(1,1) PRIMARY KEY,
+    day_desc varchar(25)
 );
 
-CREATE TABLE tblemployee
-(
-    id       int          not null identity (1,1) primary key,
-    name     varchar(128) not null,
-    email    varchar(128) not null,
-    address  varchar(128) not null,
-    phone    varchar(128) not null,
-    roles_id int          not null FOREIGN KEY REFERENCES tblroles (role_id)
+CREATE TABLE tblemployee (
+    id int not null identity(1,1) primary key,
+    name varchar(128) not null,
+    email varchar(128) not null,
+    address varchar(128) not null,
+    phone varchar(128) not null,
+    roles_id int not null FOREIGN KEY REFERENCES tblroles(role_id)
 );
 
-create table tblschedule
-(
-    schedule_id         int      NOT NULL identity (1,1) primary key,
-    schedule_time_begin time     NULL,
-    schedule_time_end   time     NULL,
-    schedule_date       datetime NULL,
-    employee_id         int      NOT null FOREIGN KEY REFERENCES tblemployee (id),
-    day_id              int      NOT null FOREIGN KEY REFERENCES tblday (day_id)
+
+create table tblschedule(
+    schedule_id int not null identity(1,1) primary key,
+    schedule_time_begin time NOT NULL,
+    schedule_time_end time NOT NULL,
+    schedule_date datetime NOT NULL,
+    employee_id int not null FOREIGN KEY REFERENCES tblemployee(id),
+    day_id int not null FOREIGN KEY REFERENCES tblday(day_id)
 );
 
-create table tblclock
-(
-    clock_id    int  NOT NULL identity (1,1) PRIMARY KEY,
-    punch_in    time NOT NULL,
-    punch_out   time NOT NULL,
-    day_desc varchar(36) null,
+create table tblclock(
+    clock_id int NOT NULL identity(1,1) PRIMARY KEY,
+    punch_in time NOT NULL,
+    punch_out time NOT NULL,
     date_created datetime NOT NULL,
-    schedule_id int  not null FOREIGN KEY REFERENCES tblschedule (schedule_id)
+    day_id int null FOREIGN KEY REFERENCES tblday(day_id),
+    schedule_id int null FOREIGN KEY REFERENCES tblschedule(schedule_id)
 );
 
-create table tblusers
-(
-    user_id     int          NOT NULL identity (1,1) PRIMARY KEY,
-    username    varchar(128) NOT NULL UNIQUE,
-    password    varchar(128) NOT NULL,
-    employee_id int FOREIGN KEY REFERENCES tblemployee (id)
+create table tblusers(
+    user_id int NOT NULL identity(1,1) PRIMARY KEY,
+    username varchar(128) NOT NULL UNIQUE,
+    password varchar(128) NOT NULL,
+    employee_id int FOREIGN KEY REFERENCES tblemployee(id)
 );
 
-CREATE TABLE tbltimeoff
-(
-    time_off_id         int          not null identity (1,1) primary key,
-    begin_time_off_date datetime     not null,
-    end_time_off_date   datetime     not null,
-    approved            bit          NOT NULL,
-    day_off             bit          not null,
-    day_desc            varchar(36)  null,
-    reason_desc         varchar(128) not null,
-    schedule_id         int          not null FOREIGN KEY REFERENCES tblschedule (schedule_id)
+CREATE TABLE tbltimeoff(
+    time_off_id int not null identity(1,1) primary key,
+    begin_time_off_date time not null,
+    end_time_off_date time not null,
+    approved bit NOT NULL,
+    day_off bit not null,
+    reason_desc varchar(128) not null,
+    day_id int null FOREIGN KEY REFERENCES tblday(day_id),
+    schedule_id int null FOREIGN KEY REFERENCES tblschedule(schedule_id)
 );
 
 
