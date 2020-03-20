@@ -20,11 +20,14 @@ import myproject.ErrorMessages;
 import myproject.controllers.Dashboard.DashboardController;
 import myproject.models.TblRoles;
 import myproject.models.Tblemployee;
+import myproject.models.Tblusers;
 import myproject.repositories.EmployeeRepository;
 import myproject.repositories.RoleRepository;
 import myproject.repositories.ScheduleRepository;
+import myproject.repositories.UserRepository;
 import myproject.services.EmployeeService;
 import myproject.services.ScheduleService;
+import myproject.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
@@ -41,7 +44,7 @@ import static java.time.temporal.TemporalAdjusters.nextOrSame;
 import static java.time.temporal.TemporalAdjusters.previousOrSame;
 
 @Component
-public class EmployeeRoleManagementController implements Initializable {
+public class EmployeeRoleUserManagementController implements Initializable {
 
 
     /*=============================
@@ -98,6 +101,22 @@ public class EmployeeRoleManagementController implements Initializable {
             roleColumn,
             roleDescColumn;
 
+    /*=============================
+          Account/User Controls
+    =============================*/
+
+    @FXML
+    private TableView<Tblusers> userTable;
+
+    @FXML
+    private Button editUserButton,
+            deleteUserButton;
+
+    @FXML
+    private TableColumn<Tblusers, String>
+            userCol,
+            passCol;
+
     @Autowired
     private ConfigurableApplicationContext springContext;
 
@@ -108,19 +127,27 @@ public class EmployeeRoleManagementController implements Initializable {
     private ScheduleRepository scheduleRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private ScheduleService scheduleService;
 
     @Autowired
     private EmployeeService employeeService;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private RoleRepository roleRepository;
 
     private ObservableList<Tblemployee> listOfEmployees;
     private ObservableList<TblRoles> listOfRoles;
+    private ObservableList<Tblusers> listOfUsers;
 
     private FilteredList<Tblemployee> filteredListOfEmployees;
     private FilteredList<TblRoles> filteredListOfRoles;
+    private FilteredList<Tblusers> filteredListOfUsers;
 
     private LocalDate today = LocalDate.now();
     public LocalDate sunday = today.with(previousOrSame(DayOfWeek.SUNDAY));
@@ -131,9 +158,11 @@ public class EmployeeRoleManagementController implements Initializable {
         //Initialize the observable list and add all the employees to the list
         listOfEmployees = FXCollections.observableArrayList();
         listOfRoles = FXCollections.observableArrayList();
+        listOfUsers = FXCollections.observableArrayList();
 
         listOfEmployees.addAll(employeeRepository.findAllEmployee());
         listOfRoles.addAll(roleRepository.findAll());
+        listOfUsers.addAll(userRepository.findAll());
 
         reloadEmployeeTableView();
         setDataForEmployeeTableView();
@@ -142,6 +171,10 @@ public class EmployeeRoleManagementController implements Initializable {
         reloadRoleTableView();
         setDataForRoleTableView();
         addActionListenersForRoleCrudButtons();
+
+        reloadUserTableView();
+        setDataForUserTableView();
+        addActionListenersForUserCrudButtons();
 
         //Filters the employee management view list
         searchText.setOnKeyReleased(event -> {
@@ -400,6 +433,60 @@ public class EmployeeRoleManagementController implements Initializable {
                 resetRoleButton.setDisable(false);
                 editRoleButton.setDisable(false);
                 deleteRoleButton.setDisable(false);
+            }
+        });
+    }
+
+    /*====================================
+            Account/User Management
+     ====================================*/
+
+    private void reloadUserTableView() {
+        listOfUsers.clear();
+
+        listOfUsers.addAll(userRepository.findAll());
+
+        filteredListOfUsers = new FilteredList<>(listOfUsers);
+
+        userTable.setItems(filteredListOfUsers);
+    }
+
+    private void setDataForUserTableView() {
+        userCol.setCellValueFactory(new PropertyValueFactory<>("username"));
+        passCol.setCellValueFactory(new PropertyValueFactory<>("password"));
+    }
+
+    @FXML
+    private void handleSaveUser(ActionEvent event) {
+        Button button = (Button) event.getSource();
+
+        Tblusers user = userTable.getSelectionModel().getSelectedItem();
+
+        switch (button.getText()) {
+            case "+ Create User":
+                System.out.println("Open create user form");
+                break;
+            case "Edit User":
+                System.out.println("Open edit user form");
+                break;
+            case "Delete":
+                System.out.println("Delete the user");
+                break;
+        }
+    }
+
+    @FXML
+    private void handleResetUser(){
+        userTable.getSelectionModel().clearSelection();
+        editUserButton.setDisable(true);
+        deleteUserButton.setDisable(true);
+    }
+
+    private void addActionListenersForUserCrudButtons() {
+        userTable.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue != null) {
+                editUserButton.setDisable(false);
+                deleteUserButton.setDisable(false);
             }
         });
     }
