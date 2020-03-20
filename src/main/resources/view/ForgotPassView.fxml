@@ -14,7 +14,7 @@
 
 <AnchorPane fx:id="signupAnchor" prefHeight="450.0" prefWidth="325.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.WelcomeLoginSignup.ForgotPassController">
    <children>
-      <TextField fx:id="signupUsernameText" layoutX="60.0" layoutY="211.0" prefHeight="28.0" prefWidth="194.0" promptText="Username / Email" AnchorPane.bottomAnchor="211.0" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="71.0" AnchorPane.topAnchor="211.0" />
+      <TextField fx:id="signupUsernameText" layoutX="60.0" layoutY="211.0" prefHeight="28.0" prefWidth="194.0" promptText="Email (e.g. johnsmith@mail.com)" AnchorPane.bottomAnchor="211.0" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="71.0" AnchorPane.topAnchor="211.0" />
       <Button fx:id="signupButton" layoutX="70.0" layoutY="306.0" onAction="#sendCode" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #de1c00;" text="Submit" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="80.0">
          <font>
             <Font name="System Bold Italic" size="18.0" />
@@ -31,7 +31,7 @@
             <Font name="System Bold Italic" size="18.0" />
          </font>
       </Label>
-      <Label layoutX="64.0" layoutY="115.0" prefHeight="53.0" prefWidth="186.0" text="Enter your username or email and we'll generate a code to reset your password" wrapText="true" />
+      <Label layoutX="64.0" layoutY="115.0" prefHeight="53.0" prefWidth="186.0" text="Enter your email used to login and we'll generate a code to reset your password" wrapText="true" />
       <Pane fx:id="paneLoadTextfield" layoutX="60.0" layoutY="252.0" prefHeight="40.0" prefWidth="196.0">
          <children>
             <ImageView fx:id="spinner" fitHeight="40.0" fitWidth="42.0" layoutX="77.0" pickOnBounds="true" preserveRatio="true" visible="false">
