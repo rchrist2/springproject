@@ -4,6 +4,7 @@ import myproject.repositories.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -96,13 +97,12 @@ public class Tblemployee {
     public String employeeStartHours(Date startOfTheWeek, Date endOfTheWeek){
         List<String> listOfHours = new ArrayList<>();
 
-        String strDateFormat = "HH:mm a";
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(strDateFormat);
+        SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
 
         for (Tblschedule hours : this.schedules) {
             if(hours.getScheduleDate().compareTo(startOfTheWeek) >= 0 && hours.getScheduleDate().compareTo(endOfTheWeek) <= 0)
                 if(hours.getTimeOffs() == null || !(hours.getTimeOffs().isDayOff() && hours.getTimeOffs().isApproved())){
-                    listOfHours.add(hours.getScheduleTimeBegin().toLocalTime().format(timeFormatter));
+                    listOfHours.add(timeFormat.format(hours.getScheduleTimeBegin()));
                 }
         }
 
@@ -112,13 +112,12 @@ public class Tblemployee {
     public String employeeEndHours(Date startOfTheWeek, Date endOfTheWeek){
         List<String> listOfHours = new ArrayList<>();
 
-        String strDateFormat = "HH:mm a";
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(strDateFormat);
+        SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
 
         for(Tblschedule hours : this.schedules) {
             if(hours.getScheduleDate().compareTo(startOfTheWeek) >= 0 && hours.getScheduleDate().compareTo(endOfTheWeek) <= 0)
                 if(hours.getTimeOffs() == null || !(hours.getTimeOffs().isDayOff() && hours.getTimeOffs().isApproved())){
-                    listOfHours.add(hours.getScheduleTimeEnd().toLocalTime().format(timeFormatter));
+                    listOfHours.add(timeFormat.format(hours.getScheduleTimeEnd()));
                 }
         }
         return String.join("\n", listOfHours);
