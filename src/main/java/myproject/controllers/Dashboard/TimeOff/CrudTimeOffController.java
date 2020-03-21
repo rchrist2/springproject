@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 
 import java.net.URL;
 import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.ResourceBundle;
@@ -54,9 +55,9 @@ public class CrudTimeOffController implements Initializable {
     private Button cancelButton;
 
     @FXML
-    private Spinner<Integer> beginHrList;
+    private Spinner<String> beginHrList;
     @FXML
-    private Spinner<Integer> endHrList;
+    private Spinner<String> endHrList;
 
     @FXML
     private ComboBox<Tblschedule> scheduleList;
@@ -78,7 +79,7 @@ public class CrudTimeOffController implements Initializable {
 
     private ObservableList<Tblschedule> scheduleData;
 
-    private ObservableList<Integer> hrList;
+    private ObservableList<String> hrList;
 
     private ObservableList<String> pmList =
             FXCollections.observableArrayList(Arrays.asList("AM","PM"));
@@ -122,35 +123,6 @@ public class CrudTimeOffController implements Initializable {
     }
 
     private void setFieldsForEdit(Tbltimeoff tf1){
-        //use Calendar class to find if time has AM or PM
-        Calendar begPM=Calendar.getInstance();
-        begPM.setTime(tf1.getBeginTimeOffDate());
-
-        Calendar endPM=Calendar.getInstance();
-        endPM.setTime(tf1.getEndTimeOffDate());
-
-        //if time has AM or PM, assign appropriate value in AM/PM drop-downs
-        if(begPM.get(Calendar.AM_PM) == Calendar.AM
-        && endPM.get(Calendar.AM_PM) == Calendar.AM){
-            beginPMList.getSelectionModel().select(0);
-            endPMList.getSelectionModel().select(0);
-        }
-        else if(begPM.get(Calendar.AM_PM) == Calendar.AM
-                && endPM.get(Calendar.AM_PM) == Calendar.PM){
-            beginPMList.getSelectionModel().select(0);
-            endPMList.getSelectionModel().select(1);
-        }
-        else if(begPM.get(Calendar.AM_PM) == Calendar.PM
-                && endPM.get(Calendar.AM_PM) == Calendar.AM){
-            beginPMList.getSelectionModel().select(1);
-            endPMList.getSelectionModel().select(0);
-        }
-        else if(begPM.get(Calendar.AM_PM) == Calendar.PM
-                && endPM.get(Calendar.AM_PM) == Calendar.PM){
-            beginPMList.getSelectionModel().select(1);
-            endPMList.getSelectionModel().select(1);
-        }
-
         //initialize the schedule dates for the current user (not done in initialize() method due to nullpointerexception)
         scheduleData = FXCollections.observableArrayList();
         scheduleData.addAll(scheduleRepository.findScheduleForUser(selectedTimeOff.getSchedule().getEmployee().getUser().getUsername()));
@@ -158,6 +130,13 @@ public class CrudTimeOffController implements Initializable {
 
         //get the schedule for this time off request and select it in drop-down
         scheduleList.getSelectionModel().select(selectedTimeOff.getSchedule());
+
+        //use Calendar class to find if time has AM or PM
+        Calendar begPM=Calendar.getInstance();
+        begPM.setTime(tf1.getBeginTimeOffDate());
+
+        Calendar endPM=Calendar.getInstance();
+        endPM.setTime(tf1.getEndTimeOffDate());
 
         //use Calendar class to extract only hour from time
         Calendar calendarBeg=Calendar.getInstance();
@@ -168,22 +147,28 @@ public class CrudTimeOffController implements Initializable {
         calendarEnd.setTime(tf1.getEndTimeOffDate());
         int endHour = calendarEnd.get(Calendar.HOUR);
 
+        SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm:ss a");
+
         //assigns hour spinners
-        if(beginHour == 0 && endHour == 0){ //if any of the hours are equal to 12
-            beginHrList.getValueFactory().setValue(12);
-            endHrList.getValueFactory().setValue(12);
+        if(begPM.get(Calendar.AM_PM) == Calendar.AM
+                && endPM.get(Calendar.AM_PM) == Calendar.AM){
+            beginHrList.getValueFactory().setValue(timeFormat.format(tf1.getBeginTimeOffDate()));
+            endHrList.getValueFactory().setValue(timeFormat.format(tf1.getEndTimeOffDate()));
         }
-        else if(endHour == 0){
-            beginHrList.getValueFactory().setValue(beginHour);
-            endHrList.getValueFactory().setValue(12);
+        else if(begPM.get(Calendar.AM_PM) == Calendar.AM
+                && endPM.get(Calendar.AM_PM) == Calendar.PM){
+            beginHrList.getValueFactory().setValue(timeFormat.format(tf1.getBeginTimeOffDate()));
+            endHrList.getValueFactory().setValue(timeFormat.format(tf1.getEndTimeOffDate()));
         }
-        else if(beginHour == 0){
-            beginHrList.getValueFactory().setValue(12);
-            endHrList.getValueFactory().setValue(endHour);
+        else if(begPM.get(Calendar.AM_PM) == Calendar.PM
+                && endPM.get(Calendar.AM_PM) == Calendar.AM){
+            beginHrList.getValueFactory().setValue(timeFormat.format(tf1.getBeginTimeOffDate()));
+            endHrList.getValueFactory().setValue(timeFormat.format(tf1.getEndTimeOffDate()));
         }
-        else{
-            beginHrList.getValueFactory().setValue(beginHour);
-            endHrList.getValueFactory().setValue(endHour);
+        else if(begPM.get(Calendar.AM_PM) == Calendar.PM
+                && endPM.get(Calendar.AM_PM) == Calendar.PM){
+            beginHrList.getValueFactory().setValue(timeFormat.format(tf1.getBeginTimeOffDate()));
+            endHrList.getValueFactory().setValue(timeFormat.format(tf1.getEndTimeOffDate()));
         }
 
         //find whether request is approved or not, and set appropriate drop-down value
@@ -200,6 +185,8 @@ public class CrudTimeOffController implements Initializable {
 
         if(tf1.isDayOff()){
             dayOffCheck.setSelected(true);
+            beginHrList.setDisable(true);
+            endHrList.setDisable(true);
         }
         else{
             changeAvailCheck.setSelected(true);
@@ -225,49 +212,51 @@ public class CrudTimeOffController implements Initializable {
             if(approveList.getSelectionModel().getSelectedItem().equals("Approve")) {
                 isApproved = true;
 
-                //beginning hour
-                if (beginPMList.getSelectionModel().getSelectedItem().equals("AM")) {
+                //convert combobox values to 24 hour clock depending if AM or PM was selected
+                if (beginHrList.getValue().contains("AM")) {
+
                     //if the beginning hour is 12 am
-                    if(beginHrList.getValue().toString().equals("12")){
+                    if (beginHrList.getValue().equals("12:00:00 AM")) {
                         sch.setScheduleTimeBegin(Time.valueOf("00"
                                 + ":00:00"));
+                    } else {
+                        String begAMTime = beginHrList.getValue().replace(" AM","");
+                        sch.setScheduleTimeBegin(Time.valueOf(begAMTime));
                     }
-                    else {
-                        sch.setScheduleTimeBegin(Time.valueOf(beginHrList.getValue().toString()
-                                + ":00:00"));
-                    }
-                } else if (beginPMList.getSelectionModel().getSelectedItem().equals("PM")) {
+                } else if (beginHrList.getValue().contains("PM")) {
+
                     //if the beginning hour is 12 pm
-                    if(beginHrList.getValue().toString().equals("12")) {
+                    if (beginHrList.getValue().equals("12:00:00 PM")) {
                         sch.setScheduleTimeBegin(Time.valueOf("12"
                                 + ":00:00"));
-                    }
-                    else{
-                        sch.setScheduleTimeBegin(Time.valueOf((beginHrList.getValue() + 12)
-                                + ":00:00"));
+                    } else {
+                        String begPMTime = beginHrList.getValue().replace(" PM","");
+                        sch.setScheduleTimeBegin(Time.valueOf(begPMTime));
+                        sch.setScheduleTimeBegin(Time.valueOf(sch.getScheduleTimeBegin().toLocalTime().plusHours(12)));
                     }
                 }
 
-                //ending hour
-                if (endPMList.getSelectionModel().getSelectedItem().equals("AM")) {
+                if (endHrList.getValue().contains("AM")) {
+
                     //if the ending hour is 12 am
-                    if(endHrList.getValue().toString().equals("12")){
-                        sch.setScheduleTimeEnd(Time.valueOf("00"
+                    if (endHrList.getValue().equals("12:00:00 AM")) {
+                        tf.setEndTimeOffDate(Time.valueOf("00"
                                 + ":00:00"));
+                    } else {
+                        String endAMTime = endHrList.getValue().replace(" AM","");
+                        tf.setEndTimeOffDate(Time.valueOf(endAMTime));
                     }
-                    else {
-                        sch.setScheduleTimeEnd(Time.valueOf(endHrList.getValue().toString()
-                                + ":00:00"));
-                    }
-                } else if (endPMList.getSelectionModel().getSelectedItem().equals("PM")) {
+                } else if (endHrList.getValue().contains("PM")) {
+
                     //if the ending hour is 12 pm
-                    if(endHrList.getValue().toString().equals("12")) {
-                        sch.setScheduleTimeEnd(Time.valueOf("12"
+                    if (endHrList.getValue().equals("12:00:00 PM")) {
+                        tf.setEndTimeOffDate(Time.valueOf("12"
                                 + ":00:00"));
-                    }
-                    else {
-                        sch.setScheduleTimeEnd(Time.valueOf((endHrList.getValue() + 12)
-                                + ":00:00"));
+                    } else {
+                        String endPMTime = endHrList.getValue().replace(" PM","");
+                        tf.setEndTimeOffDate(Time.valueOf(endPMTime));
+                        tf.setEndTimeOffDate(Time.valueOf(tf.getEndTimeOffDate().toLocalTime().plusHours(12)));
+
                     }
                 }
             }
@@ -280,48 +269,51 @@ public class CrudTimeOffController implements Initializable {
             isApproved = false;
         }
 
-        //convert spinner values to 24 hour clock depending if AM or PM was selected
-        if (beginPMList.getSelectionModel().getSelectedItem().equals("AM")) {
+        //convert combobox values to 24 hour clock depending if AM or PM was selected
+        if (beginHrList.getValue().contains("AM")) {
+
             //if the beginning hour is 12 am
-            if(beginHrList.getValue().toString().equals("12")){
+            if (beginHrList.getValue().equals("12:00:00 AM")) {
                 tf.setBeginTimeOffDate(Time.valueOf("00"
                         + ":00:00"));
+            } else {
+                String begAMTime = beginHrList.getValue().replace(" AM","");
+                tf.setBeginTimeOffDate(Time.valueOf(begAMTime));
             }
-            else {
-                tf.setBeginTimeOffDate(Time.valueOf(beginHrList.getValue().toString()
-                        + ":00:00"));
-            }
-        } else if (beginPMList.getSelectionModel().getSelectedItem().equals("PM")) {
+        } else if (beginHrList.getValue().contains("PM")) {
+
             //if the beginning hour is 12 pm
-            if(beginHrList.getValue().toString().equals("12")) {
+            if (beginHrList.getValue().equals("12:00:00 PM")) {
                 tf.setBeginTimeOffDate(Time.valueOf("12"
                         + ":00:00"));
-            }
-            else{
-                tf.setBeginTimeOffDate(Time.valueOf((beginHrList.getValue() + 12)
-                        + ":00:00"));
+            } else {
+                String begPMTime = beginHrList.getValue().replace(" PM","");
+                tf.setBeginTimeOffDate(Time.valueOf(begPMTime));
+                tf.setBeginTimeOffDate(Time.valueOf(tf.getBeginTimeOffDate().toLocalTime().plusHours(12)));
             }
         }
 
-        if (endPMList.getSelectionModel().getSelectedItem().equals("AM")) {
+        if (endHrList.getValue().contains("AM")) {
+
             //if the ending hour is 12 am
-            if(endHrList.getValue().toString().equals("12")){
+            if (endHrList.getValue().equals("12:00:00 AM")) {
                 tf.setEndTimeOffDate(Time.valueOf("00"
                         + ":00:00"));
+            } else {
+                String endAMTime = endHrList.getValue().replace(" AM","");
+                tf.setEndTimeOffDate(Time.valueOf(endAMTime));
             }
-            else {
-                tf.setEndTimeOffDate(Time.valueOf(endHrList.getValue().toString()
-                        + ":00:00"));
-            }
-        } else if (endPMList.getSelectionModel().getSelectedItem().equals("PM")) {
+        } else if (endHrList.getValue().contains("PM")) {
+
             //if the ending hour is 12 pm
-            if(endHrList.getValue().toString().equals("12")) {
+            if (endHrList.getValue().equals("12:00:00 PM")) {
                 tf.setEndTimeOffDate(Time.valueOf("12"
                         + ":00:00"));
-            }
-            else {
-                tf.setEndTimeOffDate(Time.valueOf((endHrList.getValue() + 12)
-                        + ":00:00"));
+            } else {
+                String endPMTime = endHrList.getValue().replace(" PM", "");
+                tf.setEndTimeOffDate(Time.valueOf(endPMTime));
+                tf.setEndTimeOffDate(Time.valueOf(tf.getEndTimeOffDate().toLocalTime().plusHours(12)));
+
             }
         }
 
@@ -339,14 +331,18 @@ public class CrudTimeOffController implements Initializable {
 
         //check if any fields are empty, probably not necessary since these are set already
         if(!(approveList.getSelectionModel().isEmpty() ||
-        beginPMList.getSelectionModel().isEmpty() ||
-        endPMList.getSelectionModel().isEmpty() ||
         reasonInput.getText().trim().isEmpty() ||
         scheduleList.getSelectionModel().isEmpty())) {
 
                 //if they want to take the day off, change day_off to true in schedule
                 if(tf.isDayOff()){
+                    tf.setBeginTimeOffDate(sch.getScheduleTimeBegin());
+                    tf.setEndTimeOffDate(sch.getScheduleTimeEnd());
                     timeOffRepository.save(tf);
+
+                    Stage stage = (Stage) saveButton.getScene().getWindow();
+                    System.out.println("Saved");
+                    stage.close();
                 }
                 else{ //if day off is false, change the availability
                     //check if the selected time range is valid before saving
@@ -354,16 +350,16 @@ public class CrudTimeOffController implements Initializable {
                             && tf.getEndTimeOffDate().after(tf.getBeginTimeOffDate())) {
                         scheduleRepository.save(sch);
                         timeOffRepository.save(tf);
+
+                        Stage stage = (Stage) saveButton.getScene().getWindow();
+                        System.out.println("Saved");
+                        stage.close();
                     }
                     else {
                         ErrorMessages.showErrorMessage("Invalid time values", "Time range for time" +
                                 " off request is invalid", "Please edit time range for this time off request");
                     }
                 }
-
-                Stage stage = (Stage) saveButton.getScene().getWindow();
-                System.out.println("Saved");
-                stage.close();
             }
         else{
             ErrorMessages.showErrorMessage("Fields are empty",
@@ -393,15 +389,21 @@ public class CrudTimeOffController implements Initializable {
 
     private void setDataForHourPMLists(){
         //make a list of hours from 1 to 12
-        hrList.addAll(IntStream.rangeClosed(1, 12).boxed().collect(Collectors.toList()));
+        hrList.addAll("01:00:00 AM", "02:00:00 AM", "03:00:00 AM",
+                "04:00:00 AM", "05:00:00 AM", "06:00:00 AM", "07:00:00 AM",
+                "08:00:00 AM", "09:00:00 AM", "10:00:00 AM", "11:00:00 AM",
+                "12:00:00 PM","01:00:00 PM", "02:00:00 PM", "03:00:00 PM",
+                "04:00:00 PM", "05:00:00 PM", "06:00:00 PM", "07:00:00 PM",
+                "08:00:00 PM", "09:00:00 PM", "10:00:00 PM", "11:00:00 PM",
+                "12:00:00 AM");
 
         //fill the hour, minute, and AM/PM drop-downs or spinners with values
-        beginPMList.setItems(pmList);
-        endPMList.setItems(pmList);
+        //beginPMList.setItems(pmList);
+        //endPMList.setItems(pmList);
 
-        SpinnerValueFactory<Integer> bHours =
+        SpinnerValueFactory<String> bHours =
                 new SpinnerValueFactory.ListSpinnerValueFactory<>(hrList);
-        SpinnerValueFactory<Integer> eHours =
+        SpinnerValueFactory<String> eHours =
                 new SpinnerValueFactory.ListSpinnerValueFactory<>(hrList);
 
         beginHrList.setValueFactory(bHours);
@@ -427,6 +429,18 @@ public class CrudTimeOffController implements Initializable {
         dayOffCheck.setToggleGroup(toggleGroup);
         changeAvailCheck.setToggleGroup(toggleGroup);
 
+    }
+
+    @FXML
+    private void hideTimeSpinner(){
+        beginHrList.setDisable(true);
+        endHrList.setDisable(true);
+    }
+
+    @FXML
+    private void enableTimeSpinner(){
+        beginHrList.setDisable(false);
+        endHrList.setDisable(false);
     }
 
 }

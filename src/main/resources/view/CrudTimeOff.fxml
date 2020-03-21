@@ -47,24 +47,22 @@
                       </padding>
                   </HBox>
             <Label layoutX="13.0" layoutY="118.0" text="Time:" />
-            <Label layoutX="234.0" layoutY="118.0" text="to" />
-            <ComboBox fx:id="endPMList" layoutX="333.0" layoutY="114.0" prefHeight="25.0" prefWidth="92.0" promptText="AM/PM" />
-            <ComboBox fx:id="beginPMList" layoutX="130.0" layoutY="114.0" prefHeight="25.0" prefWidth="92.0" promptText="AM/PM" />
+            <Label layoutX="176.0" layoutY="118.0" text="to" />
             <Label layoutX="13.0" layoutY="167.0" text="Approved:" />
             <ComboBox fx:id="approveList" disable="true" layoutX="81.0" layoutY="163.0" prefHeight="25.0" prefWidth="120.0" promptText="Approve/Deny" />
             <Label layoutX="13.0" layoutY="257.0" text="Reason:" />
             <TextArea fx:id="reasonInput" layoutX="65.0" layoutY="262.0" prefHeight="124.0" prefWidth="356.0" />
             <Label layoutX="14.0" layoutY="213.0" text="Select Schedule:" />
             <ComboBox fx:id="scheduleList" layoutX="107.0" layoutY="209.0" prefWidth="150.0" promptText="Select Schedule" />
-            <Spinner fx:id="beginHrList" layoutX="55.0" layoutY="114.0" prefHeight="25.0" prefWidth="70.0" />
-            <Spinner fx:id="endHrList" layoutX="257.0" layoutY="114.0" prefHeight="25.0" prefWidth="70.0" />
+            <Spinner fx:id="beginHrList" layoutX="55.0" layoutY="114.0" prefHeight="25.0" prefWidth="112.0" />
+            <Spinner fx:id="endHrList" layoutX="199.0" layoutY="114.0" prefHeight="25.0" prefWidth="112.0" />
             <Pane fx:id="errorMsgPane" layoutX="81.0" layoutY="163.0" onMouseClicked="#approveClicked" prefHeight="25.0" prefWidth="120.0" />
-            <RadioButton fx:id="dayOffCheck" layoutX="12.0" layoutY="71.0" mnemonicParsing="false" text="Request Day Off">
+            <RadioButton fx:id="dayOffCheck" layoutX="12.0" layoutY="71.0" mnemonicParsing="false" onAction="#hideTimeSpinner" text="Request Day Off">
                <toggleGroup>
                   <ToggleGroup fx:id="toggleGroup" />
                </toggleGroup>
             </RadioButton>
-            <RadioButton fx:id="changeAvailCheck" layoutX="138.0" layoutY="71.0" mnemonicParsing="false" text="Change Availability">
+            <RadioButton fx:id="changeAvailCheck" layoutX="138.0" layoutY="71.0" mnemonicParsing="false" onAction="#enableTimeSpinner" text="Change Availability">
                <toggleGroup>
                   <ToggleGroup fx:id="toggleGroup" />
                </toggleGroup>
