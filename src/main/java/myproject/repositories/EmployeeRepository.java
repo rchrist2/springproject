@@ -63,8 +63,8 @@ public interface EmployeeRepository extends CrudRepository<Tblemployee, Integer>
     Tblemployee findEmployeeById(@Param("id") int id);
 
     @Modifying
-    @Query(value = "UPDATE tblemployee SET name = :name, email = :email, address = :address, phone = :phone WHERE id = :id", nativeQuery = true)
-    void updateEmployee(@Param("name") String name, @Param("email") String email, @Param("address") String address, @Param("phone") String phone, @Param("id") int id);
+    @Query(value = "UPDATE tblemployee SET name = :name, email = :email, address = :address, phone = :phone, roles_id = :roleId WHERE id = :id", nativeQuery = true)
+    void updateEmployee(@Param("name") String name, @Param("email") String email, @Param("address") String address, @Param("phone") String phone, @Param("id") int id, @Param("roleId") int roleId);
 
     @Modifying
     @Query(value = "DELETE FROM tblemployee WHERE id = :id", nativeQuery = true)

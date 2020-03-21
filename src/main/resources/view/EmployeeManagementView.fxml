@@ -19,11 +19,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<<<<<<< HEAD
-<AnchorPane prefHeight="750.0" prefWidth="985.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.Dashboard.EmployeeManagement.EmployeeRoleManagementController">
-=======
 <AnchorPane prefHeight="750.0" prefWidth="985.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.Dashboard.EmployeeManagement.EmployeeRoleUserManagementController">
->>>>>>> c6d7050952af00c1d8fb1d425acdde5f164d932b
    <children>
       <TabPane fx:id="managementTabPane" layoutY="115.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="115.0">
          <tabs>

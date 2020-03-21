@@ -88,6 +88,7 @@ public class CrudRoleController implements Initializable {
             roleComboBox.setValue(roles.getRoleName());
             otherRoleLabel.setDisable(true);
             roleText.setDisable(true);
+            roleText.setText(roles.getRoleName());
             roleComboBox.setDisable(true);
         } else {
             roleComboBox.setValue("Employee");

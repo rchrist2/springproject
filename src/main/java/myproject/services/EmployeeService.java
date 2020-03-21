@@ -13,8 +13,8 @@ public class EmployeeService {
     private EmployeeRepository employeeRepository;
 
     @Transactional
-    public void updateEmployee(String name, String email, String address, String phone, int id){
-        employeeRepository.updateEmployee(name, email, address, phone, id);
+    public void updateEmployee(String name, String email, String address, String phone, int id, int roleId){
+        employeeRepository.updateEmployee(name, email, address, phone, id, roleId);
     }
 
     @Transactional

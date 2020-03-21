@@ -76,4 +76,9 @@ public class TblRoles {
     public int hashCode() {
         return Objects.hash(roleId, roleName, roleDesc);
     }
+
+    @Override
+    public String toString(){
+        return this.getRoleName();
+    }
 }
