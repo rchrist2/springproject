@@ -357,6 +357,10 @@ public class EmployeeRoleUserManagementController implements Initializable {
                 editEmployeeButton.setDisable(false);
                 deleteEmployeeButton.setDisable(false);
             }
+            else{
+                editEmployeeButton.setDisable(true);
+                deleteEmployeeButton.setDisable(true);
+            }
         });
     }
 
@@ -483,6 +487,11 @@ public class EmployeeRoleUserManagementController implements Initializable {
                 editRoleButton.setDisable(false);
                 deleteRoleButton.setDisable(false);
             }
+            else{
+                resetRoleButton.setDisable(true);
+                editRoleButton.setDisable(true);
+                deleteRoleButton.setDisable(true);
+            }
         });
     }
 
@@ -542,6 +551,11 @@ public class EmployeeRoleUserManagementController implements Initializable {
                 resetUserButton.setDisable(false);
                 editUserButton.setDisable(false);
                 deleteUserButton.setDisable(false);
+            }
+            else{
+                resetUserButton.setDisable(true);
+                editUserButton.setDisable(true);
+                deleteUserButton.setDisable(true);
             }
         });
     }
