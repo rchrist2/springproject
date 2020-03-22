@@ -12,10 +12,8 @@ import javafx.stage.Stage;
 import myproject.ErrorMessages;
 import myproject.models.TblRoles;
 import myproject.models.Tblemployee;
-import myproject.repositories.DayRepository;
-import myproject.repositories.EmployeeRepository;
-import myproject.repositories.RoleRepository;
-import myproject.repositories.ScheduleRepository;
+import myproject.models.Tblusers;
+import myproject.repositories.*;
 import myproject.services.EmployeeService;
 import myproject.services.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +40,9 @@ public class CrudEmployeeController implements Initializable {
             addressText,
             phoneText,
             startTimeText,
-            endTimeText;
+            endTimeText,
+            usernameText,
+            passwordText;
 
     @FXML
     private VBox timePerDayVBox;
@@ -68,6 +68,7 @@ public class CrudEmployeeController implements Initializable {
     private EmployeeRoleUserManagementController employeeRoleManagementController;
     private EmployeeService employeeService;
     private RoleRepository roleRepository;
+    private UserRepository userRepository;
     private ScheduleRepository scheduleRepository;
     private DayRepository dayRepository;
     private ScheduleService scheduleService;
@@ -80,7 +81,7 @@ public class CrudEmployeeController implements Initializable {
 
     @Autowired
     public CrudEmployeeController(ConfigurableApplicationContext springContext, EmployeeRepository employeeRepository, EmployeeService employeeService, RoleRepository roleRepository,
-                                  ScheduleRepository scheduleRepository, DayRepository dayRepository, ScheduleService scheduleService) {
+                                  ScheduleRepository scheduleRepository, DayRepository dayRepository, ScheduleService scheduleService, UserRepository userRepository) {
         this.springContext = springContext;
         this.employeeRepository = employeeRepository;
         this.employeeService = employeeService;
@@ -88,6 +89,7 @@ public class CrudEmployeeController implements Initializable {
         this.scheduleRepository = scheduleRepository;
         this.dayRepository = dayRepository;
         this.scheduleService = scheduleService;
+        this.userRepository = userRepository;
     }
 
     public void setController(EmployeeRoleUserManagementController employeeRoleManagementController) {
@@ -132,11 +134,14 @@ public class CrudEmployeeController implements Initializable {
         Button selectedButton = (Button)event.getSource();
         TblRoles selectedRole = roleRepository.findRole(roleComboBox.getSelectionModel().getSelectedIndex() + 1);
         Tblemployee newEmp = new Tblemployee(nameText.getText(), emailText.getText(), addressText.getText(), phoneText.getText(), selectedRole);
+        Tblusers newUser = new Tblusers(usernameText.getText(), passwordText.getText(), newEmp);
 
         switch (selectedButton.getText()){
             case "Add":
                 try {
                     employeeRepository.save(newEmp);
+                    userRepository.save(newUser);
+
 
                     Stage stage = (Stage)saveButton.getScene().getWindow();
                     ErrorMessages.showInformationMessage("Successful", "Employee Success", "Added " + nameText.getText() + " successfully");
@@ -169,36 +174,6 @@ public class CrudEmployeeController implements Initializable {
                 stage.close();
                 break;
         }
-    }
-
-    @FXML
-    private void addDaysToList(){
-        String selectedDay = daysToWorkComboBox.getSelectionModel().getSelectedItem();
-        daysToWorkComboBox.getItems().remove(selectedDay);
-
-        HBox hoursForEachDayHBox = new HBox();
-        hoursForEachDayHBox.setSpacing(20);
-
-        ComboBox<String> beginTimes = new ComboBox<>(possibleTimes);
-        ComboBox<String> endTimes = new ComboBox<>(possibleTimes);
-
-
-        hoursForEachDayHBox.getChildren().addAll(beginTimes, endTimes);
-
-        timePerDayVBox.getChildren().add(hoursForEachDayHBox);
-        daysToWorkListView.getItems().add(selectedDay);
-
-        daysToWorkComboBox.setValue(null);
-        addDaysButton.setDisable(true);
-    }
-
-    @FXML
-    private void deleteDayFromList(){
-        String selectedDay = daysToWorkListView.getSelectionModel().getSelectedItem();
-        daysToWorkComboBox.getItems().add(selectedDay);
-
-        daysToWorkListView.getItems().remove(selectedDay);
-        deleteDayButton.setDisable(true);
     }
 
     @FXML

@@ -13,13 +13,13 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="382.0" prefWidth="548.0" style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.Dashboard.EmployeeManagement.CrudEmployeeController">
+<AnchorPane prefHeight="547.0" prefWidth="465.0" style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.Dashboard.EmployeeManagement.CrudEmployeeController">
     <children>
         <AnchorPane layoutX="40.0" layoutY="40.0" style="-fx-background-radius: 20 20 20 20; -fx-border-radius: 20 20 20 20;" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
             <children>
-                <VBox prefHeight="300.0" prefWidth="518.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <VBox prefHeight="489.0" prefWidth="455.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <children>
-                        <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="200.0" style="-fx-background-color: lightgray;">
+                        <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="455.0" style="-fx-background-color: lightgray;">
                             <children>
                                 <Label fx:id="crudEmployeeLabel" text="Label">
                                     <font>
@@ -49,18 +49,18 @@
                         <Insets />
                      </opaqueInsets>
                   </HBox>
-                        <GridPane prefHeight="225.0" prefWidth="508.0">
+                        <GridPane prefHeight="205.0" prefWidth="445.0">
                             <columnConstraints>
-                                <ColumnConstraints fillWidth="false" hgrow="SOMETIMES" maxWidth="327.0" minWidth="10.0" prefWidth="250.0" />
-                        <ColumnConstraints fillWidth="false" hgrow="SOMETIMES" maxWidth="304.0" minWidth="10.0" prefWidth="278.0" />
+                                <ColumnConstraints fillWidth="false" hgrow="SOMETIMES" maxWidth="327.0" minWidth="10.0" prefWidth="213.0" />
+                        <ColumnConstraints fillWidth="false" hgrow="SOMETIMES" maxWidth="304.0" minWidth="10.0" prefWidth="232.0" />
                             </columnConstraints>
                             <rowConstraints>
                                 <RowConstraints fillHeight="false" maxHeight="46.0" minHeight="10.0" prefHeight="22.0" vgrow="SOMETIMES" />
                                 <RowConstraints fillHeight="false" maxHeight="68.0" minHeight="10.0" prefHeight="37.0" vgrow="SOMETIMES" />
-                                <RowConstraints fillHeight="false" maxHeight="59.0" minHeight="10.0" prefHeight="24.0" vgrow="SOMETIMES" />
-                                <RowConstraints fillHeight="false" maxHeight="80.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints fillHeight="false" maxHeight="76.0" minHeight="10.0" prefHeight="27.0" valignment="BOTTOM" vgrow="SOMETIMES" />
-                        <RowConstraints fillHeight="false" maxHeight="131.0" minHeight="10.0" prefHeight="88.0" valignment="TOP" vgrow="SOMETIMES" />
+                                <RowConstraints fillHeight="false" maxHeight="59.0" minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES" />
+                                <RowConstraints fillHeight="false" maxHeight="80.0" minHeight="10.0" prefHeight="34.0" vgrow="SOMETIMES" />
+                                <RowConstraints fillHeight="false" maxHeight="76.0" minHeight="10.0" prefHeight="19.0" valignment="BOTTOM" vgrow="SOMETIMES" />
+                        <RowConstraints fillHeight="false" maxHeight="170.0" minHeight="10.0" prefHeight="58.0" valignment="TOP" vgrow="SOMETIMES" />
                             </rowConstraints>
                             <children>
                                 <Label text="Name:" />
@@ -86,6 +86,43 @@
                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                             </VBox.margin>
                         </GridPane>
+                  <HBox alignment="BOTTOM_LEFT" prefHeight="37.0" prefWidth="518.0" style="-fx-border-color: transparent transparent derive(black, 80%) transparent;">
+                     <children>
+                        <Label fx:id="crudEmployeeLabel11" text="Account Information">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                           <HBox.margin>
+                              <Insets left="10.0" />
+                           </HBox.margin>
+                        </Label>
+                     </children>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </HBox>
+                  <GridPane layoutX="15.0" layoutY="102.0" prefHeight="138.0" prefWidth="445.0">
+                     <columnConstraints>
+                        <ColumnConstraints fillWidth="false" hgrow="SOMETIMES" maxWidth="327.0" minWidth="10.0" prefWidth="213.0" />
+                        <ColumnConstraints fillWidth="false" hgrow="SOMETIMES" maxWidth="304.0" minWidth="10.0" prefWidth="232.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints fillHeight="false" maxHeight="46.0" minHeight="10.0" prefHeight="27.0" vgrow="SOMETIMES" />
+                        <RowConstraints fillHeight="false" maxHeight="68.0" minHeight="10.0" prefHeight="35.0" valignment="TOP" vgrow="SOMETIMES" />
+                        <RowConstraints fillHeight="false" maxHeight="78.0" minHeight="10.0" prefHeight="26.0" vgrow="SOMETIMES" />
+                        <RowConstraints fillHeight="false" maxHeight="78.0" minHeight="10.0" prefHeight="42.0" valignment="TOP" vgrow="SOMETIMES" />
+                        <RowConstraints fillHeight="false" maxHeight="97.0" minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                     <children>
+                        <Label text="Username:" />
+                        <Label text="Password:" GridPane.rowIndex="2" />
+                        <TextField fx:id="usernameText" prefHeight="25.0" prefWidth="180.0" GridPane.rowIndex="1" />
+                        <TextField fx:id="passwordText" prefHeight="25.0" prefWidth="180.0" GridPane.rowIndex="3" />
+                     </children>
+                     <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </VBox.margin>
+                  </GridPane>
                         <HBox alignment="CENTER_RIGHT" layoutX="10.0" layoutY="10.0" prefHeight="50.0" prefWidth="200.0" spacing="10.0" style="-fx-background-color: lightgray;">
                             <opaqueInsets>
                                 <Insets />
