@@ -140,7 +140,8 @@ public class WeeklyScheduleController implements Initializable {
                 for (Tblschedule tblSchedule : employeeSchedule){
                     //Check to see if the current day matches the day in the employee schedule
                     if(tblSchedule.getDay().getDayDesc().toLowerCase().equals(currentDay.getDayOfWeek().toString().toLowerCase())
-                        && tblSchedule.getScheduleDate().compareTo(Date.valueOf(sunday)) >= 0 && tblSchedule.getScheduleDate().compareTo(Date.valueOf(saturday)) <= 0){
+                        && tblSchedule.getScheduleDate().compareTo(Date.valueOf(sunday)) >= 0 && tblSchedule.getScheduleDate().compareTo(Date.valueOf(saturday)) <= 0
+                        && tblSchedule.getEmployee().getName().equals(employeeName.getText())){
                         Label hours = new Label();
                         hours.setText(timeFormat.format(tblSchedule.getScheduleTimeBegin()) + " - "
                                 + timeFormat.format(tblSchedule.getScheduleTimeEnd()));

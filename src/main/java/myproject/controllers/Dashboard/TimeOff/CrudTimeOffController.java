@@ -149,6 +149,7 @@ public class CrudTimeOffController implements Initializable {
 
         SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm:ss a");
 
+        //TODO can remove if statements since timeFormat gives correct AM/PM
         //assigns hour spinners
         if(begPM.get(Calendar.AM_PM) == Calendar.AM
                 && endPM.get(Calendar.AM_PM) == Calendar.AM){
@@ -389,13 +390,12 @@ public class CrudTimeOffController implements Initializable {
 
     private void setDataForHourPMLists(){
         //make a list of hours from 1 to 12
-        hrList.addAll("01:00:00 AM", "02:00:00 AM", "03:00:00 AM",
+        hrList.addAll("12:00:00 AM", "01:00:00 AM", "02:00:00 AM", "03:00:00 AM",
                 "04:00:00 AM", "05:00:00 AM", "06:00:00 AM", "07:00:00 AM",
                 "08:00:00 AM", "09:00:00 AM", "10:00:00 AM", "11:00:00 AM",
                 "12:00:00 PM","01:00:00 PM", "02:00:00 PM", "03:00:00 PM",
                 "04:00:00 PM", "05:00:00 PM", "06:00:00 PM", "07:00:00 PM",
-                "08:00:00 PM", "09:00:00 PM", "10:00:00 PM", "11:00:00 PM",
-                "12:00:00 AM");
+                "08:00:00 PM", "09:00:00 PM", "10:00:00 PM", "11:00:00 PM");
 
         //fill the hour, minute, and AM/PM drop-downs or spinners with values
         //beginPMList.setItems(pmList);

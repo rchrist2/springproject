@@ -126,12 +126,12 @@ public class EmployeeSchedulerController implements Initializable {
     private Tblemployee selectedEmployee;
 
     private ObservableList<String> times = FXCollections.observableArrayList(
-            "00:00:00", "01:00:00", "02:00:00", "03:00:00",
-            "04:00:00", "05:00:00", "06:00:00", "07:00:00",
-            "08:00:00", "09:00:00", "10:00:00", "11:00:00",
-            "12:00:00", "13:00:00", "14:00:00", "15:00:00",
-            "16:00:00", "17:00:00", "18:00:00", "19:00:00",
-            "20:00:00", "21:00:00", "22:00:00", "23:00:00"
+            "12:00:00 AM", "01:00:00 AM", "02:00:00 AM", "03:00:00 AM",
+            "04:00:00 AM", "05:00:00 AM", "06:00:00 AM", "07:00:00 AM",
+            "08:00:00 AM", "09:00:00 AM", "10:00:00 AM", "11:00:00 AM",
+            "12:00:00 PM","01:00:00 PM", "02:00:00 PM", "03:00:00 PM",
+            "04:00:00 PM", "05:00:00 PM", "06:00:00 PM", "07:00:00 PM",
+            "08:00:00 PM", "09:00:00 PM", "10:00:00 PM", "11:00:00 PM"
     );
 
 
@@ -239,7 +239,8 @@ public class EmployeeSchedulerController implements Initializable {
     private void handleAddSchedule(){
         LocalDate begOfWeek = sunday;
 
-        List<String> listOfTimes = new ArrayList<>();
+        List<String> listOfBegTimes = new ArrayList<>();
+        List<String> listOfEndTimes = new ArrayList<>();
         List<String> listOfDays = new ArrayList<>();
         List<LocalDate> listOfDates = new ArrayList<>();
 
@@ -251,8 +252,8 @@ public class EmployeeSchedulerController implements Initializable {
         if(sundayCheck.isSelected()){
 
             if(spinnerValidation(sundayStartSpinner.getValue(), sundayEndSpinner.getValue())) {
-                listOfTimes.add(sundayStartSpinner.getValue());
-                listOfTimes.add(sundayEndSpinner.getValue());
+                listOfBegTimes.add(sundayStartSpinner.getValue());
+                listOfEndTimes.add(sundayEndSpinner.getValue());
             } else{
 
                 errors = true;
@@ -268,8 +269,8 @@ public class EmployeeSchedulerController implements Initializable {
         if(mondayCheck.isSelected()){
 
             if(spinnerValidation(mondayStartSpinner.getValue(), mondayEndSpinner.getValue())){
-                listOfTimes.add(mondayStartSpinner.getValue());
-                listOfTimes.add(mondayEndSpinner.getValue());
+                listOfBegTimes.add(mondayStartSpinner.getValue());
+                listOfEndTimes.add(mondayEndSpinner.getValue());
             } else {
 
                 errors = true;
@@ -287,8 +288,8 @@ public class EmployeeSchedulerController implements Initializable {
         if(tuesdayCheck.isSelected()){
 
             if(spinnerValidation(tuesdayStartSpinner.getValue(), tuesdayEndSpinner.getValue())) {
-                listOfTimes.add(tuesdayStartSpinner.getValue());
-                listOfTimes.add(tuesdayEndSpinner.getValue());
+                listOfBegTimes.add(tuesdayStartSpinner.getValue());
+                listOfEndTimes.add(tuesdayEndSpinner.getValue());
             } else{
 
                 errors = true;
@@ -306,8 +307,8 @@ public class EmployeeSchedulerController implements Initializable {
         if(wednesdayCheck.isSelected()){
 
             if(spinnerValidation(wednesdayStartSpinner.getValue(), wednesdayEndSpinner.getValue())) {
-                listOfTimes.add(wednesdayStartSpinner.getValue());
-                listOfTimes.add(wednesdayEndSpinner.getValue());
+                listOfBegTimes.add(wednesdayStartSpinner.getValue());
+                listOfEndTimes.add(wednesdayEndSpinner.getValue());
             } else{
 
                 errors = true;
@@ -325,8 +326,8 @@ public class EmployeeSchedulerController implements Initializable {
         if(thursdayCheck.isSelected()){
 
             if(spinnerValidation(thursdayStartSpinner.getValue(), thursdayEndSpinner.getValue())) {
-                listOfTimes.add(thursdayStartSpinner.getValue());
-                listOfTimes.add(thursdayEndSpinner.getValue());
+                listOfBegTimes.add(thursdayStartSpinner.getValue());
+                listOfEndTimes.add(thursdayEndSpinner.getValue());
             } else{
 
                 errors = true;
@@ -344,8 +345,8 @@ public class EmployeeSchedulerController implements Initializable {
         if(fridayCheck.isSelected()){
 
             if(spinnerValidation(fridayStartSpinner.getValue(), fridayEndSpinner.getValue())) {
-                listOfTimes.add(fridayStartSpinner.getValue());
-                listOfTimes.add(fridayEndSpinner.getValue());
+                listOfBegTimes.add(fridayStartSpinner.getValue());
+                listOfEndTimes.add(fridayEndSpinner.getValue());
             } else {
 
                 errors = true;
@@ -363,8 +364,8 @@ public class EmployeeSchedulerController implements Initializable {
         if(saturdayCheck.isSelected()){
 
             if(spinnerValidation(saturdayStartSpinner.getValue(), saturdayEndSpinner.getValue())) {
-                listOfTimes.add(saturdayStartSpinner.getValue());
-                listOfTimes.add(saturdayEndSpinner.getValue());
+                listOfBegTimes.add(saturdayStartSpinner.getValue());
+                listOfEndTimes.add(saturdayEndSpinner.getValue());
             } else{
 
                 errors = true;
@@ -433,11 +434,62 @@ public class EmployeeSchedulerController implements Initializable {
             //alt. insert method, allows new ids to be saved to an id list
             for (String day : listOfDays) {
                 Tblschedule s = new Tblschedule();
-                s.setScheduleTimeBegin(Time.valueOf(listOfTimes.get(timeIndex++)));
-                s.setScheduleTimeEnd(Time.valueOf(listOfTimes.get(timeIndex++)));
+                String currBegTime = listOfBegTimes.get(timeIndex);
+                String currEndTime = listOfEndTimes.get(timeIndex);
+
+                //convert combobox values to 24 hour clock depending if AM or PM was selected
+                if (currBegTime.contains("AM")) {
+
+                    //if the beginning hour is 12 am
+                    if (currBegTime.equals("12:00:00 AM")) {
+                        s.setScheduleTimeBegin(Time.valueOf("00"
+                                + ":00:00"));
+                    } else {
+                        String begAMTime = currBegTime.replace(" AM","");
+                        s.setScheduleTimeBegin(Time.valueOf(begAMTime));
+                    }
+                } else if (currBegTime.contains("PM")) {
+
+                    //if the beginning hour is 12 pm
+                    if (currBegTime.equals("12:00:00 PM")) {
+                        s.setScheduleTimeBegin(Time.valueOf("12"
+                                + ":00:00"));
+                    } else {
+                        String begPMTime = currBegTime.replace(" PM","");
+                        s.setScheduleTimeBegin(Time.valueOf(begPMTime));
+                        s.setScheduleTimeBegin(Time.valueOf(s.getScheduleTimeBegin().toLocalTime().plusHours(12)));
+                    }
+                }
+
+                //convert combobox values to 24 hour clock depending if AM or PM was selected
+                if (currEndTime.contains("AM")) {
+
+                    //if the beginning hour is 12 am
+                    if (currEndTime.equals("12:00:00 AM")) {
+                        s.setScheduleTimeEnd(Time.valueOf("00"
+                                + ":00:00"));
+                    } else {
+                        String endAMTime = currEndTime.replace(" AM","");
+                        s.setScheduleTimeEnd(Time.valueOf(endAMTime));
+                    }
+                } else if (currEndTime.contains("PM")) {
+
+                    //if the beginning hour is 12 pm
+                    if (currEndTime.equals("12:00:00 PM")) {
+                        s.setScheduleTimeEnd(Time.valueOf("12"
+                                + ":00:00"));
+                    } else {
+                        String endPMTime = currEndTime.replace(" PM","");
+                        s.setScheduleTimeEnd(Time.valueOf(endPMTime));
+                        s.setScheduleTimeEnd(Time.valueOf(s.getScheduleTimeEnd().toLocalTime().plusHours(12)));
+                    }
+                }
+
                 s.setScheduleDate(Date.valueOf(listOfDates.get(i++)));
                 s.setEmployee(employeeRepository.findEmployeeById(selectedEmployee.getId()));
                 s.setDay(dayRepository.findDayByID(dayRepository.findDay(day).getDayId()));
+                timeIndex++;
+
                 scheduleRepository.save(s);
 
                 int newId = s.getScheduleId();
@@ -483,11 +535,13 @@ public class EmployeeSchedulerController implements Initializable {
     private void handleEdittingEmployee(){
         scheduleTableView.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) ->{
             if(newValue != null) {
+                resetSpinners();
                 employeeListView.setDisable(true);
 
                 selectedEmployee = scheduleTableView.getSelectionModel().getSelectedItem();
                 List<String> days = scheduleRepository.findEmployeeDays(selectedEmployee.getId(), sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert));
 
+                SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm:ss a");
                 scheduleGridPane.setDisable(false);
                 resetCheckBoxes();
                 for (String day : days) {
@@ -495,56 +549,56 @@ public class EmployeeSchedulerController implements Initializable {
                     switch (day.toLowerCase()) {
                         case "sunday":
                             sundayCheck.setSelected(true);
-                            sundayStartSpinner.getValueFactory().setValue(scheduleRepository.findEmployeeStartHours(selectedEmployee.getId(), 1, sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert)));
-                            sundayEndSpinner.getValueFactory().setValue(scheduleRepository.findEmployeeEndHours(selectedEmployee.getId(), 1, sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert)));
+                            sundayStartSpinner.getValueFactory().setValue(timeFormat.format(scheduleRepository.findEmployeeStartHours(selectedEmployee.getId(), 1, sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert))));
+                            sundayEndSpinner.getValueFactory().setValue(timeFormat.format(scheduleRepository.findEmployeeEndHours(selectedEmployee.getId(), 1, sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert))));
 
                             sundayStartSpinner.setDisable(false);
                             sundayEndSpinner.setDisable(false);
                             break;
                         case "monday":
                             mondayCheck.setSelected(true);
-                            mondayStartSpinner.getValueFactory().setValue(scheduleRepository.findEmployeeStartHours(selectedEmployee.getId(), 2, sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert)));
-                            mondayEndSpinner.getValueFactory().setValue(scheduleRepository.findEmployeeEndHours(selectedEmployee.getId(), 2, sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert)));
+                            mondayStartSpinner.getValueFactory().setValue(timeFormat.format(scheduleRepository.findEmployeeStartHours(selectedEmployee.getId(), 2, sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert))));
+                            mondayEndSpinner.getValueFactory().setValue(timeFormat.format(scheduleRepository.findEmployeeEndHours(selectedEmployee.getId(), 2, sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert))));
 
                             mondayStartSpinner.setDisable(false);
                             mondayEndSpinner.setDisable(false);
                             break;
                         case "tuesday":
                             tuesdayCheck.setSelected(true);
-                            tuesdayStartSpinner.getValueFactory().setValue(scheduleRepository.findEmployeeStartHours(selectedEmployee.getId(), 3, sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert)));
-                            tuesdayEndSpinner.getValueFactory().setValue(scheduleRepository.findEmployeeEndHours(selectedEmployee.getId(), 3, sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert)));
+                            tuesdayStartSpinner.getValueFactory().setValue(timeFormat.format(scheduleRepository.findEmployeeStartHours(selectedEmployee.getId(), 3, sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert))));
+                            tuesdayEndSpinner.getValueFactory().setValue(timeFormat.format(scheduleRepository.findEmployeeEndHours(selectedEmployee.getId(), 3, sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert))));
 
                             tuesdayStartSpinner.setDisable(false);
                             tuesdayEndSpinner.setDisable(false);
                             break;
                         case "wednesday":
                             wednesdayCheck.setSelected(true);
-                            wednesdayStartSpinner.getValueFactory().setValue(scheduleRepository.findEmployeeStartHours(selectedEmployee.getId(), 4, sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert)));
-                            wednesdayEndSpinner.getValueFactory().setValue(scheduleRepository.findEmployeeEndHours(selectedEmployee.getId(), 4, sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert)));
+                            wednesdayStartSpinner.getValueFactory().setValue(timeFormat.format(scheduleRepository.findEmployeeStartHours(selectedEmployee.getId(), 4, sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert))));
+                            wednesdayEndSpinner.getValueFactory().setValue(timeFormat.format(scheduleRepository.findEmployeeEndHours(selectedEmployee.getId(), 4, sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert))));
 
                             wednesdayStartSpinner.setDisable(false);
                             wednesdayEndSpinner.setDisable(false);
                             break;
                         case "thursday":
                             thursdayCheck.setSelected(true);
-                            thursdayStartSpinner.getValueFactory().setValue(scheduleRepository.findEmployeeStartHours(selectedEmployee.getId(), 5, sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert)));
-                            thursdayEndSpinner.getValueFactory().setValue(scheduleRepository.findEmployeeEndHours(selectedEmployee.getId(), 5, sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert)));
+                            thursdayStartSpinner.getValueFactory().setValue(timeFormat.format(scheduleRepository.findEmployeeStartHours(selectedEmployee.getId(), 5, sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert))));
+                            thursdayEndSpinner.getValueFactory().setValue(timeFormat.format(scheduleRepository.findEmployeeEndHours(selectedEmployee.getId(), 5, sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert))));
 
                             thursdayStartSpinner.setDisable(false);
                             thursdayEndSpinner.setDisable(false);
                             break;
                         case "friday":
                             fridayCheck.setSelected(true);
-                            fridayStartSpinner.getValueFactory().setValue(scheduleRepository.findEmployeeStartHours(selectedEmployee.getId(), 6, sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert)));
-                            fridayEndSpinner.getValueFactory().setValue(scheduleRepository.findEmployeeEndHours(selectedEmployee.getId(), 6, sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert)));
+                            fridayStartSpinner.getValueFactory().setValue(timeFormat.format(scheduleRepository.findEmployeeStartHours(selectedEmployee.getId(), 6, sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert))));
+                            fridayEndSpinner.getValueFactory().setValue(timeFormat.format(scheduleRepository.findEmployeeEndHours(selectedEmployee.getId(), 6, sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert))));
 
                             fridayStartSpinner.setDisable(false);
                             fridayEndSpinner.setDisable(false);
                             break;
                         case "saturday":
                             saturdayCheck.setSelected(true);
-                            saturdayStartSpinner.getValueFactory().setValue(scheduleRepository.findEmployeeStartHours(selectedEmployee.getId(), 7, sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert)));
-                            saturdayEndSpinner.getValueFactory().setValue(scheduleRepository.findEmployeeEndHours(selectedEmployee.getId(), 7, sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert)));
+                            saturdayStartSpinner.getValueFactory().setValue(timeFormat.format(scheduleRepository.findEmployeeStartHours(selectedEmployee.getId(), 7, sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert))));
+                            saturdayEndSpinner.getValueFactory().setValue(timeFormat.format(scheduleRepository.findEmployeeEndHours(selectedEmployee.getId(), 7, sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert))));
 
                             saturdayStartSpinner.setDisable(false);
                             saturdayEndSpinner.setDisable(false);
@@ -734,19 +788,19 @@ public class EmployeeSchedulerController implements Initializable {
     }
 
     private void resetSpinners(){
-        sundayStartSpinner.getValueFactory().setValue("00:00:00");
-        sundayEndSpinner.getValueFactory().setValue("00:00:00");
-        mondayStartSpinner.getValueFactory().setValue("00:00:00");
-        mondayEndSpinner.getValueFactory().setValue("00:00:00");
-        tuesdayStartSpinner.getValueFactory().setValue("00:00:00");
-        tuesdayEndSpinner.getValueFactory().setValue("00:00:00");
-        wednesdayStartSpinner.getValueFactory().setValue("00:00:00");
-        wednesdayEndSpinner.getValueFactory().setValue("00:00:00");
-        thursdayStartSpinner.getValueFactory().setValue("00:00:00");
-        thursdayEndSpinner.getValueFactory().setValue("00:00:00");
-        fridayStartSpinner.getValueFactory().setValue("00:00:00");
-        fridayEndSpinner.getValueFactory().setValue("00:00:00");
-        saturdayStartSpinner.getValueFactory().setValue("00:00:00");
-        saturdayEndSpinner.getValueFactory().setValue("00:00:00");
+        sundayStartSpinner.getValueFactory().setValue(times.get(0));
+        sundayEndSpinner.getValueFactory().setValue(times.get(0));
+        mondayStartSpinner.getValueFactory().setValue(times.get(0));
+        mondayEndSpinner.getValueFactory().setValue(times.get(0));
+        tuesdayStartSpinner.getValueFactory().setValue(times.get(0));
+        tuesdayEndSpinner.getValueFactory().setValue(times.get(0));
+        wednesdayStartSpinner.getValueFactory().setValue(times.get(0));
+        wednesdayEndSpinner.getValueFactory().setValue(times.get(0));
+        thursdayStartSpinner.getValueFactory().setValue(times.get(0));
+        thursdayEndSpinner.getValueFactory().setValue(times.get(0));
+        fridayStartSpinner.getValueFactory().setValue(times.get(0));
+        fridayEndSpinner.getValueFactory().setValue(times.get(0));
+        saturdayStartSpinner.getValueFactory().setValue(times.get(0));
+        saturdayEndSpinner.getValueFactory().setValue(times.get(0));
     }
 }
