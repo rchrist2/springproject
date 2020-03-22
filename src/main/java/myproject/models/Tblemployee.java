@@ -35,7 +35,7 @@ public class Tblemployee {
     }
 
     //one employee can only have one user account
-    @OneToOne(mappedBy = "employee")
+    @OneToOne(fetch = FetchType.EAGER,mappedBy = "employee",cascade = CascadeType.ALL)
     public Tblusers getUser() {
         return user;
     }
