@@ -1,6 +1,7 @@
 package myproject.controllers.Dashboard.EmployeeManagement;
 
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -12,6 +13,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -35,6 +37,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Optional;
@@ -52,6 +55,9 @@ public class EmployeeRoleUserManagementController implements Initializable {
     =============================*/
     @FXML
     private Label titleLabel;
+
+    @FXML
+    private AnchorPane empAnchor;
 
     @FXML
     private Button editEmployeeButton,
@@ -83,7 +89,10 @@ public class EmployeeRoleUserManagementController implements Initializable {
     private Label roleTitleLabel;
 
     @FXML
-    private TextField roleText;
+    private AnchorPane roleAnchor;
+
+    @FXML
+    private TextField roleText, searchRoleText;
 
     @FXML
     private TextArea roleDescTextA;
@@ -107,16 +116,24 @@ public class EmployeeRoleUserManagementController implements Initializable {
     =============================*/
 
     @FXML
+    private TextField searchUserText;
+
+    @FXML
+    private AnchorPane userAnchor;
+
+    @FXML
     private TableView<Tblusers> userTable;
 
     @FXML
-    private Button editUserButton,
+    private Button resetUserButton,
+            editUserButton,
             deleteUserButton;
 
     @FXML
     private TableColumn<Tblusers, String>
             userCol,
-            passCol;
+            passCol,
+            userEmpCol;
 
     @Autowired
     private ConfigurableApplicationContext springContext;
@@ -178,6 +195,18 @@ public class EmployeeRoleUserManagementController implements Initializable {
         addActionListenersForUserCrudButtons();
 
         //Filters the employee management view list
+        setSearchBars();
+
+        //reload tables when a new tab is clicked
+        addActionListenersForTabPane();
+
+        managementTabPane.getSelectionModel().selectedItemProperty().addListener((observableValue, tab, t1) -> {
+            titleLabel.setText(t1.getText() + " Management");
+        });
+
+    }
+
+    private void setSearchBars(){
         searchText.setOnKeyReleased(event -> {
             filteredListOfEmployees.setPredicate(emp -> emp.getName().toLowerCase().contains(searchText.getText().toLowerCase())
                     || emp.getEmail().toLowerCase().contains(searchText.getText().toLowerCase())
@@ -188,10 +217,27 @@ public class EmployeeRoleUserManagementController implements Initializable {
                     || emp.getRole().getRoleDesc().toLowerCase().contains(searchText.getText().toLowerCase()));
         });
 
-        managementTabPane.getSelectionModel().selectedItemProperty().addListener((observableValue, tab, t1) -> {
-            titleLabel.setText(t1.getText() + " Management");
+        searchRoleText.setOnKeyReleased(event -> {
+            filteredListOfRoles.setPredicate(r -> r.getRoleName().toLowerCase().contains(searchRoleText.getText().toLowerCase())
+                    || r.getRoleDesc().toLowerCase().contains(searchRoleText.getText().toLowerCase()));
         });
 
+        searchUserText.setOnKeyReleased(event -> {
+            filteredListOfUsers.setPredicate(u -> u.getUsername().toLowerCase().contains(searchUserText.getText().toLowerCase())
+                    || u.getPassword().contains(searchUserText.getText())
+                    || u.getEmployee().getName().toLowerCase().contains(searchUserText.getText().toLowerCase()));
+        });
+    }
+
+    private void addActionListenersForTabPane(){
+        //reload tables when a new tab is clicked
+        managementTabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue != null) {
+                reloadEmployeeTableView();
+                reloadRoleTableView();
+                reloadUserTableView();
+            }
+        });
     }
 
 
@@ -310,6 +356,10 @@ public class EmployeeRoleUserManagementController implements Initializable {
             if (newValue != null) {
                 editEmployeeButton.setDisable(false);
                 deleteEmployeeButton.setDisable(false);
+            }
+            else{
+                editEmployeeButton.setDisable(true);
+                deleteEmployeeButton.setDisable(true);
             }
         });
     }
@@ -437,6 +487,11 @@ public class EmployeeRoleUserManagementController implements Initializable {
                 editRoleButton.setDisable(false);
                 deleteRoleButton.setDisable(false);
             }
+            else{
+                resetRoleButton.setDisable(true);
+                editRoleButton.setDisable(true);
+                deleteRoleButton.setDisable(true);
+            }
         });
     }
 
@@ -457,6 +512,11 @@ public class EmployeeRoleUserManagementController implements Initializable {
     private void setDataForUserTableView() {
         userCol.setCellValueFactory(new PropertyValueFactory<>("username"));
         passCol.setCellValueFactory(new PropertyValueFactory<>("password"));
+        userEmpCol.setCellValueFactory(Tblusers -> {
+            SimpleStringProperty property = new SimpleStringProperty();
+            property.setValue(Tblusers.getValue().getEmployee().getName());
+            return property;
+        });
     }
 
     @FXML
@@ -529,8 +589,14 @@ public class EmployeeRoleUserManagementController implements Initializable {
     private void addActionListenersForUserCrudButtons() {
         userTable.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue != null) {
+                resetUserButton.setDisable(false);
                 editUserButton.setDisable(false);
                 deleteUserButton.setDisable(false);
+            }
+            else{
+                resetUserButton.setDisable(true);
+                editUserButton.setDisable(true);
+                deleteUserButton.setDisable(true);
             }
         });
     }

@@ -1,6 +1,7 @@
 myproject\controllers\Dashboard\TimeOff\CrudTimeOffController.class
 myproject\controllers\Dashboard\TimeOff\TimeOffController$1.class
 myproject\models\TimeClass.class
+myproject\services\TimeOffService.class
 myproject\controllers\WelcomeLoginSignup\ForgotPassController.class
 myproject\repositories\TimeOffRepository.class
 myproject\controllers\WelcomeLoginSignup\WelcomeController.class

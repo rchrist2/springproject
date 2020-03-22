@@ -52,10 +52,12 @@ public class CrudEmployeeController implements Initializable {
 
     @FXML
     private ComboBox<String>
-            roleComboBox,
             daysToWorkComboBox,
             startCombo,
             endCombo;
+
+    @FXML
+    private ComboBox<TblRoles> roleComboBox;
 
     @FXML
     private Label crudEmployeeLabel,
@@ -70,7 +72,8 @@ public class CrudEmployeeController implements Initializable {
     private DayRepository dayRepository;
     private ScheduleService scheduleService;
 
-    private ObservableList<String> listOfDaysObs, listOfRoleObs, listOfAMandPM, possibleTimes;
+    private ObservableList<String> listOfDaysObs, listOfAMandPM, possibleTimes;
+    private ObservableList<TblRoles> listOfRoleObs;
 
     //The employee returned from the EmployeeManagementController
     private Tblemployee selectedEmployee;
@@ -97,13 +100,13 @@ public class CrudEmployeeController implements Initializable {
         listOfRoleObs = FXCollections.observableArrayList();
 
         listOfDaysObs.setAll(dayRepository.findAllDays());
-        listOfRoleObs.setAll(roleRepository.findAllRoleName());
+        listOfRoleObs.setAll(roleRepository.findAll());
 
         roleComboBox.setItems(listOfRoleObs);
 
         roleComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldV, newV) -> {
             if(newV != null)
-                descriptionLabel.setText(roleRepository.findRoleDescFromRoleId(roleComboBox.getSelectionModel().getSelectedIndex() + 1));
+                descriptionLabel.setText(roleRepository.findRoleDescFromRoleId(roleComboBox.getSelectionModel().getSelectedItem().getRoleId()));
         });
     }
 
@@ -154,7 +157,8 @@ public class CrudEmployeeController implements Initializable {
                                 emailText.getText(),
                                 addressText.getText(),
                                 phoneText.getText(),
-                                selectedEmployee.getId()
+                                selectedEmployee.getId(),
+                                roleComboBox.getSelectionModel().getSelectedItem().getRoleId()
                         );
 
                 } catch (Exception e) {

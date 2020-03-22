@@ -150,9 +150,9 @@ public class TimeOffController implements Initializable {
     private ComboBox<String> endPMList;
 
     @FXML
-    private Spinner<Integer> beginHrList;
+    private Spinner<String> beginHrList;
     @FXML
-    private Spinner<Integer> endHrList;
+    private Spinner<String> endHrList;
 
     @FXML
     private TextField reasonInput;
@@ -163,7 +163,7 @@ public class TimeOffController implements Initializable {
     private ObservableList<Tbltimeoff> listOfTimeOffs;
     private FilteredList<Tbltimeoff> filteredListOfTimeOff;
 
-    private ObservableList<Integer> hrList;
+    private ObservableList<String> hrList;
 
     private ObservableList<String> pmList =
             FXCollections.observableArrayList(Arrays.asList("AM","PM"));
@@ -235,53 +235,56 @@ public class TimeOffController implements Initializable {
     @FXML
     private void submitTimeOffRequestWithTime(){
         //check if any of the fields are empty
-        if (!(scheduleList.getSelectionModel().isEmpty() || beginHrList.getValue() == 0
-                || beginPMList.getSelectionModel().isEmpty() || endHrList.getValue() == 0
-                || endPMList.getSelectionModel().isEmpty() || reasonInput.getText().trim().isEmpty())) {
+        if (!(scheduleList.getSelectionModel().isEmpty() || beginHrList.getValue().isEmpty()
+                || endHrList.getValue().isEmpty()
+                || reasonInput.getText().trim().isEmpty())) {
             Tbltimeoff newTimeOff = new Tbltimeoff();
 
             //convert combobox values to 24 hour clock depending if AM or PM was selected
-            if (beginPMList.getSelectionModel().getSelectedItem().equals("AM")) {
+            if (beginHrList.getValue().contains("AM")) {
 
                 //if the beginning hour is 12 am
-                if (beginHrList.getValue().toString().equals("12")) {
+                if (beginHrList.getValue().equals("12:00:00 AM")) {
                     newTimeOff.setBeginTimeOffDate(Time.valueOf("00"
                             + ":00:00"));
                 } else {
-                    newTimeOff.setBeginTimeOffDate(Time.valueOf(beginHrList.getValue().toString()
-                            + ":00:00"));
+                    String begAMTime = beginHrList.getValue().replace(" AM","");
+                    newTimeOff.setBeginTimeOffDate(Time.valueOf(begAMTime));
                 }
-            } else if (beginPMList.getSelectionModel().getSelectedItem().equals("PM")) {
+            } else if (beginHrList.getValue().contains("PM")) {
 
                 //if the beginning hour is 12 pm
-                if (beginHrList.getValue().toString().equals("12")) {
+                if (beginHrList.getValue().equals("12:00:00 PM")) {
                     newTimeOff.setBeginTimeOffDate(Time.valueOf("12"
                             + ":00:00"));
                 } else {
-                    newTimeOff.setBeginTimeOffDate(Time.valueOf((beginHrList.getValue() + 12)
-                            + ":00:00"));
+                    String begPMTime = beginHrList.getValue().replace(" PM","");
+                    newTimeOff.setBeginTimeOffDate(Time.valueOf(begPMTime));
+                    newTimeOff.setBeginTimeOffDate(Time.valueOf(newTimeOff.getBeginTimeOffDate().toLocalTime().plusHours(12)));
                 }
             }
 
-            if (endPMList.getSelectionModel().getSelectedItem().equals("AM")) {
+            if (endHrList.getValue().contains("AM")) {
 
                 //if the ending hour is 12 am
-                if (endHrList.getValue().toString().equals("12")) {
+                if (endHrList.getValue().equals("12:00:00 AM")) {
                     newTimeOff.setEndTimeOffDate(Time.valueOf("00"
                             + ":00:00"));
                 } else {
-                    newTimeOff.setEndTimeOffDate(Time.valueOf(endHrList.getValue().toString()
-                            + ":00:00"));
+                    String endAMTime = endHrList.getValue().replace(" AM","");
+                    newTimeOff.setEndTimeOffDate(Time.valueOf(endAMTime));
                 }
-            } else if (endPMList.getSelectionModel().getSelectedItem().equals("PM")) {
+            } else if (endHrList.getValue().contains("PM")) {
 
                 //if the ending hour is 12 pm
-                if (endHrList.getValue().toString().equals("12")) {
+                if (endHrList.getValue().equals("12:00:00 PM")) {
                     newTimeOff.setEndTimeOffDate(Time.valueOf("12"
                             + ":00:00"));
                 } else {
-                    newTimeOff.setEndTimeOffDate(Time.valueOf((endHrList.getValue() + 12)
-                            + ":00:00"));
+                    String endPMTime = endHrList.getValue().replace(" PM","");
+                    newTimeOff.setEndTimeOffDate(Time.valueOf(endPMTime));
+                    newTimeOff.setEndTimeOffDate(Time.valueOf(newTimeOff.getEndTimeOffDate().toLocalTime().plusHours(12)));
+
                 }
             }
 
@@ -406,10 +409,12 @@ public class TimeOffController implements Initializable {
                 reloadTimeOffTableViewAllUsers();
                 setDataForTimeOffTableView();
                 resetButtons();
+                reloadScheduleList();
             } else {
                 reloadTimeOffTableView();
                 setDataForTimeOffTableView();
                 resetButtons();
+                reloadScheduleList();
             }
         }
         else {
@@ -545,15 +550,21 @@ public class TimeOffController implements Initializable {
     private void setDataForHourPMLists(){
         //make a list of hours from 0 to 12 (0 if they did not select an hour)
         hrList = FXCollections.observableArrayList();
-        hrList.addAll(IntStream.rangeClosed(0,12).boxed().collect(Collectors.toList()));
+        hrList.addAll("01:00:00 AM", "02:00:00 AM", "03:00:00 AM",
+                "04:00:00 AM", "05:00:00 AM", "06:00:00 AM", "07:00:00 AM",
+                "08:00:00 AM", "09:00:00 AM", "10:00:00 AM", "11:00:00 AM",
+                "12:00:00 PM","01:00:00 PM", "02:00:00 PM", "03:00:00 PM",
+                "04:00:00 PM", "05:00:00 PM", "06:00:00 PM", "07:00:00 PM",
+                "08:00:00 PM", "09:00:00 PM", "10:00:00 PM", "11:00:00 PM",
+                "12:00:00 AM");
 
         //fill the hour, minute, and AM/PM comboboxes with values
-        beginPMList.setItems(pmList);
-        endPMList.setItems(pmList);
+//        beginPMList.setItems(pmList);
+       // endPMList.setItems(pmList);
 
-        SpinnerValueFactory<Integer> bHours =
+        SpinnerValueFactory<String> bHours =
                 new SpinnerValueFactory.ListSpinnerValueFactory<>(hrList);
-        SpinnerValueFactory<Integer> eHours =
+        SpinnerValueFactory<String> eHours =
                 new SpinnerValueFactory.ListSpinnerValueFactory<>(hrList);
 
         beginHrList.setValueFactory(bHours);
