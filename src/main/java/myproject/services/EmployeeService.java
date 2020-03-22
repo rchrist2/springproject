@@ -18,6 +18,11 @@ public class EmployeeService {
     }
 
     @Transactional
+    public void updateEmployeeRole(int roleId, String email){
+        employeeRepository.updateEmployeeRole(roleId, email);
+    }
+
+    @Transactional
     public void deleteEmployee(int empId){
         employeeRepository.deleteEmployee(empId);
     }

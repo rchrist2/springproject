@@ -468,9 +468,50 @@ public class EmployeeRoleUserManagementController implements Initializable {
         switch (button.getText()) {
             case "+ Create User":
                 System.out.println("Open create user form");
+
+                try {
+                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/CrudAccount.fxml"));
+                    fxmlLoader.setControllerFactory(springContext::getBean);
+                    Parent parent = fxmlLoader.load();
+                    Stage stage = new Stage();
+                    stage.initModality(Modality.APPLICATION_MODAL);
+                    stage.initStyle(StageStyle.UNDECORATED);
+                    stage.setTitle("Account Manager");
+
+                    CrudAccountController crudAccountController = fxmlLoader.getController();
+                    crudAccountController.setLabel("Add Role", "Add");
+                    crudAccountController.setController(this);
+
+                    stage.setScene(new Scene(parent));
+                    stage.showAndWait();
+                    reloadUserTableView();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 break;
             case "Edit User":
                 System.out.println("Open edit user form");
+
+                try {
+                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/CrudAccount.fxml"));
+                    fxmlLoader.setControllerFactory(springContext::getBean);
+                    Parent parent = fxmlLoader.load();
+                    Stage stage = new Stage();
+                    stage.initModality(Modality.APPLICATION_MODAL);
+                    stage.initStyle(StageStyle.UNDECORATED);
+                    stage.setTitle("Account Manager");
+
+                    CrudAccountController crudAccountController = fxmlLoader.getController();
+                    crudAccountController.setLabel("Add Account", "Update");
+                    crudAccountController.setAccount(user);
+                    crudAccountController.setController(this);
+
+                    stage.setScene(new Scene(parent));
+                    stage.showAndWait();
+                    reloadUserTableView();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 break;
             case "Delete":
                 System.out.println("Delete the user");

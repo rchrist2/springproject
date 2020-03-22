@@ -23,6 +23,9 @@ public interface EmployeeRepository extends CrudRepository<Tblemployee, Integer>
             "WHERE s.schedule_id IS NULL", nativeQuery = true)
     List<Tblemployee> findAllEmployeesWithoutSchedule();
 
+    @Query(value = "SELECT * FROM tblemployee WHERE email = :email", nativeQuery = true)
+    Tblemployee findEmployeeFromEmployeeEmail(@Param("email") String email);
+
     @Query(value = "SELECT e.id, e.name, e.email, e.address, e.phone, e.roles_id " +
             "FROM tblemployee e " +
             "EXCEPT " +
@@ -65,6 +68,10 @@ public interface EmployeeRepository extends CrudRepository<Tblemployee, Integer>
     @Modifying
     @Query(value = "UPDATE tblemployee SET name = :name, email = :email, address = :address, phone = :phone WHERE id = :id", nativeQuery = true)
     void updateEmployee(@Param("name") String name, @Param("email") String email, @Param("address") String address, @Param("phone") String phone, @Param("id") int id);
+
+    @Modifying
+    @Query(value = "UPDATE tblemployee SET role_id = :role WHERE email = :email", nativeQuery = true)
+    void updateEmployeeRole(@Param("role") int roleId, @Param("email") String email);
 
     @Modifying
     @Query(value = "DELETE FROM tblemployee WHERE id = :id", nativeQuery = true)

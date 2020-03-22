@@ -16,4 +16,8 @@ public class UserService {
         userRepository.deleteUser(userId);
     }
 
+    @Transactional
+    public void insertUser(String user, String pass, int tblemployee, int userId){
+        userRepository.updateUserAccount(user, pass, tblemployee, userId);
+    }
 }

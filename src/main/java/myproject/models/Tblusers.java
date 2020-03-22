@@ -11,6 +11,14 @@ public class Tblusers {
     private String password;
     private Tblemployee employee;
 
+    public Tblusers() {
+    }
+
+    public Tblusers(String username, String password){
+        this.username = username;
+        this.password = password;
+    }
+
     //one user account can belong to only one employee
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "employee_id", referencedColumnName = "id")

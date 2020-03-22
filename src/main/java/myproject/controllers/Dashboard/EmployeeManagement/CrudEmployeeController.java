@@ -72,8 +72,6 @@ public class CrudEmployeeController implements Initializable {
 
     private ObservableList<String> listOfDaysObs, listOfRoleObs, listOfAMandPM, possibleTimes;
 
-    private List<String> listOfDayHours = new ArrayList<>();
-
     //The employee returned from the EmployeeManagementController
     private Tblemployee selectedEmployee;
 
@@ -140,7 +138,6 @@ public class CrudEmployeeController implements Initializable {
                     Stage stage = (Stage)saveButton.getScene().getWindow();
                     ErrorMessages.showInformationMessage("Successful", "Employee Success", "Added " + nameText.getText() + " successfully");
 
-                    listOfDayHours.clear();
                     stage.close();
                 } catch (Exception e) {
                     e.printStackTrace();
