@@ -21,11 +21,11 @@ public interface UserRepository extends CrudRepository<Tblusers, Integer> {
     @Query(value = "SELECT * FROM tblUsers WHERE Username = :username", nativeQuery = true)
     Tblusers findUsername(@Param("username") String user);
 
-    @Query(value = "SELECT e.email FROM tblemployee e EXCEPT SELECT e.name FROM tblusers u JOIN tblemployee e ON u.employee_id = e.id", nativeQuery = true)
+    @Query(value = "SELECT e.email FROM tblemployee e EXCEPT SELECT e.email FROM tblusers u JOIN tblemployee e ON u.employee_id = e.id", nativeQuery = true)
     List<String> listOfEmployeeWithoutAccounts();
 
-    @Query(value = "SELECT e.name FROM tblemployee e JOIN tblusers u ON e.id = u.employee_id WHERE u.employee_id = :name", nativeQuery = true)
-    String findUserFromEmployee(@Param("name") int name);
+    @Query(value = "SELECT e.email FROM tblemployee e JOIN tblusers u ON e.id = u.employee_id WHERE u.user_id = :name", nativeQuery = true)
+    String findEmailFromUser(@Param("name") int name);
 
     @Modifying
     @Query(value = "UPDATE tblUsers SET username = :username, password = :password, employee_id = :employee_id WHERE user_id = :userid", nativeQuery = true)

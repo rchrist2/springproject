@@ -79,7 +79,7 @@ public class CrudAccountController implements Initializable {
     private void setTextFieldsForEdit(Tblusers user){
         usernameText.setText(user.getUsername());
         passwordText.setText(user.getPassword());
-        employeeComboBox.setValue(userRepository.findUserFromEmployee(user.getUserId()));
+        employeeComboBox.setValue(userRepository.findEmailFromUser(user.getUserId()));
     }
 
     @FXML
@@ -88,14 +88,14 @@ public class CrudAccountController implements Initializable {
 
         Tblemployee selectedEmployee = employeeRepository.findEmployeeFromEmployeeEmail(employeeComboBox.getSelectionModel().getSelectedItem());
 
-        Tblusers newUser = new Tblusers(usernameText.getText(), passwordText.getText());
+        Tblusers newUser = new Tblusers(usernameText.getText(), passwordText.getText(), selectedEmployee);
 
         System.out.println("Selected Employee: " + selectedEmployee.getName());
 
         switch (button.getText()){
             case "Add":
                 try{
-                    newUser.setEmployee(selectedEmployee);
+                    //newUser.setEmployee(selectedEmployee);
                     userRepository.save(newUser);
 
                     Stage stage = (Stage)saveButton.getScene().getWindow();
@@ -120,8 +120,6 @@ public class CrudAccountController implements Initializable {
                 } catch (Exception e){
                     e.printStackTrace();
                 }
-
-
                 break;
         }
     }

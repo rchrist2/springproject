@@ -14,9 +14,10 @@ public class Tblusers {
     public Tblusers() {
     }
 
-    public Tblusers(String username, String password){
+    public Tblusers(String username, String password, Tblemployee employee){
         this.username = username;
         this.password = password;
+        this.employee = employee;
     }
 
     //one user account can belong to only one employee

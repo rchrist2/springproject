@@ -575,6 +575,24 @@ public class EmployeeRoleUserManagementController implements Initializable {
                 break;
             case "Delete":
                 System.out.println("Delete the user");
+
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Delete Role");
+                alert.setHeaderText("Are you sure?");
+                alert.setContentText("You are about to delete: " + user.getEmployee().getName() +"'s account");
+
+                Optional<ButtonType> choice = alert.showAndWait();
+                if (choice.get() == ButtonType.OK) {
+
+                    try {
+                        userService.deleteUser(user.getUserId());
+                        reloadUserTableView();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+
                 break;
         }
     }
