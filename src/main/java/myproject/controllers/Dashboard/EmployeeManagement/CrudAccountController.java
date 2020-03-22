@@ -90,16 +90,15 @@ public class CrudAccountController implements Initializable {
 
         Tblusers newUser = new Tblusers(usernameText.getText(), passwordText.getText(), selectedEmployee);
 
-        System.out.println("Selected Employee: " + selectedEmployee.getName());
-
         switch (button.getText()){
             case "Add":
                 try{
-                    //newUser.setEmployee(selectedEmployee);
                     userRepository.save(newUser);
 
                     Stage stage = (Stage)saveButton.getScene().getWindow();
-                    ErrorMessages.showInformationMessage("Successful", "User Account Success", "Added user account successfully");
+                    ErrorMessages.showInformationMessage("Successful",
+                            "User Account Success",
+                            "Added user account successfully");
 
                     stage.close();
                 } catch (Exception e){
