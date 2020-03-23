@@ -5,13 +5,11 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 import myproject.ErrorMessages;
 import myproject.models.Tblemployee;
+import myproject.models.Tblschedule;
 import myproject.models.Tblusers;
 import myproject.repositories.EmployeeRepository;
 import myproject.repositories.UserRepository;
@@ -59,7 +57,34 @@ public class CrudAccountController implements Initializable {
         listOfEmployeeNames = FXCollections.observableArrayList();
         listOfEmployeeNames.setAll(userRepository.listOfEmployeeWithoutAccounts());
 
-        employeeComboBox.setItems(listOfEmployeeNames);
+        //show different prompt text in employee combo box if no employees are found
+        if(!(listOfEmployeeNames.isEmpty())){
+            employeeComboBox.setItems(listOfEmployeeNames);
+            employeeComboBox.setPromptText("Select Employee");
+
+            employeeComboBox.setButtonCell(new ListCell<String>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty) ;
+                    if (empty || item == null) {
+                        setText("Select Employee");
+                    } else {
+                        setText(item);
+                    }
+                }
+            });
+        }
+        else{
+            employeeComboBox.setPromptText("No Employees w/o User");
+        }
+
+        //when the user selects an employee, set that email address in the username textfield
+        employeeComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue != null) {
+                usernameText.setText(employeeComboBox.getSelectionModel().getSelectedItem());
+            }
+        });
+
     }
 
     public void setController(EmployeeRoleUserManagementController employeeRoleUserManagementController){
@@ -90,37 +115,66 @@ public class CrudAccountController implements Initializable {
 
         Tblusers newUser = new Tblusers(usernameText.getText(), passwordText.getText(), selectedEmployee);
 
-        switch (button.getText()){
-            case "Add":
-                try{
-                    userRepository.save(newUser);
+        if(!(usernameText.getText().isEmpty()
+                || passwordText.getText().isEmpty()
+                || employeeComboBox.getSelectionModel().getSelectedItem().isEmpty())){
+            if(usernameText.getText().equals(employeeComboBox.getSelectionModel().getSelectedItem())) {
+                if (usernameText.getText().contains("@") && usernameText.getText().contains(".com")) {
+                    switch (button.getText()){
+                        case "Add":
+                            try{
+                                if(newUser.getUsername().equals(selectedEmployee.getEmail())){
+                                    userRepository.save(newUser);
 
-                    Stage stage = (Stage)saveButton.getScene().getWindow();
-                    ErrorMessages.showInformationMessage("Successful",
-                            "User Account Success",
-                            "Added user account successfully");
+                                    Stage stage = (Stage)saveButton.getScene().getWindow();
+                                    ErrorMessages.showInformationMessage("Successful",
+                                            "User Account Success",
+                                            "Added user account successfully");
 
-                    stage.close();
-                } catch (Exception e){
-                    e.printStackTrace();
+                                    stage.close();
+                                }
+                                else{
+                                    ErrorMessages.showErrorMessage("Error!","Email does not match",
+                                            "Username and employee email must be the same.");
+                                }
+                            } catch (Exception e){
+                                e.printStackTrace();
+                            }
+
+                            break;
+                        case "Update":
+                            try{
+                                Stage stage = (Stage)saveButton.getScene().getWindow();
+                                ErrorMessages.showInformationMessage("Successful", "User Account Updated", "Updated user account successfully");
+
+                                System.out.println("Employee Id: " + selectedEmployee.getId() + "\nUser Id: " + user.getUserId());
+
+                                userService.insertUser(usernameText.getText(), passwordText.getText(), selectedEmployee.getId(), user.getUserId());
+
+                                stage.close();
+                            } catch (Exception e){
+                                e.printStackTrace();
+                            }
+                            break;
+                    }
                 }
-
-                break;
-            case "Update":
-                try{
-                    Stage stage = (Stage)saveButton.getScene().getWindow();
-                    ErrorMessages.showInformationMessage("Successful", "User Account Updated", "Updated user account successfully");
-
-                    System.out.println("Employee Id: " + selectedEmployee.getId() + "\nUser Id: " + user.getUserId());
-
-                    userService.insertUser(usernameText.getText(), passwordText.getText(), selectedEmployee.getId(), user.getUserId());
-
-                    stage.close();
-                } catch (Exception e){
-                    e.printStackTrace();
+                else{
+                    ErrorMessages.showErrorMessage("Error!","Username is not an email address",
+                            "Username must be a valid email address.");
                 }
-                break;
+            }
+            else{
+                ErrorMessages.showErrorMessage("Error!","Email does not match",
+                        "Username and employee email must be the same.");
+            }
+
         }
+        else{
+            ErrorMessages.showErrorMessage("Fields are empty",
+                    "There are empty fields",
+                    "Please select items from drop-down menus or enter text for fields");
+        }
+
     }
 
     @FXML

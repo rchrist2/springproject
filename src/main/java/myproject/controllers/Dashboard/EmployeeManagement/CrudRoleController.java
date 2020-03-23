@@ -60,11 +60,15 @@ public class CrudRoleController implements Initializable {
             if(newV != null && newV.equals("Employee")){
                 otherRoleLabel.setDisable(false);
                 roleText.setDisable(false);
+                roleText.setText(newV);
             } else {
                 otherRoleLabel.setDisable(true);
                 roleText.setDisable(true);
+                roleText.setText(newV);
             }
         });
+
+
     }
 
     public void setController(EmployeeRoleUserManagementController employeeRoleManagementController) {
@@ -106,41 +110,51 @@ public class CrudRoleController implements Initializable {
         Button button = (Button) event.getSource();
         Stage stage = (Stage)saveRoleButton.getScene().getWindow();
 
-        switch (button.getText()) {
-            case "Add":
-                TblRoles newRole = new TblRoles();
+        if(!(roleText.getText().isEmpty()
+                || roleDescTextA.getText().isEmpty()
+                || roleComboBox.getSelectionModel().getSelectedItem().isEmpty())){
+            switch (button.getText()) {
+                case "Add":
+                    TblRoles newRole = new TblRoles();
 
-                try {
-                    System.out.println("Add a role");
+                    try {
+                        System.out.println("Add a role");
 
-                    if(roleComboBox.getSelectionModel().getSelectedItem().equals("Employee"))
-                        newRole.setRoleName(roleText.getText());
-                    else
-                        newRole.setRoleName(roleComboBox.getSelectionModel().getSelectedItem());
+                        if(roleComboBox.getSelectionModel().getSelectedItem().equals("Employee"))
+                            newRole.setRoleName(roleText.getText());
+                        else
+                            newRole.setRoleName(roleComboBox.getSelectionModel().getSelectedItem());
 
-                    newRole.setRoleDesc(roleDescTextA.getText());
-                    roleRepository.save(newRole);
+                        newRole.setRoleDesc(roleDescTextA.getText());
+                        roleRepository.save(newRole);
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 
-                stage.close();
-                break;
-            case "Update":
-                try{
-                    System.out.println("Update a role");
+                    stage.close();
+                    break;
+                case "Update":
+                    try{
+                        System.out.println("Update a role");
 
-                    roleService.updateRole(roleText.getText(), roleDescTextA.getText(),
-                            selectedRole.getRoleId());
+                        roleService.updateRole(roleText.getText(), roleDescTextA.getText(),
+                                selectedRole.getRoleId());
 
-                } catch (Exception e){
-                    e.printStackTrace();
-                }
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
 
-                stage.close();
-                break;
+                    stage.close();
+                    break;
+            }
         }
+        else{
+            ErrorMessages.showErrorMessage("Fields are empty",
+                    "There are empty fields",
+                    "Please select items from drop-down menus or enter text for fields");
+        }
+
     }
 
     @FXML

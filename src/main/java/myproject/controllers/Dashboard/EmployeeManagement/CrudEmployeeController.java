@@ -132,47 +132,73 @@ public class CrudEmployeeController implements Initializable {
     public void handleSaveEmployee(ActionEvent event){
 
         Button selectedButton = (Button)event.getSource();
-        TblRoles selectedRole = roleRepository.findRole(roleComboBox.getSelectionModel().getSelectedIndex() + 1);
+        TblRoles selectedRole = roleRepository.findRole(roleComboBox.getSelectionModel().getSelectedItem().getRoleName());
         Tblemployee newEmp = new Tblemployee(nameText.getText(), emailText.getText(), addressText.getText(), phoneText.getText(), selectedRole);
         Tblusers newUser = new Tblusers(usernameText.getText(), passwordText.getText(), newEmp);
 
-        switch (selectedButton.getText()){
-            case "Add":
-                try {
-                    employeeRepository.save(newEmp);
-                    userRepository.save(newUser);
+        if(!(nameText.getText().isEmpty()
+                || emailText.getText().isEmpty()
+                || addressText.getText().isEmpty()
+                || phoneText.getText().isEmpty()
+                || usernameText.getText().isEmpty()
+                || passwordText.getText().isEmpty()
+                || roleComboBox.getSelectionModel().getSelectedItem() == null)){
+            if(usernameText.getText().equals(emailText.getText())){
+                if(usernameText.getText().contains("@") && usernameText.getText().contains(".com")){
+                    switch (selectedButton.getText()){
+                        case "Add":
+                            try {
+                                employeeRepository.save(newEmp);
+                                userRepository.save(newUser);
 
 
-                    Stage stage = (Stage)saveButton.getScene().getWindow();
-                    ErrorMessages.showInformationMessage("Successful", "Employee Success", "Added " + nameText.getText() + " successfully");
+                                Stage stage = (Stage)saveButton.getScene().getWindow();
+                                ErrorMessages.showInformationMessage("Successful", "Employee Success", "Added " + nameText.getText() + " successfully");
 
-                    stage.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println("Adding Employee Error");
+                                stage.close();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                System.out.println("Adding Employee Error");
+                            }
+
+                            break;
+                        case "Save":
+
+                            Stage stage = (Stage)saveButton.getScene().getWindow();
+                            try {
+                                employeeService.updateEmployee(
+                                        nameText.getText(),
+                                        emailText.getText(),
+                                        addressText.getText(),
+                                        phoneText.getText(),
+                                        selectedEmployee.getId(),
+                                        roleComboBox.getSelectionModel().getSelectedItem().getRoleId()
+                                );
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
+                            System.out.println("Saved");
+                            stage.close();
+                            break;
+                    }
                 }
-
-                break;
-            case "Save":
-
-                Stage stage = (Stage)saveButton.getScene().getWindow();
-                try {
-                        employeeService.updateEmployee(
-                                nameText.getText(),
-                                emailText.getText(),
-                                addressText.getText(),
-                                phoneText.getText(),
-                                selectedEmployee.getId(),
-                                roleComboBox.getSelectionModel().getSelectedItem().getRoleId()
-                        );
-
-                } catch (Exception e) {
-                    e.printStackTrace();
+                else{
+                    ErrorMessages.showErrorMessage("Error!","Username is not an email address",
+                            "Username must be a valid email address.");
                 }
+            }
+            else{
+                ErrorMessages.showErrorMessage("Error!","Email does not match",
+                        "Username and employee email must be the same.");
+            }
 
-                System.out.println("Saved");
-                stage.close();
-                break;
+        }
+        else{
+            ErrorMessages.showErrorMessage("Fields are empty",
+                    "There are empty fields",
+                    "Please select items from drop-down menus or enter text for fields");
         }
     }
 

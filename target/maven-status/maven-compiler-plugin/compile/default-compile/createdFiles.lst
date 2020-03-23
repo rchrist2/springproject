@@ -15,6 +15,7 @@ myproject\controllers\WelcomeLoginSignup\WelcomeController.class
 myproject\repositories\RoleRepository.class
 myproject\services\ScheduleService.class
 myproject\controllers\Dashboard\TimeOff\TimeOffController.class
+myproject\controllers\Dashboard\EmployeeManagement\CrudAccountController$1.class
 myproject\repositories\UserRepository.class
 myproject\controllers\Dashboard\DashboardController.class
 myproject\Main.class
