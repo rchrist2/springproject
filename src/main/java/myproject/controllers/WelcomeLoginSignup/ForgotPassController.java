@@ -29,8 +29,10 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Component;
 
 import javax.mail.*;
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Properties;
 import java.util.ResourceBundle;
@@ -215,9 +217,9 @@ public class ForgotPassController implements Initializable {
         mailSender.setPort(587);
 
         //used to take properties from .properties file for username/password
-        FileInputStream input = null;
+        BufferedReader input = null;
         Properties props1 = new Properties();
-        input = new FileInputStream("src/main/resources/application.properties");
+        input = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/application.properties")));
         props1.load(input );
 
         //this is set here and in application.properties
