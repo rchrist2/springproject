@@ -103,7 +103,6 @@ public class EmployeeRoleUserManagementController implements Initializable {
     @FXML
     private Button saveRoleButton,
             editRoleButton,
-            resetRoleButton,
             deleteRoleButton;
 
     @FXML
@@ -125,8 +124,7 @@ public class EmployeeRoleUserManagementController implements Initializable {
     private TableView<Tblusers> userTable;
 
     @FXML
-    private Button resetUserButton,
-            editUserButton,
+    private Button editUserButton,
             deleteUserButton;
 
     @FXML
@@ -483,12 +481,10 @@ public class EmployeeRoleUserManagementController implements Initializable {
     private void addActionListenersForRoleCrudButtons() {
         roleTableView.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue != null) {
-                resetRoleButton.setDisable(false);
                 editRoleButton.setDisable(false);
                 deleteRoleButton.setDisable(false);
             }
             else{
-                resetRoleButton.setDisable(true);
                 editRoleButton.setDisable(true);
                 deleteRoleButton.setDisable(true);
             }
@@ -607,12 +603,10 @@ public class EmployeeRoleUserManagementController implements Initializable {
     private void addActionListenersForUserCrudButtons() {
         userTable.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue != null) {
-                resetUserButton.setDisable(false);
                 editUserButton.setDisable(false);
                 deleteUserButton.setDisable(false);
             }
             else{
-                resetUserButton.setDisable(true);
                 editUserButton.setDisable(true);
                 deleteUserButton.setDisable(true);
             }
