@@ -47,12 +47,14 @@ public interface ScheduleRepository extends CrudRepository<Tblschedule, Integer>
 
     @Query(value = "SELECT * FROM tblschedule s LEFT JOIN tbltimeoff t ON s.schedule_id=t.schedule_id " +
             "JOIN tblemployee e ON s.employee_id = e.id " +
-            "WHERE employee_id = :employeeId AND t.schedule_id IS NULL OR NOT (t.approved=1 AND t.day_off=1)", nativeQuery = true)
+            "WHERE s.employee_id = :employeeId AND t.schedule_id IS NULL " +
+            "OR s.employee_id = :employeeId AND NOT (t.approved=1 AND t.day_off=1)", nativeQuery = true)
     List<Tblschedule> findScheduleForEmployee(@Param("employeeId") int employeeId);
 
-    @Query(value = "SELECT * FROM tblschedule s " +
+    @Query(value = "SELECT * FROM tblschedule s LEFT JOIN tbltimeoff t ON s.schedule_id=t.schedule_id " +
             "JOIN tblemployee e ON s.employee_id = e.id " +
-            "WHERE employee_id = :employeeId", nativeQuery = true)
+            "WHERE s.employee_id = :employeeId AND t.schedule_id IS NULL " +
+            "OR s.employee_id = :employeeId AND NOT (t.approved=1 AND t.day_off=1)", nativeQuery = true)
     List<Tblschedule> findScheduleForEmployeeSchedList(@Param("employeeId") int employeeId);
 
     @Query(value = "SELECT d.Day_Desc " +
