@@ -4,7 +4,7 @@ Uses JDK 13, SQL Server, flyway, see pom.xml
 After cloning, import the maven changes and go to exec:java and make a new run configuration using 
 "compile exec:java -f pom.xml" in the Command Line box (this probably isn't needed, the program should also run using Main)
 
-## Updated SQL Scripts 3/24/2020 (edit file to see with correct formatting):
+## Updated SQL Scripts 3/25/2020 (edit file to see with correct formatting):
 
 create table tblroles(
     role_id int NOT NULL identity(1,1) PRIMARY KEY,
