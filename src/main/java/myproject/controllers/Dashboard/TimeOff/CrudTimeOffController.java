@@ -235,9 +235,9 @@ public class CrudTimeOffController implements Initializable {
             if(!(approveList.getSelectionModel().isEmpty() ||
                     reasonInput.getText().trim().isEmpty() ||
                     scheduleList.getSelectionModel().isEmpty())) {
+                //if the schedule doesn't have a time off or has a time off equal to the current one
                 if(scheduleList.getSelectionModel().getSelectedItem().getTimeOffs() == null
-                || tf.getSchedule().equals(scheduleList.getSelectionModel().getSelectedItem())
-                || tf.getSchedule().equals(null)){
+                || scheduleList.getSelectionModel().getSelectedItem().getTimeOffs().getBeginTimeOffDate().equals(tf.getBeginTimeOffDate())){
                     tf.setBeginTimeOffDate(scheduleList.getSelectionModel().getSelectedItem().getScheduleDate());
                     tf.setEndTimeOffDate(scheduleList.getSelectionModel().getSelectedItem().getScheduleDate());
                     tf.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
