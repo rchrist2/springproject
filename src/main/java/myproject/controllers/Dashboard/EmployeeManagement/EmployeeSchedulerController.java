@@ -134,6 +134,7 @@ public class EmployeeSchedulerController implements Initializable {
             "08:00:00 PM", "09:00:00 PM", "10:00:00 PM", "11:00:00 PM"
     );
 
+    List<Tblschedule> schedList = new ArrayList<>();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -160,6 +161,10 @@ public class EmployeeSchedulerController implements Initializable {
         loadDataToTable();
 
         handleEdittingEmployee();
+
+        scheduleTableView.getSelectionModel().selectedItemProperty().addListener((obs, old, newv) -> {
+            selectedEmployee = newv;
+        });
     }
 
 
@@ -396,140 +401,346 @@ public class EmployeeSchedulerController implements Initializable {
         int timeIndex = 0, i = 0;
 
         if(!errors) {
-            //variables used for method below
+            //variables used for deletion
             int id = 0;
             List<Tbltimeoff> tfs = new ArrayList<>();
             List<Tblclock> cls = new ArrayList<>();
-            List<Tblschedule> schedList = scheduleRepository.findScheduleForEmployee(selectedEmployee.getId());
-            List<Integer> idList = new ArrayList<>();
+            List<Tblschedule> newSchedList = new ArrayList<>();
             if(scheduleButton.getText().equals("Update Schedule")) {
-                //find related rows and set their schedule_ids to null
-                for(Tblschedule sch : schedList){
-                    id = sch.getScheduleId();
-                    if(timeOffRepository.findScheduleTimeOff(id) != null){
-                            tfs.add(timeOffRepository.findScheduleTimeOff(id));
+
+                //declare variables for validating time ranges
+                List<Tblschedule> invalidDays = new ArrayList<>();
+                List<Tblschedule> schedToDel = new ArrayList<>();
+
+                //get all spinner values to validate time range
+                for (String day : listOfDays) {
+                    Tblschedule s = new Tblschedule();
+                    String currBegTime = listOfBegTimes.get(timeIndex);
+                    String currEndTime = listOfEndTimes.get(timeIndex);
+
+                    //convert combobox values to 24 hour clock depending if AM or PM was selected
+                    if (currBegTime.contains("AM")) {
+
+                        //if the beginning hour is 12 am
+                        if (currBegTime.equals("12:00:00 AM")) {
+                            s.setScheduleTimeBegin(Time.valueOf("00"
+                                    + ":00:00"));
+                        } else {
+                            String begAMTime = currBegTime.replace(" AM","");
+                            s.setScheduleTimeBegin(Time.valueOf(begAMTime));
+                        }
+                    } else if (currBegTime.contains("PM")) {
+
+                        //if the beginning hour is 12 pm
+                        if (currBegTime.equals("12:00:00 PM")) {
+                            s.setScheduleTimeBegin(Time.valueOf("12"
+                                    + ":00:00"));
+                        } else {
+                            String begPMTime = currBegTime.replace(" PM","");
+                            s.setScheduleTimeBegin(Time.valueOf(begPMTime));
+                            s.setScheduleTimeBegin(Time.valueOf(s.getScheduleTimeBegin().toLocalTime().plusHours(12)));
+                        }
+                    }
+
+                    //convert combobox values to 24 hour clock depending if AM or PM was selected
+                    if (currEndTime.contains("AM")) {
+
+                        //if the beginning hour is 12 am
+                        if (currEndTime.equals("12:00:00 AM")) {
+                            s.setScheduleTimeEnd(Time.valueOf("00"
+                                    + ":00:00"));
+                        } else {
+                            String endAMTime = currEndTime.replace(" AM","");
+                            s.setScheduleTimeEnd(Time.valueOf(endAMTime));
+                        }
+                    } else if (currEndTime.contains("PM")) {
+
+                        //if the beginning hour is 12 pm
+                        if (currEndTime.equals("12:00:00 PM")) {
+                            s.setScheduleTimeEnd(Time.valueOf("12"
+                                    + ":00:00"));
+                        } else {
+                            String endPMTime = currEndTime.replace(" PM","");
+                            s.setScheduleTimeEnd(Time.valueOf(endPMTime));
+                            s.setScheduleTimeEnd(Time.valueOf(s.getScheduleTimeEnd().toLocalTime().plusHours(12)));
+                        }
+                    }
+
+                    s.setScheduleDate(Date.valueOf(listOfDates.get(i++)));
+                    s.setEmployee(employeeRepository.findEmployeeById(selectedEmployee.getId()));
+                    s.setDay(dayRepository.findDayByID(dayRepository.findDay(day).getDayId()));
+                    timeIndex++;
+
+                    if(!(s.getScheduleTimeBegin().before(s.getScheduleTimeEnd())
+                            && s.getScheduleTimeEnd().after(s.getScheduleTimeBegin()))){
+                        invalidDays.add(s);
+                    }
+
+                    schedToDel.add(s);
+                }
+
+                //show an error message for each invalid schedule
+                StringBuilder schedError = new StringBuilder();
+                for (Tblschedule s : invalidDays) {
+                    schedError.append("\t- " + s.getDay().getDayDesc() + "\n");
+                }
+
+                //show an error message with the days for each invalid schedule
+                if(!(invalidDays.isEmpty())){
+                    ErrorMessages.showErrorMessage("Invalid time values", "Time range for \n"
+                            + schedError
+                            + " is invalid", "Please edit the time range for this schedule.");
+                    //prevents the table selection being null and permanently disabling spinners
+                    //TODO stop the spinners from disabling after closing alert
+                    scheduleTableView.getSelectionModel().clearSelection();
+                }
+                else{ //if there are no invalid time ranges..
+
+                    //find related rows and set their schedule_ids to null
+                    for(Tblschedule sch : schedList){
+                        id = sch.getScheduleId();
+                        if(timeOffRepository.findScheduleTimeOff(id, selectedEmployee.getId()) != null){
+                            tfs.add(timeOffRepository.findScheduleTimeOff(id, selectedEmployee.getId()));
                             tfs.forEach((t) -> t.setSchedule(null));
                             for(Tbltimeoff t : tfs){
                                 timeOffRepository.save(t);
                             }
 
-                    }
-                    if(clockRepository.findScheduleClock(id) != null){
-                        cls.addAll(clockRepository.findScheduleClock(id));
-                        cls.forEach((c) -> c.setSchedule(null));
-                        for(Tblclock c : cls){
-                            clockRepository.save(c);
+                        }
+                        if(clockRepository.findScheduleClock(id) != null){
+                            cls.addAll(clockRepository.findScheduleClock(id));
+                            cls.forEach((c) -> c.setSchedule(null));
+                            for(Tblclock c : cls){
+                                clockRepository.save(c);
+                            }
                         }
                     }
-                }
 
-                //Delete the original schedule (Pre-updated schedule)
-                System.out.println("Schedule to delete: " + schedList);
-                for(Tblschedule sh : schedList){
+                    //Delete the original schedule (Pre-updated schedule)
+                    System.out.println("Schedule to delete: " + schedList);
+                    for(Tblschedule sh : schedList){
                         scheduleService.deleteScheduleByID(sh.getScheduleId());
                         System.out.println("Deleted");
-                }
-            }
 
-            //alt. insert method, allows new ids to be saved to an id list
-            for (String day : listOfDays) {
-                Tblschedule s = new Tblschedule();
-                String currBegTime = listOfBegTimes.get(timeIndex);
-                String currEndTime = listOfEndTimes.get(timeIndex);
-
-                //convert combobox values to 24 hour clock depending if AM or PM was selected
-                if (currBegTime.contains("AM")) {
-
-                    //if the beginning hour is 12 am
-                    if (currBegTime.equals("12:00:00 AM")) {
-                        s.setScheduleTimeBegin(Time.valueOf("00"
-                                + ":00:00"));
-                    } else {
-                        String begAMTime = currBegTime.replace(" AM","");
-                        s.setScheduleTimeBegin(Time.valueOf(begAMTime));
                     }
-                } else if (currBegTime.contains("PM")) {
 
-                    //if the beginning hour is 12 pm
-                    if (currBegTime.equals("12:00:00 PM")) {
-                        s.setScheduleTimeBegin(Time.valueOf("12"
-                                + ":00:00"));
-                    } else {
-                        String begPMTime = currBegTime.replace(" PM","");
-                        s.setScheduleTimeBegin(Time.valueOf(begPMTime));
-                        s.setScheduleTimeBegin(Time.valueOf(s.getScheduleTimeBegin().toLocalTime().plusHours(12)));
+                    //set these to 0 to prevent out of bounds error
+                    timeIndex = 0;
+                    i = 0;
+
+                    //re-insert the schedule that was deleted
+                    for (String day : listOfDays) {
+                        Tblschedule s = new Tblschedule();
+                        String currBegTime = listOfBegTimes.get(timeIndex);
+                        String currEndTime = listOfEndTimes.get(timeIndex);
+
+                        //convert combobox values to 24 hour clock depending if AM or PM was selected
+                        if (currBegTime.contains("AM")) {
+
+                            //if the beginning hour is 12 am
+                            if (currBegTime.equals("12:00:00 AM")) {
+                                s.setScheduleTimeBegin(Time.valueOf("00"
+                                        + ":00:00"));
+                            } else {
+                                String begAMTime = currBegTime.replace(" AM","");
+                                s.setScheduleTimeBegin(Time.valueOf(begAMTime));
+                            }
+                        } else if (currBegTime.contains("PM")) {
+
+                            //if the beginning hour is 12 pm
+                            if (currBegTime.equals("12:00:00 PM")) {
+                                s.setScheduleTimeBegin(Time.valueOf("12"
+                                        + ":00:00"));
+                            } else {
+                                String begPMTime = currBegTime.replace(" PM","");
+                                s.setScheduleTimeBegin(Time.valueOf(begPMTime));
+                                s.setScheduleTimeBegin(Time.valueOf(s.getScheduleTimeBegin().toLocalTime().plusHours(12)));
+                            }
+                        }
+
+                        //convert combobox values to 24 hour clock depending if AM or PM was selected
+                        if (currEndTime.contains("AM")) {
+
+                            //if the beginning hour is 12 am
+                            if (currEndTime.equals("12:00:00 AM")) {
+                                s.setScheduleTimeEnd(Time.valueOf("00"
+                                        + ":00:00"));
+                            } else {
+                                String endAMTime = currEndTime.replace(" AM","");
+                                s.setScheduleTimeEnd(Time.valueOf(endAMTime));
+                            }
+                        } else if (currEndTime.contains("PM")) {
+
+                            //if the beginning hour is 12 pm
+                            if (currEndTime.equals("12:00:00 PM")) {
+                                s.setScheduleTimeEnd(Time.valueOf("12"
+                                        + ":00:00"));
+                            } else {
+                                String endPMTime = currEndTime.replace(" PM","");
+                                s.setScheduleTimeEnd(Time.valueOf(endPMTime));
+                                s.setScheduleTimeEnd(Time.valueOf(s.getScheduleTimeEnd().toLocalTime().plusHours(12)));
+                            }
+                        }
+
+                        s.setScheduleDate(Date.valueOf(listOfDates.get(i++)));
+                        s.setEmployee(employeeRepository.findEmployeeById(selectedEmployee.getId()));
+                        s.setDay(dayRepository.findDayByID(dayRepository.findDay(day).getDayId()));
+                        timeIndex++;
+
+                        scheduleRepository.save(s);
+                        int newId = s.getScheduleId();
+                        newSchedList.add(s);
                     }
-                }
 
-                //convert combobox values to 24 hour clock depending if AM or PM was selected
-                if (currEndTime.contains("AM")) {
+                    //give related clock and time off records the new schedule ids
+                    if(!(schedList.isEmpty())){
+                        if(!(tfs.isEmpty())){
+                            //loop through each new id
+                            for(Tblschedule d : newSchedList){
+                                //find the schedule with each new id
+                                //Tblschedule newSched = scheduleRepository.findByScheduleId(d.getScheduleId());
 
-                    //if the beginning hour is 12 am
-                    if (currEndTime.equals("12:00:00 AM")) {
-                        s.setScheduleTimeEnd(Time.valueOf("00"
-                                + ":00:00"));
-                    } else {
-                        String endAMTime = currEndTime.replace(" AM","");
-                        s.setScheduleTimeEnd(Time.valueOf(endAMTime));
-                    }
-                } else if (currEndTime.contains("PM")) {
+                                //if the schedule day matches the day of the related time offs, set the id
+                                for(Tbltimeoff t : tfs){
+                                    if(d.getDay().getDayDesc().equals(t.getDay().getDayDesc())){
+                                        t.setSchedule(d);
+                                        timeOffRepository.save(t);
+                                    }
+                                }
+                            }
+                        }
 
-                    //if the beginning hour is 12 pm
-                    if (currEndTime.equals("12:00:00 PM")) {
-                        s.setScheduleTimeEnd(Time.valueOf("12"
-                                + ":00:00"));
-                    } else {
-                        String endPMTime = currEndTime.replace(" PM","");
-                        s.setScheduleTimeEnd(Time.valueOf(endPMTime));
-                        s.setScheduleTimeEnd(Time.valueOf(s.getScheduleTimeEnd().toLocalTime().plusHours(12)));
-                    }
-                }
-
-                s.setScheduleDate(Date.valueOf(listOfDates.get(i++)));
-                s.setEmployee(employeeRepository.findEmployeeById(selectedEmployee.getId()));
-                s.setDay(dayRepository.findDayByID(dayRepository.findDay(day).getDayId()));
-                timeIndex++;
-
-                scheduleRepository.save(s);
-
-                int newId = s.getScheduleId();
-                idList.add(newId);
-            }
-
-            //give related clock and time off records the new schedule ids
-            if(!(schedList.isEmpty())){
-                //loop through each new id
-                for(Integer d : idList){
-                    //find the schedule with each new id
-                    Tblschedule newSched = scheduleRepository.findByScheduleId(d);
-
-                    //if the schedule day matches the day of the related time offs, set the id
-                    for(Tbltimeoff t : tfs){
-                        if(newSched.getDay().getDayDesc().equals(t.getDay().getDayDesc())){
-                            t.setSchedule(newSched);
-                            timeOffRepository.save(t);
+                        if(!(cls.isEmpty())){
+                            //do the same for clock ins/outs
+                            for(Tblschedule k : newSchedList){
+                                //Tblschedule newSched2 = scheduleRepository.findByScheduleId(k.getScheduleId());
+                                for(Tblclock c : cls){
+                                    if(k.getDay().getDayDesc().equals(c.getDay().getDayDesc())){
+                                        c.setSchedule(k);
+                                        clockRepository.save(c);
+                                    }
+                                }
+                            }
                         }
                     }
-                }
 
-                //do the same for clock ins/outs
-                for(Integer k : idList){
-                    Tblschedule newSched2 = scheduleRepository.findByScheduleId(k);
-                    for(Tblclock c : cls){
-                        if(newSched2.getDay().getDayDesc().equals(c.getDay().getDayDesc())){
-                            c.setSchedule(newSched2);
-                            clockRepository.save(c);
+
+                    ErrorMessages.showInformationMessage("Successful", "Saved Schedule", selectedEmployee + "'s schedule was saved successfully");
+                    loadDataToTable();
+
+                    resetCheckBoxes();
+                    resetSpinners();
+                }
+            }
+            else if(scheduleButton.getText().equals("Add Schedule")){
+
+                //declare variables to use for validating time ranges
+                List<Tblschedule> schedToAdd = new ArrayList<>();
+                StringBuilder schedErrorAdd = new StringBuilder();
+                List<Tblschedule> invalidDaysAdd = new ArrayList<>();
+
+                //set these to 0 to avoid out of bounds error
+                timeIndex = 0;
+                i = 0;
+
+                //gather schedules to be inserted, while also finding schedules w/ invalid time ranges
+                for (String day : listOfDays) {
+                    Tblschedule s = new Tblschedule();
+                    String currBegTime = listOfBegTimes.get(timeIndex);
+                    String currEndTime = listOfEndTimes.get(timeIndex);
+
+                    //convert combobox values to 24 hour clock depending if AM or PM was selected
+                    if (currBegTime.contains("AM")) {
+
+                        //if the beginning hour is 12 am
+                        if (currBegTime.equals("12:00:00 AM")) {
+                            s.setScheduleTimeBegin(Time.valueOf("00"
+                                    + ":00:00"));
+                        } else {
+                            String begAMTime = currBegTime.replace(" AM","");
+                            s.setScheduleTimeBegin(Time.valueOf(begAMTime));
+                        }
+                    } else if (currBegTime.contains("PM")) {
+
+                        //if the beginning hour is 12 pm
+                        if (currBegTime.equals("12:00:00 PM")) {
+                            s.setScheduleTimeBegin(Time.valueOf("12"
+                                    + ":00:00"));
+                        } else {
+                            String begPMTime = currBegTime.replace(" PM","");
+                            s.setScheduleTimeBegin(Time.valueOf(begPMTime));
+                            s.setScheduleTimeBegin(Time.valueOf(s.getScheduleTimeBegin().toLocalTime().plusHours(12)));
                         }
                     }
+
+                    //convert combobox values to 24 hour clock depending if AM or PM was selected
+                    if (currEndTime.contains("AM")) {
+
+                        //if the beginning hour is 12 am
+                        if (currEndTime.equals("12:00:00 AM")) {
+                            s.setScheduleTimeEnd(Time.valueOf("00"
+                                    + ":00:00"));
+                        } else {
+                            String endAMTime = currEndTime.replace(" AM","");
+                            s.setScheduleTimeEnd(Time.valueOf(endAMTime));
+                        }
+                    } else if (currEndTime.contains("PM")) {
+
+                        //if the beginning hour is 12 pm
+                        if (currEndTime.equals("12:00:00 PM")) {
+                            s.setScheduleTimeEnd(Time.valueOf("12"
+                                    + ":00:00"));
+                        } else {
+                            String endPMTime = currEndTime.replace(" PM","");
+                            s.setScheduleTimeEnd(Time.valueOf(endPMTime));
+                            s.setScheduleTimeEnd(Time.valueOf(s.getScheduleTimeEnd().toLocalTime().plusHours(12)));
+                        }
+                    }
+
+                    s.setScheduleDate(Date.valueOf(listOfDates.get(i++)));
+                    s.setEmployee(employeeRepository.findEmployeeById(selectedEmployee.getId()));
+                    s.setDay(dayRepository.findDayByID(dayRepository.findDay(day).getDayId()));
+                    timeIndex++;
+
+                    //find all days with an invalid time range and add them to a list
+                    if(!(s.getScheduleTimeBegin().before(s.getScheduleTimeEnd())
+                            && s.getScheduleTimeEnd().after(s.getScheduleTimeBegin()))){
+                        invalidDaysAdd.add(s);
+                    }
+
+                    //add the schedules to be added into another list
+                    schedToAdd.add(s);
+                }
+
+                //show an error message for each invalid schedule
+                for (Tblschedule sched : invalidDaysAdd) {
+                    schedErrorAdd.append("\t- " + sched.getDay().getDayDesc() + "\n");
+                }
+
+                //if invalid schedules were found, show an error
+                if(!(invalidDaysAdd.isEmpty())){
+                    ErrorMessages.showErrorMessage("Invalid time values", "Time range for \n"
+                            + schedErrorAdd
+                            + " is invalid", "Please edit the time range for this schedule");
+
+                    //prevents the list selection being null and permanently disabling spinners
+                    //TODO stop the spinners from disabling after closing alert
+                    employeeListView.getSelectionModel().clearSelection();
+                }
+                else{ //if no invalid time ranges were found, add the schedules
+                    for(Tblschedule sc : schedToAdd){
+                        scheduleRepository.save(sc);
+                    }
+
+                    ErrorMessages.showInformationMessage("Successful", "Saved Schedule", selectedEmployee + "'s schedule was saved successfully");
+                    loadDataToTable();
+
+                    resetCheckBoxes();
+                    resetSpinners();
                 }
             }
 
-        ErrorMessages.showInformationMessage("Successful", "Saved Schedule", selectedEmployee + "'s schedule was saved successfully");
-        loadDataToTable();
         }
-
-        resetCheckBoxes();
-        resetSpinners();
     }
 
     private void handleEdittingEmployee(){
@@ -540,6 +751,10 @@ public class EmployeeSchedulerController implements Initializable {
 
                 selectedEmployee = scheduleTableView.getSelectionModel().getSelectedItem();
                 List<String> days = scheduleRepository.findEmployeeDays(selectedEmployee.getId(), sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert));
+
+                schedList.clear();
+                schedList = scheduleRepository.findScheduleForEmployeeSchedList(selectedEmployee.getId());
+                System.out.println("Schedlist: " + schedList);
 
                 SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm:ss a");
                 scheduleGridPane.setDisable(false);

@@ -4,16 +4,7 @@ Uses JDK 13, SQL Server, flyway, see pom.xml
 After cloning, import the maven changes and go to exec:java and make a new run configuration using 
 "compile exec:java -f pom.xml" in the Command Line box (this probably isn't needed, the program should also run using Main)
 
-## Updated SQL Scripts 3/21/2020 (edit file to see with correct formatting):
-
-create table tblclock(
-  	clock_id int NOT NULL identity(1,1) PRIMARY KEY,
-    punch_in time NOT NULL,
-  	punch_out time NOT NULL,
-  	date_created datetime NOT NULL,
-  	day_id int null FOREIGN KEY REFERENCES tblday(day_id),
-  	schedule_id int null FOREIGN KEY REFERENCES tblschedule(schedule_id)
-  );
+## Updated SQL Scripts 3/24/2020 (edit file to see with correct formatting):
 
 create table tblroles(
     role_id int NOT NULL identity(1,1) PRIMARY KEY,
@@ -21,11 +12,20 @@ create table tblroles(
     role_desc varchar(200) NOT NULL
 );
 
+CREATE TABLE tblemployee (
+	id int not null identity(1,1) primary key,
+	name varchar(128) not null,
+	email varchar(128) not null,
+	address varchar(128) not null,
+	phone varchar(128) not null,
+	roles_id int not null FOREIGN KEY REFERENCES tblroles(role_id) ON DELETE CASCADE
+);
+
 create table tblusers(
     user_id int NOT NULL identity(1,1) PRIMARY KEY,
     username varchar(128) NOT NULL UNIQUE,
     password varchar(128) NOT NULL,
-    employee_id int UNIQUE FOREIGN KEY REFERENCES tblemployee(id)
+    employee_id int UNIQUE FOREIGN KEY REFERENCES tblemployee(id) ON DELETE CASCADE
 );
 
 create table tblday(
@@ -38,19 +38,18 @@ create table tblschedule(
     schedule_time_begin time NOT NULL,
     schedule_time_end time NOT NULL,
     schedule_date datetime NOT NULL,
-	employee_id int not null FOREIGN KEY REFERENCES tblemployee(id),
+	employee_id int not null FOREIGN KEY REFERENCES tblemployee(id) ON DELETE CASCADE,
     day_id int not null FOREIGN KEY REFERENCES tblday(day_id)
 );
 
-
-CREATE TABLE tblemployee (
-	id int not null identity(1,1) primary key,
-	name varchar(128) not null,
-	email varchar(128) not null,
-	address varchar(128) not null,
-	phone varchar(128) not null,
-	roles_id int not null FOREIGN KEY REFERENCES tblroles(role_id)
-);
+create table tblclock(
+  	clock_id int NOT NULL identity(1,1) PRIMARY KEY,
+    punch_in time NOT NULL,
+  	punch_out time NOT NULL,
+  	date_created datetime NOT NULL,
+  	day_id int null FOREIGN KEY REFERENCES tblday(day_id),
+  	schedule_id int null FOREIGN KEY REFERENCES tblschedule(schedule_id)
+  );
 
 CREATE TABLE tbltimeoff(
 	time_off_id int not null identity(1,1) primary key,
@@ -62,6 +61,18 @@ CREATE TABLE tbltimeoff(
 	day_id int null FOREIGN KEY REFERENCES tblday(day_id),
 	schedule_id int null FOREIGN KEY REFERENCES tblschedule(schedule_id)
 );
+
+INSERT INTO tblroles VALUES('Owner','Is the owner');
+INSERT INTO tblroles VALUES('Manager','Is a manager');
+INSERT INTO tblroles VALUES('Employee','Is an employee');
+
+INSERT INTO tblday VALUES('Sunday');
+INSERT INTO tblday VALUES('Monday');
+INSERT INTO tblday VALUES('Tuesday');
+INSERT INTO tblday VALUES('Wednesday');
+INSERT INTO tblday VALUES('Thursday');
+INSERT INTO tblday VALUES('Friday');
+INSERT INTO tblday VALUES('Saturday');
 
 ## Check/Other Constraints as of 3/18/2020
 alter table tblusers add constraint username_is_email check (username like '%_@__%.__%');

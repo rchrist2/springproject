@@ -127,6 +127,9 @@ public class CrudEmployeeController implements Initializable {
         emailText.setText(emp1.getEmail());
         addressText.setText(emp1.getAddress());
         phoneText.setText(emp1.getPhone());
+        roleComboBox.getSelectionModel().select(emp1.getRole());
+        usernameText.setText(emp1.getUser().getUsername());
+        passwordText.setText(emp1.getUser().getPassword());
     }
 
     public void handleSaveEmployee(ActionEvent event){
@@ -135,6 +138,7 @@ public class CrudEmployeeController implements Initializable {
         TblRoles selectedRole = roleRepository.findRole(roleComboBox.getSelectionModel().getSelectedItem().getRoleName());
         Tblemployee newEmp = new Tblemployee(nameText.getText(), emailText.getText(), addressText.getText(), phoneText.getText(), selectedRole);
         Tblusers newUser = new Tblusers(usernameText.getText(), passwordText.getText(), newEmp);
+        Tblemployee updateEmp = selectedEmployee;
 
         if(!(nameText.getText().isEmpty()
                 || emailText.getText().isEmpty()
@@ -166,14 +170,15 @@ public class CrudEmployeeController implements Initializable {
 
                             Stage stage = (Stage)saveButton.getScene().getWindow();
                             try {
-                                employeeService.updateEmployee(
-                                        nameText.getText(),
-                                        emailText.getText(),
-                                        addressText.getText(),
-                                        phoneText.getText(),
-                                        selectedEmployee.getId(),
-                                        roleComboBox.getSelectionModel().getSelectedItem().getRoleId()
-                                );
+                                //changed this to use setters since previous method doesn't update user
+                                updateEmp.setName(nameText.getText());
+                                updateEmp.setEmail(emailText.getText());
+                                updateEmp.setAddress(addressText.getText());
+                                updateEmp.setPhone(phoneText.getText());
+                                updateEmp.setRole(roleComboBox.getSelectionModel().getSelectedItem());
+                                updateEmp.getUser().setUsername(usernameText.getText());
+                                updateEmp.getUser().setPassword(passwordText.getText());
+                                employeeRepository.save(updateEmp);
 
                             } catch (Exception e) {
                                 e.printStackTrace();

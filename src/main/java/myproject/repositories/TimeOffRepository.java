@@ -15,8 +15,8 @@ import java.util.List;
 public interface TimeOffRepository extends CrudRepository<Tbltimeoff, Integer> {
 
     @Query(value = "SELECT * FROM tbltimeoff t JOIN tblschedule s ON t.schedule_id=s.schedule_id " +
-            "WHERE t.schedule_id = :id", nativeQuery = true)
-    Tbltimeoff findScheduleTimeOff(@Param("id") Integer id);
+            "WHERE t.schedule_id = :id AND s.employee_id=:empId", nativeQuery = true)
+    Tbltimeoff findScheduleTimeOff(@Param("id") Integer id, @Param("empId") Integer empId);
 
     @Query(value = "SELECT * FROM tbltimeoff t JOIN tblschedule s ON t.schedule_id=s.schedule_id " +
             "JOIN tblemployee e ON s.employee_id=e.id " +

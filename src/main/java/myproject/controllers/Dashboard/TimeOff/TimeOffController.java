@@ -307,7 +307,7 @@ public class TimeOffController implements Initializable {
                 }
             } else {
                 ErrorMessages.showErrorMessage("Invalid time values", "Time range for time" +
-                        " off request is invalid", "Please edit time range for this time off request");
+                        " off request is invalid", "Please edit the time range for this time off request");
             }
 
             reloadTimeOffTableView();
