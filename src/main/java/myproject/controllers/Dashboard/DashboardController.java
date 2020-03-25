@@ -69,9 +69,12 @@ public class DashboardController implements Initializable {
         Tblusers currentLoggedUser = userRepository.findUsername(LoginController.userStore);
 
         //Disables the employee management button for employees
-        if(currentLoggedUser.getEmployee().getRole().getRoleId() == 2){
+        if(!currentLoggedUser.getEmployee().getRole().getRoleName().equals("Manager")
+                && !currentLoggedUser.getEmployee().getRole().getRoleName().equals("Owner")){
             employeeButton.setDisable(true);
         }
+
+        System.out.println("The role of this employee: " + currentLoggedUser.getEmployee().getRole().getRoleName());
 
         //show the current user's full name
         Tblusers currUser = userRepository.findUsername(LoginController.userStore);

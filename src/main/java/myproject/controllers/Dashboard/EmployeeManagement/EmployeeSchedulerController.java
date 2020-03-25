@@ -122,6 +122,8 @@ public class EmployeeSchedulerController implements Initializable {
 
     private DateFormat timeConvert = new SimpleDateFormat("hh:mm a");
 
+    private List<Tblschedule> invalidDays;
+
 
     private Tblemployee selectedEmployee;
 
@@ -252,8 +254,6 @@ public class EmployeeSchedulerController implements Initializable {
 
         String errorString = "";
         boolean errors = false;
-
-        scheduleGridPane.setDisable(true);
 
         if(sundayCheck.isSelected()){
 
@@ -391,14 +391,6 @@ public class EmployeeSchedulerController implements Initializable {
                     "Please check the times on the following days:\n" + errorString);
         }
 
-        employeeLabel.setVisible(false);
-
-        resetButton.setDisable(true);
-        selectButton.setDisable(false);
-        scheduleButton.setDisable(true);
-        employeeListView.setDisable(false);
-        listOfEmployeeLabel.setDisable(false);
-
         int timeIndex = 0, i = 0;
 
         if(!errors) {
@@ -407,7 +399,9 @@ public class EmployeeSchedulerController implements Initializable {
             List<Tbltimeoff> tfs = new ArrayList<>();
             List<Tblclock> cls = new ArrayList<>();
             List<Tblschedule> newSchedList = new ArrayList<>();
+
             if(scheduleButton.getText().equals("Update Schedule")) {
+                System.out.println("Update a schedule");
 
                 //declare variables for validating time ranges
                 List<Tblschedule> invalidDays = new ArrayList<>();
@@ -490,12 +484,19 @@ public class EmployeeSchedulerController implements Initializable {
                 if(!(invalidDays.isEmpty())){
                     ErrorMessages.showErrorMessage("Invalid time values", "Time range for \n"
                             + schedError
-                            + " is invalid", "Please edit the time range for this schedule.");
+                            + " is invalid", "Please edit the time range for this schedule. Updating failed");
                     //prevents the table selection being null and permanently disabling spinners
                     //TODO stop the spinners from disabling after closing alert
-                    scheduleTableView.getSelectionModel().clearSelection();
-                }
-                else{ //if there are no invalid time ranges..
+                    scheduleGridPane.setDisable(false);
+                    employeeLabel.setVisible(true);
+
+                    resetButton.setDisable(false);
+                    selectButton.setDisable(true);
+                    scheduleButton.setDisable(false);
+                    employeeListView.setDisable(true);
+                    listOfEmployeeLabel.setDisable(true);
+
+                } else { //if there are no invalid time ranges..
 
                     //find related rows and set their schedule_ids to null
                     for(Tblschedule sch : schedList){
@@ -624,16 +625,25 @@ public class EmployeeSchedulerController implements Initializable {
                             }
                         }
                     }
-
-
                     ErrorMessages.showInformationMessage("Successful", "Saved Schedule", selectedEmployee + "'s schedule was saved successfully");
                     loadDataToTable();
+
+                    scheduleGridPane.setDisable(true);
+                    employeeLabel.setVisible(false);
+
+                    resetButton.setDisable(true);
+                    selectButton.setDisable(false);
+                    scheduleButton.setDisable(true);
+                    employeeListView.setDisable(false);
+                    listOfEmployeeLabel.setDisable(false);
 
                     resetCheckBoxes();
                     resetSpinners();
                 }
+
             }
             else if(scheduleButton.getText().equals("Add Schedule")){
+                System.out.println("Add a schedule");
 
                 //declare variables to use for validating time ranges
                 List<Tblschedule> schedToAdd = new ArrayList<>();
@@ -725,16 +735,32 @@ public class EmployeeSchedulerController implements Initializable {
                             + " is invalid", "Please edit the time range for this schedule");
 
                     //prevents the list selection being null and permanently disabling spinners
-                    //TODO stop the spinners from disabling after closing alert
-                    employeeListView.getSelectionModel().clearSelection();
+
+                    scheduleGridPane.setDisable(false);
+                    employeeLabel.setVisible(true);
+
+                    resetButton.setDisable(false);
+                    selectButton.setDisable(true);
+                    scheduleButton.setDisable(false);
+                    employeeListView.setDisable(true);
+                    listOfEmployeeLabel.setDisable(true);
                 }
-                else{ //if no invalid time ranges were found, add the schedules
+                else { //if no invalid time ranges were found, add the schedules
                     for(Tblschedule sc : schedToAdd){
                         scheduleRepository.save(sc);
                     }
 
                     ErrorMessages.showInformationMessage("Successful", "Saved Schedule", selectedEmployee + "'s schedule was saved successfully");
                     loadDataToTable();
+
+                    scheduleGridPane.setDisable(true);
+                    employeeLabel.setVisible(false);
+
+                    resetButton.setDisable(true);
+                    selectButton.setDisable(false);
+                    scheduleButton.setDisable(true);
+                    employeeListView.setDisable(false);
+                    listOfEmployeeLabel.setDisable(false);
 
                     resetCheckBoxes();
                     resetSpinners();
@@ -747,7 +773,7 @@ public class EmployeeSchedulerController implements Initializable {
     private void handleEdittingEmployee(){
         scheduleTableView.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) ->{
             if(newValue != null) {
-                resetSpinners();
+                //resetSpinners();
                 employeeListView.setDisable(true);
 
                 selectedEmployee = scheduleTableView.getSelectionModel().getSelectedItem();
