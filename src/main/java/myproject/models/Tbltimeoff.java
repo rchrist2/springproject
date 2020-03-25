@@ -1,6 +1,7 @@
 package myproject.models;
 
 import javax.persistence.*;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Objects;
@@ -9,14 +10,15 @@ import java.util.Objects;
 @Table(name = "tbltimeoff")
 public class Tbltimeoff {
     private int timeOffId;
-    private java.sql.Time beginTimeOffDate;
-    private java.sql.Time endTimeOffDate;
+    private Date beginTimeOffDate;
+    private Date endTimeOffDate;
     private boolean approved;
-    private boolean dayOff;
+    //private boolean dayOff;
     private TblDay day;
     //private String dayDesc;
     private String reasonDesc;
     private Tblschedule schedule;
+    Tblemployee employee;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "day_id", referencedColumnName = "day_id")
@@ -26,6 +28,16 @@ public class Tbltimeoff {
 
     public void setDay(TblDay day) {
         this.day = day;
+    }
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "employee_id", referencedColumnName = "id")
+    public Tblemployee getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Tblemployee employee) {
+        this.employee = employee;
     }
 
     /*@Basic
@@ -62,21 +74,21 @@ public class Tbltimeoff {
 
     @Basic
     @Column(name = "begin_time_off_date")
-    public java.sql.Time getBeginTimeOffDate() {
+    public Date getBeginTimeOffDate() {
         return beginTimeOffDate;
     }
 
-    public void setBeginTimeOffDate(java.sql.Time beginTimeOffDate) {
+    public void setBeginTimeOffDate(Date beginTimeOffDate) {
         this.beginTimeOffDate = beginTimeOffDate;
     }
 
     @Basic
     @Column(name = "end_time_off_date")
-    public java.sql.Time getEndTimeOffDate() {
+    public Date getEndTimeOffDate() {
         return endTimeOffDate;
     }
 
-    public void setEndTimeOffDate(java.sql.Time endTimeOffDate) {
+    public void setEndTimeOffDate(Date endTimeOffDate) {
         this.endTimeOffDate = endTimeOffDate;
     }
 
@@ -90,7 +102,7 @@ public class Tbltimeoff {
         this.approved = approved;
     }
 
-    @Basic
+    /*@Basic
     @Column(name = "day_off")
     public boolean isDayOff() {
         return dayOff;
@@ -98,7 +110,7 @@ public class Tbltimeoff {
 
     public void setDayOff(boolean dayOff) {
         this.dayOff = dayOff;
-    }
+    }*/
 
     @Basic
     @Column(name = "reason_desc")

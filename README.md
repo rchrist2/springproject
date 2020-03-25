@@ -53,13 +53,13 @@ create table tblclock(
 
 CREATE TABLE tbltimeoff(
 	time_off_id int not null identity(1,1) primary key,
-	begin_time_off_date time not null,
-	end_time_off_date time not null,
+	begin_time_off_date datetime not null,
+	end_time_off_date datetime not null,
 	approved bit NOT NULL,
-	day_off bit not null,
 	reason_desc varchar(128) not null,
 	day_id int null FOREIGN KEY REFERENCES tblday(day_id),
-	schedule_id int null FOREIGN KEY REFERENCES tblschedule(schedule_id)
+	schedule_id int null FOREIGN KEY REFERENCES tblschedule(schedule_id),
+	employee_id int not null FOREIGN KEY REFERENCES tblemployee(id)
 );
 
 INSERT INTO tblroles VALUES('Owner','Is the owner');

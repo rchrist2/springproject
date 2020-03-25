@@ -170,9 +170,8 @@ public class EmployeeSchedulerController implements Initializable {
 
     @FXML
     private void handleSelectedEmployee(){
-        selectedEmployee = employeeRepository.findEmployeeById(employeeListView.getSelectionModel().getSelectedItem().getId());
-
-        if(selectedEmployee != null){
+        if(employeeListView.getSelectionModel().getSelectedItem() != null){
+            selectedEmployee = employeeRepository.findEmployeeById(employeeListView.getSelectionModel().getSelectedItem().getId());
             employeeSelectError.setVisible(false);
             scheduleGridPane.setDisable(false);
             scheduleButton.setDisable(false);
@@ -188,9 +187,11 @@ public class EmployeeSchedulerController implements Initializable {
             selectButton.setDisable(true);
 
         } else {
-            employeeSelectError.setVisible(true);
-            employeeSelectError.setText("Please select a employee");
-            employeeSelectError.setTextFill(Color.RED);
+            //employeeSelectError.setVisible(true);
+            //employeeSelectError.setText("Please select a employee");
+            //employeeSelectError.setTextFill(Color.RED);
+            ErrorMessages.showErrorMessage("Error!","No employee selected",
+                    "Please select an employee from the list.");
         }
     }
 

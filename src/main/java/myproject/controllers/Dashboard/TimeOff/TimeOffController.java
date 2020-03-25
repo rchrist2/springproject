@@ -34,7 +34,9 @@ import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Date;
 import java.sql.Time;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -65,31 +67,7 @@ public class TimeOffController implements Initializable {
     private Pane optionsPane2;
 
     @FXML
-    private Pane timePane;
-
-    /*@FXML
-    private Pane optionsPane3;
-
-    @FXML
-    private Pane optionsPane4;*/
-
-    /*@FXML
-    private AnchorPane anchorTimeOff;
-
-    @FXML
-    private AnchorPane anchorLog;
-
-    @FXML
-    private AnchorPane fullPane;
-
-    @FXML
-    private Tab logTab;
-
-    @FXML
-    private Tab timeOffTab;
-
-    @FXML
-    private TabPane timeOffTabPane;*/
+    private Pane datePane;
 
     @FXML
     private Label tableUserLabel;
@@ -104,19 +82,10 @@ public class TimeOffController implements Initializable {
     private Button submitRequestButton;
 
     @FXML
-    private Button submitRequestButton1;
-
-    @FXML
     private RadioButton dayOffCheck;
 
     @FXML
-    private RadioButton changeAvailCheck;
-
-    /*@FXML
-    public RadioButton allTimeCheck;
-
-    @FXML
-    public RadioButton currentWeekCheck;*/
+    private RadioButton noSchedCheck;
 
     @FXML
     private TableView<Tbltimeoff> timeOffTable;
@@ -144,15 +113,11 @@ public class TimeOffController implements Initializable {
 
     @FXML
     private ComboBox<Tblschedule> scheduleList;
-    @FXML
-    private ComboBox<String> beginPMList;
-    @FXML
-    private ComboBox<String> endPMList;
 
     @FXML
-    private Spinner<String> beginHrList;
+    private DatePicker beginDate;
     @FXML
-    private Spinner<String> endHrList;
+    private DatePicker endDate;
 
     @FXML
     private TextField reasonInput;
@@ -182,7 +147,6 @@ public class TimeOffController implements Initializable {
         scheduleData = FXCollections.observableArrayList();
 
         //reload table, set data, and add listeners to buttons
-        setDataForHourPMLists();
         reloadTimeOffTableView();
         setDataForTimeOffTableView();
         reloadScheduleList();
@@ -202,19 +166,66 @@ public class TimeOffController implements Initializable {
     }
 
     @FXML
-    private void submitTimeOffRequestWithoutTime(){
+    private void submitTimeOffRequestWithoutSchedule(){
+        //get the current user (String) from LoginController
+        String currentUser = LoginController.userStore;
+        Tblusers currUser = userRepository.findUsername(currentUser);
+
+        if (!(beginDate.getValue() == null
+                || endDate.getValue() == null
+                || reasonInput.getText().trim().isEmpty())) {
+            Tbltimeoff newTimeOff = new Tbltimeoff();
+
+            newTimeOff.setSchedule(null);
+            newTimeOff.setBeginTimeOffDate(Date.valueOf(beginDate.getValue()));
+            newTimeOff.setEndTimeOffDate(Date.valueOf(endDate.getValue()));
+            newTimeOff.setApproved(false);
+            newTimeOff.setReasonDesc(reasonInput.getText());
+            //newTimeOff.setDayOff(true);
+            newTimeOff.setDay(null);
+            newTimeOff.setEmployee(currUser.getEmployee());
+
+            if (newTimeOff.getBeginTimeOffDate().before(newTimeOff.getEndTimeOffDate())
+                    && newTimeOff.getEndTimeOffDate().after(newTimeOff.getBeginTimeOffDate())
+                    || newTimeOff.getBeginTimeOffDate().equals(newTimeOff.getEndTimeOffDate())){
+                timeOffRepository.save(newTimeOff);
+
+                reloadTimeOffTableView();
+            }
+            else{
+                ErrorMessages.showErrorMessage("Invalid date values", "Date range is invalid",
+                        "Please edit the date range for this time off request.");
+            }
+
+        }
+        else {
+            ErrorMessages.showErrorMessage("Fields are empty",
+                    "There are empty fields",
+                    "Please select items from drop-down menus or enter text for fields");
+        }
+    }
+
+    @FXML
+    private void submitTimeOffRequestWithSchedule(){
+        //get the current user (String) from LoginController
+        String currentUser = LoginController.userStore;
+        Tblusers currUser = userRepository.findUsername(currentUser);
+
+        //check if any of the fields are empty
         if (!(scheduleList.getSelectionModel().isEmpty()
                 || reasonInput.getText().trim().isEmpty())) {
             Tbltimeoff newTimeOff = new Tbltimeoff();
 
-            newTimeOff.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
-            newTimeOff.setBeginTimeOffDate(scheduleList.getSelectionModel().getSelectedItem().getScheduleTimeBegin());
-            newTimeOff.setEndTimeOffDate(scheduleList.getSelectionModel().getSelectedItem().getScheduleTimeEnd());
+            newTimeOff.setBeginTimeOffDate(scheduleList.getSelectionModel().getSelectedItem().getScheduleDate());
+            newTimeOff.setEndTimeOffDate(scheduleList.getSelectionModel().getSelectedItem().getScheduleDate());
             newTimeOff.setApproved(false);
             newTimeOff.setReasonDesc(reasonInput.getText());
-            newTimeOff.setDayOff(true);
+            newTimeOff.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
+            //newTimeOff.setDayOff(true);
             newTimeOff.setDay(scheduleList.getSelectionModel().getSelectedItem().getDay());
+            newTimeOff.setEmployee(currUser.getEmployee());
 
+            //check if the time range is valid
             if(scheduleList.getSelectionModel().getSelectedItem().getTimeOffs() == null){
                 timeOffRepository.save(newTimeOff);
             }
@@ -225,93 +236,8 @@ public class TimeOffController implements Initializable {
             }
 
             reloadTimeOffTableView();
-        } else {
-            ErrorMessages.showErrorMessage("Fields are empty",
-                    "There are empty fields",
-                    "Please select items from drop-down menus or enter text for fields");
         }
-    }
-
-    @FXML
-    private void submitTimeOffRequestWithTime(){
-        //check if any of the fields are empty
-        if (!(scheduleList.getSelectionModel().isEmpty() || beginHrList.getValue().isEmpty()
-                || endHrList.getValue().isEmpty()
-                || reasonInput.getText().trim().isEmpty())) {
-            Tbltimeoff newTimeOff = new Tbltimeoff();
-
-            //convert combobox values to 24 hour clock depending if AM or PM was selected
-            if (beginHrList.getValue().contains("AM")) {
-
-                //if the beginning hour is 12 am
-                if (beginHrList.getValue().equals("12:00:00 AM")) {
-                    newTimeOff.setBeginTimeOffDate(Time.valueOf("00"
-                            + ":00:00"));
-                } else {
-                    String begAMTime = beginHrList.getValue().replace(" AM","");
-                    newTimeOff.setBeginTimeOffDate(Time.valueOf(begAMTime));
-                }
-            } else if (beginHrList.getValue().contains("PM")) {
-
-                //if the beginning hour is 12 pm
-                if (beginHrList.getValue().equals("12:00:00 PM")) {
-                    newTimeOff.setBeginTimeOffDate(Time.valueOf("12"
-                            + ":00:00"));
-                } else {
-                    String begPMTime = beginHrList.getValue().replace(" PM","");
-                    newTimeOff.setBeginTimeOffDate(Time.valueOf(begPMTime));
-                    newTimeOff.setBeginTimeOffDate(Time.valueOf(newTimeOff.getBeginTimeOffDate().toLocalTime().plusHours(12)));
-                }
-            }
-
-            if (endHrList.getValue().contains("AM")) {
-
-                //if the ending hour is 12 am
-                if (endHrList.getValue().equals("12:00:00 AM")) {
-                    newTimeOff.setEndTimeOffDate(Time.valueOf("00"
-                            + ":00:00"));
-                } else {
-                    String endAMTime = endHrList.getValue().replace(" AM","");
-                    newTimeOff.setEndTimeOffDate(Time.valueOf(endAMTime));
-                }
-            } else if (endHrList.getValue().contains("PM")) {
-
-                //if the ending hour is 12 pm
-                if (endHrList.getValue().equals("12:00:00 PM")) {
-                    newTimeOff.setEndTimeOffDate(Time.valueOf("12"
-                            + ":00:00"));
-                } else {
-                    String endPMTime = endHrList.getValue().replace(" PM","");
-                    newTimeOff.setEndTimeOffDate(Time.valueOf(endPMTime));
-                    newTimeOff.setEndTimeOffDate(Time.valueOf(newTimeOff.getEndTimeOffDate().toLocalTime().plusHours(12)));
-
-                }
-            }
-
-            newTimeOff.setApproved(false);
-            newTimeOff.setReasonDesc(reasonInput.getText());
-            newTimeOff.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
-            newTimeOff.setDayOff(false);
-            newTimeOff.setDay(scheduleList.getSelectionModel().getSelectedItem().getDay());
-
-            //check if the time range is valid
-            if (newTimeOff.getBeginTimeOffDate().before(newTimeOff.getEndTimeOffDate())
-                    && newTimeOff.getEndTimeOffDate().after(newTimeOff.getBeginTimeOffDate())) {
-                if(scheduleList.getSelectionModel().getSelectedItem().getTimeOffs() == null){
-                    timeOffRepository.save(newTimeOff);
-                }
-                else{
-                    ErrorMessages.showErrorMessage("Cannot add request to selected schedule",
-                            "This schedule already has a time off request",
-                            "Please select a schedule you have not made a time off request for.");
-                }
-            } else {
-                ErrorMessages.showErrorMessage("Invalid time values", "Time range for time" +
-                        " off request is invalid", "Please edit the time range for this time off request");
-            }
-
-            reloadTimeOffTableView();
-        } else {
+        else {
             ErrorMessages.showErrorMessage("Fields are empty",
                     "There are empty fields",
                     "Please select items from drop-down menus or enter text for fields");
@@ -339,7 +265,7 @@ public class TimeOffController implements Initializable {
 
                 CrudTimeOffController crudTimeOffController = fxmlLoader.getController();
                 crudTimeOffController.setLabel("Edit Time Off for "
-                        + selectedTimeOff.getSchedule().getEmployee().getName());
+                        + selectedTimeOff.getEmployee().getName());
                 crudTimeOffController.setTimeOff(selectedTimeOff);
                 crudTimeOffController.setController(this);
 
@@ -428,7 +354,7 @@ public class TimeOffController implements Initializable {
         scheduleDateCol.setCellValueFactory(Tbltimeoff -> {
             SimpleStringProperty property = new SimpleStringProperty();
             if(Tbltimeoff.getValue().getSchedule() == null){
-                property.setValue("Deleted");
+                property.setValue("Not set");
             }
             else{
                 property.setValue(String.valueOf(Tbltimeoff.getValue().getSchedule()));
@@ -440,14 +366,14 @@ public class TimeOffController implements Initializable {
         //using lambda to display with AM and PM
         beginTimeCol.setCellValueFactory(Tbltimeoff -> {
             SimpleStringProperty property = new SimpleStringProperty();
-            SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
+            SimpleDateFormat timeFormat = new SimpleDateFormat("MM/dd/yyyy");
             property.setValue(timeFormat.format(Tbltimeoff.getValue().getBeginTimeOffDate()));
             return property;
         });
 
         endTimeCol.setCellValueFactory(Tbltimeoff -> {
             SimpleStringProperty property = new SimpleStringProperty();
-            SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
+            SimpleDateFormat timeFormat = new SimpleDateFormat("MM/dd/yyyy");
             property.setValue(timeFormat.format(Tbltimeoff.getValue().getEndTimeOffDate()));
             return property;
         });
@@ -465,7 +391,7 @@ public class TimeOffController implements Initializable {
         });
 
         //change "true" and "false" to "Yes" and "No" in the Approved column
-        dayOffCol.setCellValueFactory(Tbltimeoff -> {
+        /*dayOffCol.setCellValueFactory(Tbltimeoff -> {
             SimpleStringProperty property = new SimpleStringProperty();
             if(Tbltimeoff.getValue().isDayOff()){
                 property.setValue("Yes");
@@ -474,13 +400,13 @@ public class TimeOffController implements Initializable {
                 property.setValue("No");
             }
             return property;
-        });
+        });*/
 
         reasonTimeOffCol.setCellValueFactory(new PropertyValueFactory<>("reasonDesc"));
 
         //show the users for each time off request using SimpleObjectProperty
         userCol.setCellValueFactory(tf ->
-                new SimpleObjectProperty<>(tf.getValue().getSchedule().getEmployee().getUser().getUsername()));
+                new SimpleObjectProperty<>(tf.getValue().getEmployee().getUser().getUsername()));
     }
 
     private void reloadTimeOffTableViewAllUsers(){
@@ -547,29 +473,6 @@ public class TimeOffController implements Initializable {
         }
     }
 
-    private void setDataForHourPMLists(){
-        //make a list of hours from 0 to 12 (0 if they did not select an hour)
-        hrList = FXCollections.observableArrayList();
-        hrList.addAll("12:00:00 AM", "01:00:00 AM", "02:00:00 AM", "03:00:00 AM",
-                "04:00:00 AM", "05:00:00 AM", "06:00:00 AM", "07:00:00 AM",
-                "08:00:00 AM", "09:00:00 AM", "10:00:00 AM", "11:00:00 AM",
-                "12:00:00 PM","01:00:00 PM", "02:00:00 PM", "03:00:00 PM",
-                "04:00:00 PM", "05:00:00 PM", "06:00:00 PM", "07:00:00 PM",
-                "08:00:00 PM", "09:00:00 PM", "10:00:00 PM", "11:00:00 PM");
-
-        //fill the hour, minute, and AM/PM comboboxes with values
-//        beginPMList.setItems(pmList);
-       // endPMList.setItems(pmList);
-
-        SpinnerValueFactory<String> bHours =
-                new SpinnerValueFactory.ListSpinnerValueFactory<>(hrList);
-        SpinnerValueFactory<String> eHours =
-                new SpinnerValueFactory.ListSpinnerValueFactory<>(hrList);
-
-        beginHrList.setValueFactory(bHours);
-        endHrList.setValueFactory(eHours);
-    }
-
     private void setButtonsForManagerOwner(){
         //get the current user (String) from LoginController
         String currentUser = LoginController.userStore;
@@ -578,69 +481,13 @@ public class TimeOffController implements Initializable {
         if(userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
                 || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner")){
 
-            //enable logs tab (remove then add to prevent duplicate tab)
-            /*timeOffTabPane.getTabs().remove(logTab);
-            timeOffTabPane.getTabs().add(logTab);*/
-
             //declare variables
             Button showAllUser = new Button();
             Button showThisUser = new Button();
-            /*Button approveRequest = new Button();
-            Button disapproveRequest = new Button();*/
 
             //add buttons to panes
             optionsPane.getChildren().add(showAllUser);
             optionsPane2.getChildren().add(showThisUser);
-            /*optionsPane3.getChildren().add(approveRequest);
-            optionsPane4.getChildren().add(disapproveRequest);*/
-
-           /* //set style and action for approving
-            approveRequest.setDisable(true);
-            addActionListenersForCrudButtons(approveRequest);
-            approveRequest.setPrefSize(submitRequestButton.getPrefWidth(), submitRequestButton.getPrefHeight());
-            approveRequest.setText("Approve");
-            approveRequest.setStyle("-fx-text-fill:white; -fx-background-color: #39a7c3;");
-            approveRequest.setOnAction(event ->{
-                Tbltimeoff tfApprove = selectedTimeOff;
-                selectedTimeOff.setApproved(true);
-
-                timeOffRepository.save(tfApprove);
-
-                //reload table with all users if the user column is visible
-                if(userCol.isVisible()){
-                    reloadTimeOffTableViewAllUsers();
-                    setDataForTimeOffTableView();
-                }
-                else{
-                    reloadTimeOffTableView();
-                    setDataForTimeOffTableView();
-                }
-
-            });
-
-            //set up button for disapproving
-            disapproveRequest.setDisable(true);
-            addActionListenersForCrudButtons(disapproveRequest);
-            disapproveRequest.setPrefSize(submitRequestButton.getPrefWidth(), submitRequestButton.getPrefHeight());
-            disapproveRequest.setText("Deny");
-            disapproveRequest.setStyle("-fx-text-fill:white; -fx-background-color: #39a7c3;");
-            disapproveRequest.setOnAction(event ->{
-                Tbltimeoff tfApprove = selectedTimeOff;
-                selectedTimeOff.setApproved(false);
-
-                timeOffRepository.save(tfApprove);
-
-                //reload table w/ all users if the user column is visible (only visible if all users are shown)
-                if(userCol.isVisible()){
-                    reloadTimeOffTableViewAllUsers();
-                    setDataForTimeOffTableView();
-                }
-                else{
-                    reloadTimeOffTableView();
-                    setDataForTimeOffTableView();
-                }
-
-            });*/
 
             //set up other buttons for showing all users or current user
             showThisUser.setText("Current User");
@@ -661,73 +508,8 @@ public class TimeOffController implements Initializable {
         else{
             //user does not have privileges to approve requests
             System.out.println("User is not owner or manager");
-
-            //hide logs tab
-            /*timeOffTabPane.getTabs().remove(logTab);
-
-            fullPane.getChildren().remove(timeOffTabPane);
-            fullPane.getChildren().add(anchorTimeOff);
-            timeOffTable.setPrefHeight(339);*/
         }
     }
-
-    /*@FXML
-    private void showCurrentWeek(){
-        //if the user column is visible (which is only for managers/owner)
-        if(userCol.isVisible()){
-            //reload the table to show all users (only for managers/owner)
-            listOfTimeOffs.clear();
-            timeOffTable.setItems(listOfTimeOffs);
-
-            listOfTimeOffs.addAll(timeOffRepository.findTimeOffThisWeekAllUser());
-            filteredListOfTimeOff = new FilteredList<>(listOfTimeOffs);
-            timeOffTable.setItems(filteredListOfTimeOff);
-            tableUserLabel.setText("Time Off Requests This Week for All Users");
-            setDataForTimeOffTableView();
-        }
-        else{
-            String currentUser = LoginController.userStore;
-            Tblusers currUser = userRepository.findUsername(currentUser);
-
-            listOfTimeOffs.clear();
-            timeOffTable.setItems(listOfTimeOffs);
-
-            listOfTimeOffs.addAll(timeOffRepository.findTimeOffThisWeekForUser(currentUser));
-            filteredListOfTimeOff = new FilteredList<>(listOfTimeOffs);
-            timeOffTable.setItems(filteredListOfTimeOff);
-            tableUserLabel.setText("Time Off Requests This Week for " + currUser.getEmployee().getName());
-            setDataForTimeOffTableView();
-        }
-    }
-
-    @FXML
-    private void showAllWeeks(){
-        //if the user column is visible (which is only for managers/owner)
-        if(userCol.isVisible()){
-            //reload the table to show all users (only for managers/owner)
-            listOfTimeOffs.clear();
-            timeOffTable.setItems(listOfTimeOffs);
-
-            listOfTimeOffs.addAll(timeOffRepository.findAllTimeOff());
-            filteredListOfTimeOff = new FilteredList<>(listOfTimeOffs);
-            timeOffTable.setItems(filteredListOfTimeOff);
-            tableUserLabel.setText("Time Off Requests All Time for All Users");
-            setDataForTimeOffTableView();
-        }
-        else{
-            String currentUser = LoginController.userStore;
-            Tblusers currUser = userRepository.findUsername(currentUser);
-
-            listOfTimeOffs.clear();
-            timeOffTable.setItems(listOfTimeOffs);
-
-            listOfTimeOffs.addAll(timeOffRepository.findAllTimeOffByUser(currentUser));
-            filteredListOfTimeOff = new FilteredList<>(listOfTimeOffs);
-            timeOffTable.setItems(filteredListOfTimeOff);
-            tableUserLabel.setText("Time Off Requests All Time for " + currUser.getEmployee().getName());
-            setDataForTimeOffTableView();
-        }
-    }*/
 
     private void addActionListenersForCrudButtons(Button button){
         timeOffTable.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
@@ -746,20 +528,24 @@ public class TimeOffController implements Initializable {
         ToggleGroup toggleGroup = new ToggleGroup();
 
         dayOffCheck.setToggleGroup(toggleGroup);
-        changeAvailCheck.setToggleGroup(toggleGroup);
+        noSchedCheck.setToggleGroup(toggleGroup);
 
     }
 
     @FXML
     private void dayOffChecked(){
-        timePane.setVisible(false);
+        datePane.setVisible(false);
         submitRequestButton.setVisible(true);
+
+        scheduleList.setDisable(false);
     }
 
     @FXML
-    private void changeAvailabilityChecked(){
-        timePane.setVisible(true);
+    private void noSchedChecked(){
+        datePane.setVisible(true);
         submitRequestButton.setVisible(false);
+
+        scheduleList.setDisable(true);
     }
 
 }

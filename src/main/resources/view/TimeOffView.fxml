@@ -4,9 +4,9 @@
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.RadioButton?>
-<?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
@@ -49,10 +49,9 @@
             <TableView fx:id="timeOffTable" layoutX="66.0" layoutY="263.0" prefHeight="339.0" prefWidth="808.0">
               <columns>
                 <TableColumn fx:id="scheduleDateCol" prefWidth="99.0" text="Schedule Date" />
-                  <TableColumn fx:id="beginTimeCol" prefWidth="99.0" text="Begin Time" />
-                  <TableColumn fx:id="endTimeCol" prefWidth="99.0" text="End Time" />
+                  <TableColumn fx:id="beginTimeCol" prefWidth="99.0" text="Begin Date" />
+                  <TableColumn fx:id="endTimeCol" prefWidth="99.0" text="End Date" />
                 <TableColumn fx:id="approveTimeOffCol" prefWidth="82.99998474121094" text="Approved" />
-                  <TableColumn fx:id="dayOffCol" prefWidth="110.0" text="For Entire Day?" />
                   <TableColumn fx:id="reasonTimeOffCol" prefWidth="82.99998474121094" text="Reason" />
                   <TableColumn fx:id="userCol" prefWidth="82.99998474121094" text="User" visible="false" />
               </columns>
@@ -75,9 +74,9 @@
                         <Font name="System Italic" size="18.0" />
                      </font>
                   </Label>
-                  <Pane fx:id="timePane" layoutX="1.0" layoutY="93.0" prefHeight="33.0" prefWidth="583.0" visible="false">
+                  <Pane fx:id="datePane" layoutX="1.0" layoutY="93.0" prefHeight="33.0" prefWidth="583.0" visible="false">
                      <children>
-                        <Button fx:id="submitRequestButton1" layoutX="407.0" layoutY="3.0" mnemonicParsing="false" onAction="#submitTimeOffRequestWithTime" style="-fx-background-color: #39a7c3;" text="Submit" textFill="WHITE">
+                        <Button fx:id="submitRequestButton1" layoutX="407.0" layoutY="3.0" mnemonicParsing="false" onAction="#submitTimeOffRequestWithoutSchedule" style="-fx-background-color: #39a7c3;" text="Submit" textFill="WHITE">
                            <cursor>
                               <Cursor fx:constant="HAND" />
                            </cursor>
@@ -92,14 +91,14 @@
                               <Font name="System Italic" size="18.0" />
                            </font>
                         </Label>
-                        <Spinner fx:id="beginHrList" layoutX="132.0" layoutY="3.0" prefHeight="25.0" prefWidth="112.0">
+                        <DatePicker fx:id="beginDate" layoutX="132.0" layoutY="3.0" prefHeight="25.0" prefWidth="112.0">
                            <opaqueInsets>
                               <Insets />
-                           </opaqueInsets></Spinner>
-                        <Spinner fx:id="endHrList" layoutX="279.0" layoutY="3.0" prefHeight="25.0" prefWidth="112.0" />
+                           </opaqueInsets></DatePicker>
+                        <DatePicker fx:id="endDate" layoutX="279.0" layoutY="3.0" prefHeight="25.0" prefWidth="112.0" />
                      </children>
                   </Pane>
-                  <Button fx:id="submitRequestButton" layoutX="516.0" layoutY="49.0" mnemonicParsing="false" onAction="#submitTimeOffRequestWithoutTime" style="-fx-background-color: #39a7c3;" text="Submit" textFill="WHITE">
+                  <Button fx:id="submitRequestButton" layoutX="516.0" layoutY="49.0" mnemonicParsing="false" onAction="#submitTimeOffRequestWithSchedule" style="-fx-background-color: #39a7c3;" text="Submit" textFill="WHITE">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
@@ -127,7 +126,7 @@
                <toggleGroup>
                   <ToggleGroup fx:id="toggleGroup" />
                </toggleGroup></RadioButton>
-            <RadioButton fx:id="changeAvailCheck" layoutX="335.0" layoutY="23.0" mnemonicParsing="false" onAction="#changeAvailabilityChecked" text="Change Availability" toggleGroup="$toggleGroup" />
+            <RadioButton fx:id="noSchedCheck" layoutX="335.0" layoutY="23.0" mnemonicParsing="false" onAction="#noSchedChecked" text="Request Day Off Without Schedule" toggleGroup="$toggleGroup" />
          </children>
       </AnchorPane>
    </children>

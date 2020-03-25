@@ -29,8 +29,8 @@ public interface TimeOffRepository extends CrudRepository<Tbltimeoff, Integer> {
             "tblusers u ON e.id=u.employee_id WHERE DATEPART(week, s.schedule_date) = DATEPART(week, GETDATE())", nativeQuery = true)
     List<Tbltimeoff> findTimeOffThisWeekAllUser();
 
-    @Query(value = "SELECT * FROM tbltimeoff t JOIN tblschedule s ON t.schedule_id=s.schedule_id" +
-            " JOIN tblemployee e ON e.id=s.employee_id JOIN tblusers u ON u.employee_id=e.id " +
+    @Query(value = "SELECT * FROM tbltimeoff t LEFT JOIN tblschedule s ON t.schedule_id=s.schedule_id " +
+            "JOIN tblemployee e ON e.id=t.employee_id JOIN tblusers u ON e.id=u.employee_id " +
             "WHERE Username = :username", nativeQuery = true)
     List<Tbltimeoff> findAllTimeOffByUser(@Param("username") String user);
 

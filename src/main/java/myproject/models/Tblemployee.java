@@ -20,6 +20,7 @@ public class Tblemployee {
     private TblRoles role;
 
     private Set<Tblschedule> schedules;
+    private Set<Tbltimeoff> timeOffs;
     private Tblusers user;
 
     public Tblemployee() {
@@ -42,6 +43,16 @@ public class Tblemployee {
 
     public void setUser(Tblusers user) {
         this.user = user;
+    }
+
+    //one employee can have many time off requests
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "employee",cascade = CascadeType.ALL)
+    public Set<Tbltimeoff> getTimeOffs() {
+        return timeOffs;
+    }
+
+    public void setTimeOffs(Set<Tbltimeoff> timeOffs) {
+        this.timeOffs = timeOffs;
     }
 
     //many employees can belong to a role
@@ -73,7 +84,7 @@ public class Tblemployee {
             //Grabs the schedule within the week
             if(schedule.getScheduleDate().compareTo(startOfTheWeek) >= 0 && schedule.getScheduleDate().compareTo(endOfTheWeek) <= 0)
                 //Checks if time off is null OR if employee doesn't have a day off AND time off is not approved
-                if(schedule.getTimeOffs() == null || !(schedule.getTimeOffs().isDayOff() && schedule.getTimeOffs().isApproved())){
+                if(schedule.getTimeOffs() == null || !(schedule.getTimeOffs().isApproved())){
                     listOfDays.add(schedule.getDay().getDayDesc());
             }
         }
@@ -86,7 +97,7 @@ public class Tblemployee {
 
         for (Tblschedule tblschedule : this.schedules){
             if(tblschedule.getScheduleDate().compareTo(startOfTheWeek) >= 0 && tblschedule.getScheduleDate().compareTo(endOfTheWeek) <= 0)
-                if(tblschedule.getTimeOffs() == null || !(tblschedule.getTimeOffs().isDayOff() && tblschedule.getTimeOffs().isApproved())){
+                if(tblschedule.getTimeOffs() == null || !(tblschedule.getTimeOffs().isApproved())){
                     listOfDates.add(tblschedule.getScheduleDate().toString());
                 }
         }
@@ -101,7 +112,7 @@ public class Tblemployee {
 
         for (Tblschedule hours : this.schedules) {
             if(hours.getScheduleDate().compareTo(startOfTheWeek) >= 0 && hours.getScheduleDate().compareTo(endOfTheWeek) <= 0)
-                if(hours.getTimeOffs() == null || !(hours.getTimeOffs().isDayOff() && hours.getTimeOffs().isApproved())){
+                if(hours.getTimeOffs() == null || !(hours.getTimeOffs().isApproved())){
                     listOfHours.add(timeFormat.format(hours.getScheduleTimeBegin()));
                 }
         }
@@ -116,7 +127,7 @@ public class Tblemployee {
 
         for(Tblschedule hours : this.schedules) {
             if(hours.getScheduleDate().compareTo(startOfTheWeek) >= 0 && hours.getScheduleDate().compareTo(endOfTheWeek) <= 0)
-                if(hours.getTimeOffs() == null || !(hours.getTimeOffs().isDayOff() && hours.getTimeOffs().isApproved())){
+                if(hours.getTimeOffs() == null || !(hours.getTimeOffs().isApproved())){
                     listOfHours.add(timeFormat.format(hours.getScheduleTimeEnd()));
                 }
         }

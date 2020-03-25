@@ -14,14 +14,19 @@ import myproject.ErrorMessages;
 import myproject.controllers.WelcomeLoginSignup.LoginController;
 import myproject.models.Tblschedule;
 import myproject.models.Tbltimeoff;
+import myproject.models.Tblusers;
 import myproject.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
+import java.sql.Date;
 import java.sql.Time;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.ResourceBundle;
@@ -55,9 +60,9 @@ public class CrudTimeOffController implements Initializable {
     private Button cancelButton;
 
     @FXML
-    private Spinner<String> beginHrList;
+    private DatePicker beginDate;
     @FXML
-    private Spinner<String> endHrList;
+    private DatePicker endDate;
 
     @FXML
     private ComboBox<Tblschedule> scheduleList;
@@ -75,7 +80,7 @@ public class CrudTimeOffController implements Initializable {
     private RadioButton dayOffCheck;
 
     @FXML
-    private RadioButton changeAvailCheck;
+    private RadioButton noSchedCheck;
 
     private ObservableList<Tblschedule> scheduleData;
 
@@ -123,54 +128,27 @@ public class CrudTimeOffController implements Initializable {
     }
 
     private void setFieldsForEdit(Tbltimeoff tf1){
-        //initialize the schedule dates for the current user (not done in initialize() method due to nullpointerexception)
-        scheduleData = FXCollections.observableArrayList();
-        scheduleData.addAll(scheduleRepository.findScheduleForUser(selectedTimeOff.getSchedule().getEmployee().getUser().getUsername()));
-        scheduleList.setItems(scheduleData);
+        if(tf1.getSchedule() != null){
+            //initialize the schedule dates for the current user (not done in initialize() method due to nullpointerexception)
+            scheduleData = FXCollections.observableArrayList();
+            scheduleData.addAll(scheduleRepository.findScheduleForUser(selectedTimeOff.getSchedule().getEmployee().getUser().getUsername()));
+            scheduleList.setItems(scheduleData);
 
-        //get the schedule for this time off request and select it in drop-down
-        scheduleList.getSelectionModel().select(selectedTimeOff.getSchedule());
+            //get the schedule for this time off request and select it in drop-down
+            scheduleList.getSelectionModel().select(selectedTimeOff.getSchedule());
 
-        //use Calendar class to find if time has AM or PM
-        Calendar begPM=Calendar.getInstance();
-        begPM.setTime(tf1.getBeginTimeOffDate());
-
-        Calendar endPM=Calendar.getInstance();
-        endPM.setTime(tf1.getEndTimeOffDate());
-
-        //use Calendar class to extract only hour from time
-        Calendar calendarBeg=Calendar.getInstance();
-        calendarBeg.setTime(tf1.getBeginTimeOffDate());
-        int beginHour = calendarBeg.get(Calendar.HOUR);
-
-        Calendar calendarEnd=Calendar.getInstance();
-        calendarEnd.setTime(tf1.getEndTimeOffDate());
-        int endHour = calendarEnd.get(Calendar.HOUR);
-
-        SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm:ss a");
-
-        //TODO can remove if statements since timeFormat gives correct AM/PM
-        //assigns hour spinners
-        if(begPM.get(Calendar.AM_PM) == Calendar.AM
-                && endPM.get(Calendar.AM_PM) == Calendar.AM){
-            beginHrList.getValueFactory().setValue(timeFormat.format(tf1.getBeginTimeOffDate()));
-            endHrList.getValueFactory().setValue(timeFormat.format(tf1.getEndTimeOffDate()));
+            dayOffCheck.setSelected(true);
+            beginDate.setDisable(true);
+            endDate.setDisable(true);
         }
-        else if(begPM.get(Calendar.AM_PM) == Calendar.AM
-                && endPM.get(Calendar.AM_PM) == Calendar.PM){
-            beginHrList.getValueFactory().setValue(timeFormat.format(tf1.getBeginTimeOffDate()));
-            endHrList.getValueFactory().setValue(timeFormat.format(tf1.getEndTimeOffDate()));
+        else{
+            noSchedCheck.setSelected(true);
+            scheduleList.setDisable(true);
+
+            beginDate.setValue(selectedTimeOff.getBeginTimeOffDate().toLocalDate());
+            endDate.setValue(selectedTimeOff.getEndTimeOffDate().toLocalDate());
         }
-        else if(begPM.get(Calendar.AM_PM) == Calendar.PM
-                && endPM.get(Calendar.AM_PM) == Calendar.AM){
-            beginHrList.getValueFactory().setValue(timeFormat.format(tf1.getBeginTimeOffDate()));
-            endHrList.getValueFactory().setValue(timeFormat.format(tf1.getEndTimeOffDate()));
-        }
-        else if(begPM.get(Calendar.AM_PM) == Calendar.PM
-                && endPM.get(Calendar.AM_PM) == Calendar.PM){
-            beginHrList.getValueFactory().setValue(timeFormat.format(tf1.getBeginTimeOffDate()));
-            endHrList.getValueFactory().setValue(timeFormat.format(tf1.getEndTimeOffDate()));
-        }
+
 
         //find whether request is approved or not, and set appropriate drop-down value
         String approveSelect = "null";
@@ -184,15 +162,6 @@ public class CrudTimeOffController implements Initializable {
 
         reasonInput.setText(tf1.getReasonDesc());
 
-        if(tf1.isDayOff()){
-            dayOffCheck.setSelected(true);
-            beginHrList.setDisable(true);
-            endHrList.setDisable(true);
-        }
-        else{
-            changeAvailCheck.setSelected(true);
-        }
-
     }
 
     public void handleSave(ActionEvent event){
@@ -203,63 +172,12 @@ public class CrudTimeOffController implements Initializable {
         Tbltimeoff tf = selectedTimeOff;
         Boolean isApproved = tf.isApproved();
 
-        //if approved, use this variable to change the time range for the selected schedule
-        Tblschedule sch = scheduleRepository.findByScheduleId(scheduleList.getSelectionModel().getSelectedItem().getScheduleId());
-
         //check if the user has privileges to approve or deny the request
         if (userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
                 || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner")) {
             //approve or deny time off based on selection in drop-down
             if(approveList.getSelectionModel().getSelectedItem().equals("Approve")) {
                 isApproved = true;
-
-                //convert combobox values to 24 hour clock depending if AM or PM was selected
-                if (beginHrList.getValue().contains("AM")) {
-
-                    //if the beginning hour is 12 am
-                    if (beginHrList.getValue().equals("12:00:00 AM")) {
-                        sch.setScheduleTimeBegin(Time.valueOf("00"
-                                + ":00:00"));
-                    } else {
-                        String begAMTime = beginHrList.getValue().replace(" AM","");
-                        sch.setScheduleTimeBegin(Time.valueOf(begAMTime));
-                    }
-                } else if (beginHrList.getValue().contains("PM")) {
-
-                    //if the beginning hour is 12 pm
-                    if (beginHrList.getValue().equals("12:00:00 PM")) {
-                        sch.setScheduleTimeBegin(Time.valueOf("12"
-                                + ":00:00"));
-                    } else {
-                        String begPMTime = beginHrList.getValue().replace(" PM","");
-                        sch.setScheduleTimeBegin(Time.valueOf(begPMTime));
-                        sch.setScheduleTimeBegin(Time.valueOf(sch.getScheduleTimeBegin().toLocalTime().plusHours(12)));
-                    }
-                }
-
-                if (endHrList.getValue().contains("AM")) {
-
-                    //if the ending hour is 12 am
-                    if (endHrList.getValue().equals("12:00:00 AM")) {
-                        tf.setEndTimeOffDate(Time.valueOf("00"
-                                + ":00:00"));
-                    } else {
-                        String endAMTime = endHrList.getValue().replace(" AM","");
-                        tf.setEndTimeOffDate(Time.valueOf(endAMTime));
-                    }
-                } else if (endHrList.getValue().contains("PM")) {
-
-                    //if the ending hour is 12 pm
-                    if (endHrList.getValue().equals("12:00:00 PM")) {
-                        tf.setEndTimeOffDate(Time.valueOf("12"
-                                + ":00:00"));
-                    } else {
-                        String endPMTime = endHrList.getValue().replace(" PM","");
-                        tf.setEndTimeOffDate(Time.valueOf(endPMTime));
-                        tf.setEndTimeOffDate(Time.valueOf(tf.getEndTimeOffDate().toLocalTime().plusHours(12)));
-
-                    }
-                }
             }
             else if(approveList.getSelectionModel().getSelectedItem().equals("Deny")) {
                 isApproved = false;
@@ -270,103 +188,87 @@ public class CrudTimeOffController implements Initializable {
             isApproved = false;
         }
 
-        //convert combobox values to 24 hour clock depending if AM or PM was selected
-        if (beginHrList.getValue().contains("AM")) {
-
-            //if the beginning hour is 12 am
-            if (beginHrList.getValue().equals("12:00:00 AM")) {
-                tf.setBeginTimeOffDate(Time.valueOf("00"
-                        + ":00:00"));
-            } else {
-                String begAMTime = beginHrList.getValue().replace(" AM","");
-                tf.setBeginTimeOffDate(Time.valueOf(begAMTime));
-            }
-        } else if (beginHrList.getValue().contains("PM")) {
-
-            //if the beginning hour is 12 pm
-            if (beginHrList.getValue().equals("12:00:00 PM")) {
-                tf.setBeginTimeOffDate(Time.valueOf("12"
-                        + ":00:00"));
-            } else {
-                String begPMTime = beginHrList.getValue().replace(" PM","");
-                tf.setBeginTimeOffDate(Time.valueOf(begPMTime));
-                tf.setBeginTimeOffDate(Time.valueOf(tf.getBeginTimeOffDate().toLocalTime().plusHours(12)));
-            }
-        }
-
-        if (endHrList.getValue().contains("AM")) {
-
-            //if the ending hour is 12 am
-            if (endHrList.getValue().equals("12:00:00 AM")) {
-                tf.setEndTimeOffDate(Time.valueOf("00"
-                        + ":00:00"));
-            } else {
-                String endAMTime = endHrList.getValue().replace(" AM","");
-                tf.setEndTimeOffDate(Time.valueOf(endAMTime));
-            }
-        } else if (endHrList.getValue().contains("PM")) {
-
-            //if the ending hour is 12 pm
-            if (endHrList.getValue().equals("12:00:00 PM")) {
-                tf.setEndTimeOffDate(Time.valueOf("12"
-                        + ":00:00"));
-            } else {
-                String endPMTime = endHrList.getValue().replace(" PM", "");
-                tf.setEndTimeOffDate(Time.valueOf(endPMTime));
-                tf.setEndTimeOffDate(Time.valueOf(tf.getEndTimeOffDate().toLocalTime().plusHours(12)));
-
-            }
-        }
 
         tf.setApproved(isApproved);
         tf.setReasonDesc(reasonInput.getText());
-        tf.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
-        tf.setDay(scheduleList.getSelectionModel().getSelectedItem().getDay());
+        //tf.setDayOff(true);
 
-        if(dayOffCheck.isSelected()){
-            tf.setDayOff(true);
+        //if the schedule list is disabled, don't get dates from the schedule list
+        if(scheduleList.isDisable()){
+            if(!(approveList.getSelectionModel().isEmpty()
+                    || beginDate.getValue() == null
+                    || endDate.getValue() == null
+                    || reasonInput.getText().trim().isEmpty())) {
+
+                        tf.setBeginTimeOffDate(Date.valueOf(beginDate.getValue()));
+                        tf.setEndTimeOffDate(Date.valueOf(endDate.getValue()));
+                        tf.setSchedule(null);
+                        //if the time off request has a schedule, set the schedule to that
+                        if(tf.getSchedule() != null){
+                            tf.setDay(scheduleList.getSelectionModel().getSelectedItem().getDay());
+                        }
+                        else{
+                            tf.setDay(null);
+                        }
+
+                        if (tf.getBeginTimeOffDate().before(tf.getEndTimeOffDate())
+                                && tf.getEndTimeOffDate().after(tf.getBeginTimeOffDate())
+                                || tf.getBeginTimeOffDate().equals(tf.getEndTimeOffDate())){
+                            timeOffRepository.save(tf);
+
+                            Stage stage = (Stage) saveButton.getScene().getWindow();
+                            System.out.println("Saved");
+                            stage.close();
+                        }
+                        else{
+                            ErrorMessages.showErrorMessage("Invalid date values", "Date range is invalid",
+                                    "Please edit the date range for this time off request.");
+                        }
+                }
+            else{
+                ErrorMessages.showErrorMessage("Fields are empty",
+                        "Selections missing or text fields are blank",
+                        "Please select from the drop-down menus and fill in text fields");
+            }
         }
-        else if(changeAvailCheck.isSelected()){
-            tf.setDayOff(false);
-        }
+        else{ //if the schedule list is visible, take dates from there
+            if(!(approveList.getSelectionModel().isEmpty() ||
+                    reasonInput.getText().trim().isEmpty() ||
+                    scheduleList.getSelectionModel().isEmpty())) {
+                if(scheduleList.getSelectionModel().getSelectedItem().getTimeOffs() == null
+                || tf.getSchedule().equals(scheduleList.getSelectionModel().getSelectedItem())
+                || tf.getSchedule().equals(null)){
+                    tf.setBeginTimeOffDate(scheduleList.getSelectionModel().getSelectedItem().getScheduleDate());
+                    tf.setEndTimeOffDate(scheduleList.getSelectionModel().getSelectedItem().getScheduleDate());
+                    tf.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
 
-        //check if any fields are empty, probably not necessary since these are set already
-        if(!(approveList.getSelectionModel().isEmpty() ||
-        reasonInput.getText().trim().isEmpty() ||
-        scheduleList.getSelectionModel().isEmpty())) {
+                    //if the time off request has a schedule, set the schedule to that
+                    if(tf.getSchedule() != null){
+                        tf.setDay(scheduleList.getSelectionModel().getSelectedItem().getDay());
+                    }
+                    else{
+                        tf.setDay(null);
+                    }
 
-                //if they want to take the day off, change day_off to true in schedule
-                if(tf.isDayOff()){
-                    tf.setBeginTimeOffDate(sch.getScheduleTimeBegin());
-                    tf.setEndTimeOffDate(sch.getScheduleTimeEnd());
                     timeOffRepository.save(tf);
 
                     Stage stage = (Stage) saveButton.getScene().getWindow();
                     System.out.println("Saved");
                     stage.close();
                 }
-                else{ //if day off is false, change the availability
-                    //check if the selected time range is valid before saving
-                    if (tf.getBeginTimeOffDate().before(tf.getEndTimeOffDate())
-                            && tf.getEndTimeOffDate().after(tf.getBeginTimeOffDate())) {
-                        scheduleRepository.save(sch);
-                        timeOffRepository.save(tf);
-
-                        Stage stage = (Stage) saveButton.getScene().getWindow();
-                        System.out.println("Saved");
-                        stage.close();
-                    }
-                    else {
-                        ErrorMessages.showErrorMessage("Invalid time values", "Time range for time" +
-                                " off request is invalid", "Please edit time range for this time off request");
-                    }
+                else{
+                    ErrorMessages.showErrorMessage("Cannot add request to selected schedule",
+                            "This schedule already has a time off request",
+                            "Please select a schedule you have not made a time off request for.");
                 }
             }
-        else{
-            ErrorMessages.showErrorMessage("Fields are empty",
-                    "Selections missing or text fields are blank",
-                    "Please select from the drop-down menus and fill in text fields");
+            else{
+                ErrorMessages.showErrorMessage("Fields are empty",
+                        "Selections missing or text fields are blank",
+                        "Please select from the drop-down menus and fill in text fields");
+            }
         }
+
     }
 
     @FXML
@@ -406,8 +308,8 @@ public class CrudTimeOffController implements Initializable {
         SpinnerValueFactory<String> eHours =
                 new SpinnerValueFactory.ListSpinnerValueFactory<>(hrList);
 
-        beginHrList.setValueFactory(bHours);
-        endHrList.setValueFactory(eHours);
+        //beginHrList.setValueFactory(bHours);
+       // endHrList.setValueFactory(eHours);
     }
 
     private void enableApproveList(){
@@ -427,20 +329,39 @@ public class CrudTimeOffController implements Initializable {
         ToggleGroup toggleGroup = new ToggleGroup();
 
         dayOffCheck.setToggleGroup(toggleGroup);
-        changeAvailCheck.setToggleGroup(toggleGroup);
+        noSchedCheck.setToggleGroup(toggleGroup);
 
     }
 
     @FXML
-    private void hideTimeSpinner(){
-        beginHrList.setDisable(true);
-        endHrList.setDisable(true);
+    private void hideDatePicker(){
+        //get the current user (String) from LoginController
+        String currentUser = LoginController.userStore;
+        Tblusers currUser = userRepository.findUsername(currentUser);
+
+        //initialize the schedule dates for the current user (not done in initialize() method due to nullpointerexception)
+        scheduleData = FXCollections.observableArrayList();
+        scheduleData.addAll(scheduleRepository.findScheduleForUser(currUser.getUsername()));
+        scheduleList.setItems(scheduleData);
+
+        if(selectedTimeOff.getSchedule() != null){
+            //get the schedule for this time off request and select it in drop-down
+            scheduleList.getSelectionModel().select(selectedTimeOff.getSchedule());
+        }
+
+        beginDate.setDisable(true);
+        endDate.setDisable(true);
+        scheduleList.setDisable(false);
     }
 
     @FXML
-    private void enableTimeSpinner(){
-        beginHrList.setDisable(false);
-        endHrList.setDisable(false);
+    private void enableDatePicker(){
+        scheduleData.clear();
+        scheduleList.setItems(scheduleData);
+
+        beginDate.setDisable(false);
+        endDate.setDisable(false);
+        scheduleList.setDisable(true);
     }
 
 }

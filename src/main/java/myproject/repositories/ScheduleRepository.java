@@ -48,13 +48,13 @@ public interface ScheduleRepository extends CrudRepository<Tblschedule, Integer>
     @Query(value = "SELECT * FROM tblschedule s LEFT JOIN tbltimeoff t ON s.schedule_id=t.schedule_id " +
             "JOIN tblemployee e ON s.employee_id = e.id " +
             "WHERE s.employee_id = :employeeId AND t.schedule_id IS NULL " +
-            "OR s.employee_id = :employeeId AND NOT (t.approved=1 AND t.day_off=1)", nativeQuery = true)
+            "OR s.employee_id = :employeeId AND NOT (t.approved=1)", nativeQuery = true)
     List<Tblschedule> findScheduleForEmployee(@Param("employeeId") int employeeId);
 
     @Query(value = "SELECT * FROM tblschedule s LEFT JOIN tbltimeoff t ON s.schedule_id=t.schedule_id " +
             "JOIN tblemployee e ON s.employee_id = e.id " +
             "WHERE s.employee_id = :employeeId AND t.schedule_id IS NULL " +
-            "OR s.employee_id = :employeeId AND NOT (t.approved=1 AND t.day_off=1)", nativeQuery = true)
+            "OR s.employee_id = :employeeId AND NOT (t.approved=1)", nativeQuery = true)
     List<Tblschedule> findScheduleForEmployeeSchedList(@Param("employeeId") int employeeId);
 
     @Query(value = "SELECT d.Day_Desc " +
@@ -69,7 +69,7 @@ public interface ScheduleRepository extends CrudRepository<Tblschedule, Integer>
                    "ON d.Day_id = s.day_id " +
                    "JOIN tbltimeoff t " +
                    "ON s.schedule_id = t.schedule_id " +
-                   "WHERE s.employee_id = :id AND t.approved=1 AND t.day_off=1 " +
+                   "WHERE s.employee_id = :id AND t.approved=1 " +
                    "AND s.schedule_date >= :startOfTheWeek AND s.schedule_date <= :endOfTheWeek", nativeQuery = true)
     List<String> findEmployeeDays(@Param("id") int id, @Param("startOfTheWeek") String startOfTheWeek, @Param("endOfTheWeek") String endOfTheWeek);
 
@@ -83,7 +83,7 @@ public interface ScheduleRepository extends CrudRepository<Tblschedule, Integer>
                    "ON sm.employee_id = e.id " +
                    "JOIN tbltimeoff t " +
                    "ON sm.schedule_id = t.schedule_id " +
-                   "WHERE sm.employee_id = :empId AND sm.day_id = :dayId AND t.approved=1 AND t.day_off=1 " +
+                   "WHERE sm.employee_id = :empId AND sm.day_id = :dayId AND t.approved=1 " +
                    "AND sm.schedule_date >= :startOfTheWeek AND sm.schedule_date <= :endOfTheWeek", nativeQuery = true)
     Time findEmployeeStartHours(@Param("empId") int empId, @Param("dayId") int dayId, @Param("startOfTheWeek") String startOfTheWeek, @Param("endOfTheWeek") String endOfTheWeek);
 
@@ -97,7 +97,7 @@ public interface ScheduleRepository extends CrudRepository<Tblschedule, Integer>
             "ON sm.employee_id = e.id " +
             "JOIN tbltimeoff t " +
             "ON sm.schedule_id = t.schedule_id " +
-            "WHERE sm.employee_id = :empId AND sm.day_id = :dayId AND t.approved=1 AND t.day_off=1 " +
+            "WHERE sm.employee_id = :empId AND sm.day_id = :dayId AND t.approved=1 " +
             "AND sm.schedule_date >= :startOfTheWeek AND sm.schedule_date <= :endOfTheWeek", nativeQuery = true)
     Time findEmployeeEndHours(@Param("empId") int empId, @Param("dayId") int dayId, @Param("startOfTheWeek") String startOfTheWeek, @Param("endOfTheWeek") String endOfTheWeek);
 
