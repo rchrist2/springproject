@@ -14,6 +14,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import myproject.ErrorMessages;
@@ -42,6 +43,9 @@ public class DashboardController implements Initializable {
     @FXML
     private Pane dashboardPane,
             movePane;
+
+    @FXML
+    private VBox buttonVBox;
 
     @FXML
     private AnchorPane dashboardAnchorPane;
@@ -80,12 +84,18 @@ public class DashboardController implements Initializable {
         Tblusers currUser = userRepository.findUsername(LoginController.userStore);
         loggedUserLabel.setText(currUser.getEmployee().getName());
 
+        //don't allow regular employees to see the management page
+        if (!(currUser.getEmployee().getRole().getRoleName().equals("Manager")
+                || currUser.getEmployee().getRole().getRoleName().equals("Owner"))){
+            System.out.println("User does not have privileges to enter Management");
+            buttonVBox.getChildren().remove(employeeButton);
+        }
+
     }
 
     //Will change the pane to the button that was clicked
     @FXML
     private void handleNavigationButton(ActionEvent event){
-
         //Captures the button that was clicked
         Button clickedButton = (Button)event.getSource();
 
@@ -101,11 +111,11 @@ public class DashboardController implements Initializable {
 
                 break;*/
             case "Management":
-                newButton.setDisable(false);
-                System.out.println("You clicked the Employee Management button");
-                switchWindow("/view/EmployeeManagementView.fxml");
-                newButton = clickedButton;
-                newButton.setDisable(true);
+                 newButton.setDisable(false);
+                 System.out.println("You clicked the Employee Management button");
+                 switchWindow("/view/EmployeeManagementView.fxml");
+                 newButton = clickedButton;
+                 newButton.setDisable(true);
 
                 break;
             case "Scheduler":
