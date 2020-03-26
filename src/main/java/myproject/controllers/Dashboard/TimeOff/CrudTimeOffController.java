@@ -131,7 +131,7 @@ public class CrudTimeOffController implements Initializable {
         if(tf1.getSchedule() != null){
             //initialize the schedule dates for the current user (not done in initialize() method due to nullpointerexception)
             scheduleData = FXCollections.observableArrayList();
-            scheduleData.addAll(scheduleRepository.findScheduleForUser(selectedTimeOff.getSchedule().getEmployee().getUser().getUsername()));
+            scheduleData.addAll(scheduleRepository.findScheduleThisWeekForUser(selectedTimeOff.getEmployee().getUser().getUsername()));
             scheduleList.setItems(scheduleData);
 
             //get the schedule for this time off request and select it in drop-down
@@ -235,9 +235,9 @@ public class CrudTimeOffController implements Initializable {
             if(!(approveList.getSelectionModel().isEmpty() ||
                     reasonInput.getText().trim().isEmpty() ||
                     scheduleList.getSelectionModel().isEmpty())) {
+                //if the schedule doesn't have a time off or has a time off equal to the current one
                 if(scheduleList.getSelectionModel().getSelectedItem().getTimeOffs() == null
-                || tf.getSchedule().equals(scheduleList.getSelectionModel().getSelectedItem())
-                || tf.getSchedule().equals(null)){
+                || scheduleList.getSelectionModel().getSelectedItem().getTimeOffs().getBeginTimeOffDate().equals(tf.getBeginTimeOffDate())){
                     tf.setBeginTimeOffDate(scheduleList.getSelectionModel().getSelectedItem().getScheduleDate());
                     tf.setEndTimeOffDate(scheduleList.getSelectionModel().getSelectedItem().getScheduleDate());
                     tf.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
@@ -341,7 +341,7 @@ public class CrudTimeOffController implements Initializable {
 
         //initialize the schedule dates for the current user (not done in initialize() method due to nullpointerexception)
         scheduleData = FXCollections.observableArrayList();
-        scheduleData.addAll(scheduleRepository.findScheduleForUser(currUser.getUsername()));
+        scheduleData.addAll(scheduleRepository.findScheduleThisWeekForUser(currUser.getUsername()));
         scheduleList.setItems(scheduleData);
 
         if(selectedTimeOff.getSchedule() != null){
