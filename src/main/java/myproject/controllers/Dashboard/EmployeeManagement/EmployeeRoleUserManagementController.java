@@ -238,7 +238,6 @@ public class EmployeeRoleUserManagementController implements Initializable {
         });
     }
 
-
     //Reloads (refreshes) the employee tableview
     private void reloadEmployeeTableView() {
         listOfEmployees.clear();

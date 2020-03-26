@@ -89,16 +89,6 @@ public class WeeklyScheduleController implements Initializable {
 
         monthYearLabel.setText(LocalDate.now().getMonth().toString() + ", " + LocalDate.now().getYear());
 
-        /*LocalDate sunday = today;
-        while(sunday.getDayOfWeek() != DayOfWeek.SUNDAY){
-            sunday = sunday.minusDays(1);
-        }
-
-        LocalDate saturday = today;
-        while (saturday.getDayOfWeek() != DayOfWeek.SATURDAY){
-            saturday = saturday.plusDays(1);
-        }*/
-
         weekLabel.setText(sunday.format(dateFormat) + " - " + saturday.format(dateFormat));
 
         refreshDayLabels();

@@ -10,6 +10,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import myproject.ErrorMessages;
+import myproject.controllers.Validation;
 import myproject.models.TblRoles;
 import myproject.models.Tblemployee;
 import myproject.models.Tblusers;
@@ -123,6 +124,7 @@ public class CrudEmployeeController implements Initializable {
     }
 
     private void setTextFieldsForEdit(Tblemployee emp1){
+
         nameText.setText(emp1.getName());
         emailText.setText(emp1.getEmail());
         addressText.setText(emp1.getAddress());
@@ -148,7 +150,7 @@ public class CrudEmployeeController implements Initializable {
                 || passwordText.getText().isEmpty()
                 || roleComboBox.getSelectionModel().getSelectedItem() == null)){
             if(usernameText.getText().equals(emailText.getText())){
-                if(usernameText.getText().contains("@") && usernameText.getText().contains(".com")){
+                if(Validation.validateEmail(usernameText.getText())){
                     switch (selectedButton.getText()){
                         case "Add":
                             try {
@@ -162,6 +164,9 @@ public class CrudEmployeeController implements Initializable {
                                 stage.close();
                             } catch (Exception e) {
                                 e.printStackTrace();
+                                ErrorMessages.showWarningMessage("Error", "Error Adding Employee",
+                                        "Something went wrong trying to add an employee");
+
                                 System.out.println("Adding Employee Error");
                             }
 
