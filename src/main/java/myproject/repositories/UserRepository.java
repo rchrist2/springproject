@@ -27,12 +27,39 @@ public interface UserRepository extends CrudRepository<Tblusers, Integer> {
     @Query(value = "SELECT e.email FROM tblemployee e JOIN tblusers u ON e.id = u.employee_id WHERE u.user_id = :name", nativeQuery = true)
     String findEmailFromUser(@Param("name") int name);
 
+/*    @Query(value = "SELECT password FROM tblusers WHERE employee_id = :empId", nativeQuery = true)
+    String findPasswordFromUserId(@Param("empId") int employeeId);*/
+
+    @Query(value = "SELECT salt_password FROM tblusers WHERE employee_id = :empId", nativeQuery = true)
+    byte[] findSaltFromUserId(@Param("empId") int empId);
+
+    @Query(value = "SELECT hashed_password FROM tblusers WHERE employee_id = :empId", nativeQuery = true)
+    String findHashFromUserId(@Param("empId") int empId);
+
     @Modifying
-    @Query(value = "UPDATE tblUsers SET username = :username, password = :password, employee_id = :employee_id WHERE user_id = :userid", nativeQuery = true)
+    @Query(value = "UPDATE tblUsers " +
+            "SET username = :username, " +
+            "password = :password, " +
+            "salt_password = :salt, " +
+            "hashed_password = :hash_password, " +
+            "employee_id = :employee_id " +
+            "WHERE user_id = :userid", nativeQuery = true)
     void updateUserAccount(@Param("username") String user,
                            @Param("password") String pass,
                            @Param("employee_id") int empId,
+                           @Param("salt") byte[] salt,
+                           @Param("hash_password") String hashed_password,
                            @Param("userid") int userId
+    );
+
+    @Modifying
+    @Query(value = "UPDATE tblusers " +
+            "SET salt_password = :salt, " +
+            "hashed_password = :hashed_password " +
+            "WHERE user_id = :userid", nativeQuery = true)
+    void updateUserPassword(@Param("salt") byte[] salt,
+                            @Param("hashed_password") String hashed_password,
+                            @Param("userid") int userId
     );
 
     @Modifying
@@ -41,7 +68,5 @@ public interface UserRepository extends CrudRepository<Tblusers, Integer> {
 
     @Query(value = "SELECT * FROM tblusers", nativeQuery = true)
     List<Tblusers> findAll();
-
-
 
 }

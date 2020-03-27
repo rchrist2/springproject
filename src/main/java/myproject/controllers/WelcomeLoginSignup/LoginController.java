@@ -15,8 +15,11 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import myproject.ErrorMessages;
+import myproject.SecurePassword;
+import myproject.models.Tblemployee;
 import myproject.models.Tblusers;
 import myproject.models.YearMonthInstance;
+import myproject.repositories.EmployeeRepository;
 import myproject.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -43,6 +46,7 @@ public class LoginController implements Initializable {
     private Pane welcomeLoginPane;
 
     private UserRepository userRepository;
+    private EmployeeRepository employeeRepository;
     private ConfigurableApplicationContext springContext;
     public Rectangle2D screenBounds;
     public static String userStore;
@@ -55,9 +59,10 @@ public class LoginController implements Initializable {
     //public static TblEmployee employeeStore;
 
     @Autowired
-    public LoginController(UserRepository userRepository, ConfigurableApplicationContext springContext) {
+    public LoginController(UserRepository userRepository, ConfigurableApplicationContext springContext, EmployeeRepository employeeRepository) {
         this.userRepository = userRepository;
         this.springContext = springContext;
+        this.employeeRepository = employeeRepository;
     }
 
 
@@ -69,10 +74,11 @@ public class LoginController implements Initializable {
     @FXML
     private void signinUser(ActionEvent event){
         //find user and pass in db to login
-        Tblusers currentUser = userRepository.findUserLogin(usernameText.getText(), passwordText.getText());
-        System.out.println(currentUser);
+        Tblusers currentUser = userRepository.findUsername(usernameText.getText());
 
-        if(currentUser != null){
+        if(currentUser != null && SecurePassword.checkPassword(userRepository.findHashFromUserId(currentUser.getEmployee().getId()), passwordText.getText(),
+                userRepository.findSaltFromUserId(currentUser.getEmployee().getId()))){
+
             System.out.println("User successfully logged in");
             userStore = usernameText.getText();
             YearMonthInstance.getInstance().setCurrentMonthYear();

@@ -172,7 +172,7 @@ public class WeeklyScheduleController implements Initializable {
     private void refreshDayLabels(){
         LocalDate dayOfWeek = sunday;
 
-/*        for (int i = 1; i <= 7 ; i++) {
+        /*for (int i = 1; i <= 7 ; i++) {
             Label day = new Label();
             day.setText(days.get(i - 1) + " " + dayOfWeek.format(dayFormat));
             day.setFont(Font.font("System", FontPosture.ITALIC, 16));

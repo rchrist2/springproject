@@ -20,6 +20,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import myproject.ErrorMessages;
 import myproject.controllers.Dashboard.DashboardController;
+import myproject.controllers.WelcomeLoginSignup.LoginController;
 import myproject.models.TblRoles;
 import myproject.models.Tblemployee;
 import myproject.models.Tblusers;
@@ -188,9 +189,9 @@ public class EmployeeRoleUserManagementController implements Initializable {
         setDataForRoleTableView();
         addActionListenersForRoleCrudButtons();
 
-        reloadUserTableView();
-        setDataForUserTableView();
-        addActionListenersForUserCrudButtons();
+        //reloadUserTableView();
+        //setDataForUserTableView();
+        //addActionListenersForUserCrudButtons();
 
         //Filters the employee management view list
         setSearchBars();
@@ -220,11 +221,11 @@ public class EmployeeRoleUserManagementController implements Initializable {
                     || r.getRoleDesc().toLowerCase().contains(searchRoleText.getText().toLowerCase()));
         });
 
-        searchUserText.setOnKeyReleased(event -> {
+/*        searchUserText.setOnKeyReleased(event -> {
             filteredListOfUsers.setPredicate(u -> u.getUsername().toLowerCase().contains(searchUserText.getText().toLowerCase())
                     || u.getPassword().contains(searchUserText.getText())
                     || u.getEmployee().getName().toLowerCase().contains(searchUserText.getText().toLowerCase()));
-        });
+        });*/
     }
 
     private void addActionListenersForTabPane(){
@@ -233,7 +234,7 @@ public class EmployeeRoleUserManagementController implements Initializable {
             if (newValue != null) {
                 reloadEmployeeTableView();
                 reloadRoleTableView();
-                reloadUserTableView();
+                //reloadUserTableView();
             }
         });
     }
@@ -306,6 +307,7 @@ public class EmployeeRoleUserManagementController implements Initializable {
 
                     CrudEmployeeController crudEmployeeController = fxmlLoader.getController();
                     crudEmployeeController.setLabel("Edit Employee", "Save");
+                    crudEmployeeController.setEmployeeForEdit();
                     crudEmployeeController.setEmployee(emp);
                     crudEmployeeController.setController(this);
 
@@ -334,9 +336,15 @@ public class EmployeeRoleUserManagementController implements Initializable {
                           ON DELETE CASCADE works in a way we can't apply, so we have to delete
                           each row in order
                         */
-                        scheduleService.deleteSchedule(emp.getId());
 
-                        employeeService.deleteEmployee(emp.getId());
+                        if(!emp.getUser().getUsername().equals(LoginController.userStore)) {
+                            scheduleService.deleteSchedule(emp.getId());
+
+                            employeeService.deleteEmployee(emp.getId());
+                        } else {
+                            ErrorMessages.showWarningMessage("Warning!", "Deleting user while logged in",
+                                    "Cannot delete an account while logged in as the same employee");
+                        }
                     }
 
                     reloadEmployeeTableView();
@@ -494,7 +502,7 @@ public class EmployeeRoleUserManagementController implements Initializable {
             Account/User Management
      ====================================*/
 
-    private void reloadUserTableView() {
+    /*private void reloadUserTableView() {
         listOfUsers.clear();
 
         listOfUsers.addAll(userRepository.findAll());
@@ -610,5 +618,5 @@ public class EmployeeRoleUserManagementController implements Initializable {
                 deleteUserButton.setDisable(true);
             }
         });
-    }
+    }*/
 }

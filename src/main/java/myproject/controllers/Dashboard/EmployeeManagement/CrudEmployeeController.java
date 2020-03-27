@@ -6,24 +6,24 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import myproject.ErrorMessages;
-import myproject.controllers.Validation;
+import myproject.SecurePassword;
+import myproject.Validation;
 import myproject.models.TblRoles;
 import myproject.models.Tblemployee;
 import myproject.models.Tblusers;
 import myproject.repositories.*;
 import myproject.services.EmployeeService;
 import myproject.services.ScheduleService;
+import myproject.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 import java.util.ResourceBundle;
 
 @Component
@@ -33,7 +33,8 @@ public class CrudEmployeeController implements Initializable {
     private Button saveButton,
             cancelButton,
             deleteDayButton,
-            addDaysButton;
+            addDaysButton,
+            changePasswordButton;
 
     @FXML
     private TextField nameText,
@@ -43,7 +44,8 @@ public class CrudEmployeeController implements Initializable {
             startTimeText,
             endTimeText,
             usernameText,
-            passwordText;
+            passwordText,
+            newPasswordText;
 
     @FXML
     private VBox timePerDayVBox;
@@ -62,7 +64,9 @@ public class CrudEmployeeController implements Initializable {
 
     @FXML
     private Label crudEmployeeLabel,
-                descriptionLabel;
+                descriptionLabel,
+                currentPasswordLabel,
+                changePasswordLabel;
 
     private ConfigurableApplicationContext springContext;
     private EmployeeRepository employeeRepository;
@@ -70,6 +74,7 @@ public class CrudEmployeeController implements Initializable {
     private EmployeeService employeeService;
     private RoleRepository roleRepository;
     private UserRepository userRepository;
+    private UserService userService;
     private ScheduleRepository scheduleRepository;
     private DayRepository dayRepository;
     private ScheduleService scheduleService;
@@ -79,10 +84,11 @@ public class CrudEmployeeController implements Initializable {
 
     //The employee returned from the EmployeeManagementController
     private Tblemployee selectedEmployee;
+    public boolean changePasswordChecked;
 
     @Autowired
     public CrudEmployeeController(ConfigurableApplicationContext springContext, EmployeeRepository employeeRepository, EmployeeService employeeService, RoleRepository roleRepository,
-                                  ScheduleRepository scheduleRepository, DayRepository dayRepository, ScheduleService scheduleService, UserRepository userRepository) {
+                                  ScheduleRepository scheduleRepository, DayRepository dayRepository, ScheduleService scheduleService, UserRepository userRepository, UserService userService) {
         this.springContext = springContext;
         this.employeeRepository = employeeRepository;
         this.employeeService = employeeService;
@@ -91,6 +97,7 @@ public class CrudEmployeeController implements Initializable {
         this.dayRepository = dayRepository;
         this.scheduleService = scheduleService;
         this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     public void setController(EmployeeRoleUserManagementController employeeRoleManagementController) {
@@ -99,6 +106,8 @@ public class CrudEmployeeController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        changePasswordChecked = false;
+
         listOfDaysObs = FXCollections.observableArrayList();
         listOfRoleObs = FXCollections.observableArrayList();
 
@@ -131,7 +140,27 @@ public class CrudEmployeeController implements Initializable {
         phoneText.setText(emp1.getPhone());
         roleComboBox.getSelectionModel().select(emp1.getRole());
         usernameText.setText(emp1.getUser().getUsername());
-        passwordText.setText(emp1.getUser().getPassword());
+    }
+
+    public void setEmployeeForEdit(){
+        changePasswordButton.setVisible(true);
+
+        currentPasswordLabel.setVisible(false);
+        passwordText.setVisible(false);
+    }
+
+    @FXML
+    private void handleChangePassword(){
+        changePasswordButton.setDisable(true);
+
+        currentPasswordLabel.setText("Current Password: ");
+        currentPasswordLabel.setVisible(true);
+        passwordText.setVisible(true);
+
+        changePasswordLabel.setVisible(true);
+        newPasswordText.setVisible(true);
+
+        changePasswordChecked = true;
     }
 
     public void handleSaveEmployee(ActionEvent event){
@@ -139,7 +168,6 @@ public class CrudEmployeeController implements Initializable {
         Button selectedButton = (Button)event.getSource();
         TblRoles selectedRole = roleRepository.findRole(roleComboBox.getSelectionModel().getSelectedItem().getRoleName());
         Tblemployee newEmp = new Tblemployee(nameText.getText(), emailText.getText(), addressText.getText(), phoneText.getText(), selectedRole);
-        Tblusers newUser = new Tblusers(usernameText.getText(), passwordText.getText(), newEmp);
         Tblemployee updateEmp = selectedEmployee;
 
         if(!(nameText.getText().isEmpty()
@@ -155,8 +183,13 @@ public class CrudEmployeeController implements Initializable {
                         case "Add":
                             try {
                                 employeeRepository.save(newEmp);
-                                userRepository.save(newUser);
 
+                                //Creates the hash for the password and the salt
+                                byte[] salt = SecurePassword.getSalt();
+                                String hashedPassword = SecurePassword.getSecurePassword(passwordText.getText(), salt);
+                                Tblusers newUser = new Tblusers(usernameText.getText(), passwordText.getText(), salt, hashedPassword, newEmp);
+
+                                userRepository.save(newUser);
 
                                 Stage stage = (Stage)saveButton.getScene().getWindow();
                                 ErrorMessages.showInformationMessage("Successful", "Employee Success", "Added " + nameText.getText() + " successfully");
@@ -182,15 +215,36 @@ public class CrudEmployeeController implements Initializable {
                                 updateEmp.setPhone(phoneText.getText());
                                 updateEmp.setRole(roleComboBox.getSelectionModel().getSelectedItem());
                                 updateEmp.getUser().setUsername(usernameText.getText());
-                                updateEmp.getUser().setPassword(passwordText.getText());
+
                                 employeeRepository.save(updateEmp);
+
+                                if(changePasswordChecked){
+                                    if (SecurePassword.checkPassword(userRepository.findHashFromUserId(updateEmp.getId()),
+                                            passwordText.getText(), userRepository.findSaltFromUserId(updateEmp.getId()))) {
+
+                                        Tblusers changePasswordUser = userRepository.findUsername(usernameText.getText());
+
+                                        byte[] salt = SecurePassword.getSalt();
+                                        String newPassword = SecurePassword.getSecurePassword(newPasswordText.getText(), salt);
+
+                                        changePasswordUser.setHashedPassword(newPassword);
+                                        changePasswordUser.setSaltPassword(salt);
+
+                                        userRepository.save(changePasswordUser);
+
+                                        ErrorMessages.showInformationMessage("Success", "Password Changed Successfully",
+                                                "The password was changed successfully");
+                                        stage.close();
+                                        System.out.println("Saved");
+                                    } else {
+                                        ErrorMessages.showWarningMessage("Password Mismatch", "Passwords do not equal",
+                                                "Passwords do not match, please re-check your password");
+                                    }
+                                }
 
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-
-                            System.out.println("Saved");
-                            stage.close();
                             break;
                     }
                 }

@@ -7,6 +7,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import myproject.ErrorMessages;
+import myproject.SecurePassword;
 import myproject.models.Tblusers;
 import myproject.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URL;
+import java.security.NoSuchAlgorithmException;
 import java.util.ResourceBundle;
 
 @Component
@@ -48,8 +50,22 @@ public class ReplacePassController implements Initializable {
         if(!(newPassInput.getText().isEmpty() || newPassConfirmInput.getText().isEmpty()))
         {
             if(newPassInput.getText().equals(newPassConfirmInput.getText())) {
-                replacePassUserAcc.setPassword(newPassInput.getText());
+                try{
+                    System.out.println("The both match");
+                    byte[] salt = SecurePassword.getSalt();
+                    String changedPassword = SecurePassword.getSecurePassword(newPassInput.getText(), salt);
+
+                    replacePassUserAcc.setSaltPassword(salt);
+                    replacePassUserAcc.setHashedPassword(changedPassword);
+
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                }
+
                 userRepository.save(replacePassUserAcc);
+
+                System.out.println("Do they Match? :" + SecurePassword.checkPassword(replacePassUserAcc.getHashedPassword(),
+                        newPassConfirmInput.getText(), replacePassUserAcc.getSaltPassword()));
 
                 ErrorMessages.showInformationMessage("Password reset","Password has been successfully reset",
                         "You will be redirected to sign-in");

@@ -9,6 +9,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
+import myproject.SecurePassword;
+import myproject.Validation;
 import myproject.repositories.EmployeeRepository;
 import myproject.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +60,4 @@ public class WelcomeController implements Initializable {
             io.printStackTrace();
         }
     }
-
-    //Still need method for "Forgot Password?" and "Need Help?" buttons
 }

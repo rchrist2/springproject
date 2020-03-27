@@ -1,5 +1,6 @@
 package myproject.services;
 
+import myproject.models.Tblemployee;
 import myproject.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,7 +18,12 @@ public class UserService {
     }
 
     @Transactional
-    public void insertUser(String user, String pass, int tblemployee, int userId){
-        userRepository.updateUserAccount(user, pass, tblemployee, userId);
+    public void insertUser(String user, String pass, int tblemployee, byte[] salt, String hashed_password, int userId){
+        userRepository.updateUserAccount(user, pass, tblemployee, salt, hashed_password, userId);
+    }
+
+    @Transactional
+    public void updateUserPassword(byte[] salt, String hashed_password, int emp){
+        userRepository.updateUserPassword(salt, hashed_password, emp);
     }
 }

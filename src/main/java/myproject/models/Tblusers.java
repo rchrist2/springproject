@@ -1,6 +1,7 @@
 package myproject.models;
 
 import javax.persistence.*;
+import java.util.Arrays;
 import java.util.Objects;
 
 @Entity
@@ -10,6 +11,8 @@ public class Tblusers {
     private String username;
     private String password;
     private Tblemployee employee;
+    private byte[] saltPassword;
+    private String hashedPassword;
 
     public Tblusers() {
     }
@@ -17,6 +20,14 @@ public class Tblusers {
     public Tblusers(String username, String password, Tblemployee employee){
         this.username = username;
         this.password = password;
+        this.employee = employee;
+    }
+
+    public Tblusers(String username, String password, byte[] saltPassword, String hashedPassword, Tblemployee employee){
+        this.username = username;
+        this.password = password;
+        this.saltPassword = saltPassword;
+        this.hashedPassword = hashedPassword;
         this.employee = employee;
     }
 
@@ -53,27 +64,41 @@ public class Tblusers {
     }
 
     @Basic
-    @Column(name = "password")
-    public String getPassword() {
-        return password;
+    @Column(name = "salt_password")
+    public byte[] getSaltPassword() {
+        return saltPassword;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setSaltPassword(byte[] saltPassword) {
+        this.saltPassword = saltPassword;
+    }
+
+    @Basic
+    @Column(name = "hashed_password")
+    public String getHashedPassword() {
+        return hashedPassword;
+    }
+
+    public void setHashedPassword(String hashedPassword) {
+        this.hashedPassword = hashedPassword;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Tblusers tblusers = (Tblusers) o;
-        return userId == tblusers.userId &&
-                Objects.equals(username, tblusers.username) &&
-                Objects.equals(password, tblusers.password);
+        Tblusers that = (Tblusers) o;
+        return userId == that.userId &&
+                Objects.equals(username, that.username) &&
+                Objects.equals(password, that.password) &&
+                Arrays.equals(saltPassword, that.saltPassword) &&
+                Objects.equals(hashedPassword, that.hashedPassword);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, username, password);
+        int result = Objects.hash(userId, username, password, hashedPassword);
+        result = 31 * result + Arrays.hashCode(saltPassword);
+        return result;
     }
 }

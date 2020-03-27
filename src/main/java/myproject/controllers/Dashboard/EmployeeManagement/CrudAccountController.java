@@ -1,3 +1,4 @@
+/*
 package myproject.controllers.Dashboard.EmployeeManagement;
 
 import javafx.collections.FXCollections;
@@ -8,6 +9,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import myproject.ErrorMessages;
+import myproject.SecurePassword;
+import myproject.Validation;
 import myproject.models.Tblemployee;
 import myproject.models.Tblschedule;
 import myproject.models.Tblusers;
@@ -103,7 +106,13 @@ public class CrudAccountController implements Initializable {
 
     private void setTextFieldsForEdit(Tblusers user){
         usernameText.setText(user.getUsername());
-        passwordText.setText(user.getPassword());
+
+        if(user.getPassword() == null){
+            passwordText.setText(null);
+        } else {
+            passwordText.setText(user.getPassword());
+        }
+
         employeeComboBox.setValue(userRepository.findEmailFromUser(user.getUserId()));
     }
 
@@ -113,17 +122,22 @@ public class CrudAccountController implements Initializable {
 
         Tblemployee selectedEmployee = employeeRepository.findEmployeeFromEmployeeEmail(employeeComboBox.getSelectionModel().getSelectedItem());
 
-        Tblusers newUser = new Tblusers(usernameText.getText(), passwordText.getText(), selectedEmployee);
+        //Tblusers newUser = new Tblusers(usernameText.getText(), passwordText.getText(), selectedEmployee);
 
         if(!(usernameText.getText().isEmpty()
                 || passwordText.getText().isEmpty()
                 || employeeComboBox.getSelectionModel().getSelectedItem().isEmpty())){
             if(usernameText.getText().equals(employeeComboBox.getSelectionModel().getSelectedItem())) {
-                if (usernameText.getText().contains("@") && usernameText.getText().contains(".com")) {
+                if (Validation.validateEmail(usernameText.getText())) {
                     switch (button.getText()){
                         case "Add":
                             try{
-                                if(newUser.getUsername().equals(selectedEmployee.getEmail())){
+                                if(usernameText.getText().equals(selectedEmployee.getEmail())){
+
+                                    byte[] salt = SecurePassword.getSalt();
+                                    String hashedPassword = SecurePassword.getSecurePassword(passwordText.getText(), salt);
+                                    Tblusers newUser = new Tblusers(usernameText.getText(), passwordText.getText(), salt, hashedPassword, selectedEmployee);
+
                                     userRepository.save(newUser);
 
                                     Stage stage = (Stage)saveButton.getScene().getWindow();
@@ -144,12 +158,31 @@ public class CrudAccountController implements Initializable {
                             break;
                         case "Update":
                             try{
-                                Stage stage = (Stage)saveButton.getScene().getWindow();
-                                ErrorMessages.showInformationMessage("Successful", "User Account Updated", "Updated user account successfully");
+                                byte[] salt;
+                                String hashed_password;
 
+                                Stage stage = (Stage)saveButton.getScene().getWindow();
                                 System.out.println("Employee Id: " + selectedEmployee.getId() + "\nUser Id: " + user.getUserId());
 
-                                userService.insertUser(usernameText.getText(), passwordText.getText(), selectedEmployee.getId(), user.getUserId());
+                                //Checks to see if the user has a null salt or a null password
+                                if(user.getSaltPassword() == null || user.getHashedPassword() == null){
+                                    user.setSaltPassword(null);
+                                    user.setHashedPassword(null);
+
+                                    salt = SecurePassword.getSalt();
+                                    hashed_password = SecurePassword.getSecurePassword(passwordText.getText(), salt);
+                                }
+                                else {
+                                    salt = user.getSaltPassword();
+                                    hashed_password = user.getHashedPassword();
+                                }
+
+
+                                userService.insertUser(usernameText.getText(), passwordText.getText(), selectedEmployee.getId(),
+                                        salt, hashed_password, user.getUserId());
+
+                                ErrorMessages.showInformationMessage("Successful", "User Account Updated",
+                                        "Updated user account successfully");
 
                                 stage.close();
                             } catch (Exception e){
@@ -184,3 +217,4 @@ public class CrudAccountController implements Initializable {
         currStage.close();
     }
 }
+*/

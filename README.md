@@ -24,7 +24,8 @@ CREATE TABLE tblemployee (
 create table tblusers(
     user_id int NOT NULL identity(1,1) PRIMARY KEY,
     username varchar(128) NOT NULL UNIQUE,
-    password varchar(128) NOT NULL,
+	salt_password varbinary(16) NULL,
+	hashed_password varchar(255) NULL,
     employee_id int UNIQUE FOREIGN KEY REFERENCES tblemployee(id) ON DELETE CASCADE
 );
 
@@ -95,3 +96,4 @@ https://stackoverflow.com/questions/538739/best-way-to-store-time-hhmm-in-a-data
 https://www.baeldung.com/spring-email
 https://loading.io/license/
 https://stackoverflow.com/questions/45778386/in-javafx-how-to-remove-a-specific-node-from-a-gridpane-with-the-coordinate-of
+https://www.javaguides.net/2020/02/java-sha-512-hash-with-salt-example.html
