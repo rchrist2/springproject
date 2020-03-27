@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
@@ -8,7 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="dashboardAnchorPane" prefHeight="780.0" prefWidth="1170.0" style="-fx-background-color: linear-gradient(to right, #2596b3, white); -fx-border-color: black;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.Dashboard.DashboardController">
+<AnchorPane fx:id="dashboardAnchorPane" prefHeight="780.0" prefWidth="1170.0" style="-fx-background-color: linear-gradient(to right, #2596b3, white); -fx-border-color: black;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.Dashboard.DashboardController">
    <children>
       <AnchorPane layoutX="2.0" prefHeight="756.0" prefWidth="1168.0" style="-fx-border-color: black; -fx-border-color: derive(black, 10%) transparent transparent transparent;" AnchorPane.bottomAnchor="-1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
@@ -25,7 +30,7 @@
                   </VBox>
                   <VBox alignment="TOP_RIGHT" prefHeight="610.0" prefWidth="176.0" spacing="10.0">
                      <children>
-                        <VBox alignment="CENTER_RIGHT" prefHeight="299.0" prefWidth="176.0" spacing="10.0">
+                        <VBox fx:id="buttonVBox" alignment="CENTER_RIGHT" spacing="10.0">
                            <children>
                               <Button fx:id="buttonButton1" alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#handleNavigationButton" prefHeight="40.0" prefWidth="129.0" styleClass="dashboardButton" stylesheets="@../css/Dashboard.css" text="Weekly Calendar" textAlignment="RIGHT" underline="true">
                                  <font>

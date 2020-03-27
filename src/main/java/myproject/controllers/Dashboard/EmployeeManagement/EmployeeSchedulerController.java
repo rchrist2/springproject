@@ -11,6 +11,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import myproject.ErrorMessages;
+import myproject.controllers.WelcomeLoginSignup.LoginController;
 import myproject.models.*;
 import myproject.repositories.*;
 import myproject.services.ScheduleService;
@@ -99,6 +100,9 @@ public class EmployeeSchedulerController implements Initializable {
     private ClockRepository clockRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private ScheduleService scheduleService;
 
     @Autowired
@@ -140,6 +144,8 @@ public class EmployeeSchedulerController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        //get the current user
+        String currentUser = LoginController.userStore;
 
         /*
         Add a way to take out the Time Off Schedules from the current list
@@ -150,9 +156,18 @@ public class EmployeeSchedulerController implements Initializable {
         listOfEmployees = FXCollections.observableArrayList();
         listOfSchedules = FXCollections.observableArrayList();
 
-        listOfEmployees.setAll(employeeRepository.findAllEmployeesWithoutScheduleByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert)));
+        //if user is not an owner or manager, only show their specific schedule
+        if (userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
+                || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner")){
+            listOfEmployees.setAll(employeeRepository.findAllEmployeesWithoutScheduleByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert)));
 
-        employeeListView.setItems(listOfEmployees);
+            employeeListView.setItems(listOfEmployees);
+        }
+        else{
+            listOfEmployees.setAll(employeeRepository.findCurrentEmployeeWithoutScheduleByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert), currentUser));
+
+            employeeListView.setItems(listOfEmployees);
+        }
 
         //Displays the date of the first day of week to end day
         dateLabel.setText(sunday.format(dayFormat) + " - " + saturday.format(dayFormat));
@@ -873,22 +888,42 @@ public class EmployeeSchedulerController implements Initializable {
 
     @FXML
     private void loadDataToTable(){
+        //get the current user
+        String currentUser = LoginController.userStore;
+
         listOfSchedules.clear();
         listOfEmployees.clear();
 
         System.out.println("Sunday Date: " + sunday);
         System.out.println("Saturday Date: " + saturday);
 
-        for (Tblemployee emp : employeeRepository.findAllEmployeeByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert))) {
-            System.out.println("Schedule: " + emp.getSchedules());
+        //if user is not an owner or manager, only show their specific schedule
+        if (userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
+                || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner")){
+            for (Tblemployee emp : employeeRepository.findAllEmployeeByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert))) {
+                System.out.println("Schedule: " + emp.getSchedules());
+            }
+
+            listOfSchedules.addAll(employeeRepository.findAllEmployeeByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert)));
+            listOfEmployees.addAll(employeeRepository.findAllEmployeesWithoutScheduleByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert)));
+
+            filteredEmployeeList = new FilteredList<>(listOfSchedules);
+
+            scheduleTableView.setItems(filteredEmployeeList);
+        }
+        else{
+            for (Tblemployee emp : employeeRepository.findCurrentEmployeeByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert), currentUser)) {
+                System.out.println("Schedule: " + emp.getSchedules());
+            }
+
+            listOfSchedules.addAll(employeeRepository.findCurrentEmployeeByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert), currentUser));
+            listOfEmployees.addAll(employeeRepository.findCurrentEmployeeWithoutScheduleByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert), currentUser));
+
+            filteredEmployeeList = new FilteredList<>(listOfSchedules);
+
+            scheduleTableView.setItems(filteredEmployeeList);
         }
 
-        listOfSchedules.addAll(employeeRepository.findAllEmployeeByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert)));
-        listOfEmployees.addAll(employeeRepository.findAllEmployeesWithoutScheduleByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert)));
-
-        filteredEmployeeList = new FilteredList<>(listOfSchedules);
-
-        scheduleTableView.setItems(filteredEmployeeList);
     }
 
     private boolean spinnerValidation(String start, String end){
