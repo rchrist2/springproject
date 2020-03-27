@@ -40,7 +40,7 @@ public class Tblschedule {
 
     //a schedule can have only one time off request
     //uses cascade REMOVE to allow deletions of related time offs
-    @OneToOne(fetch = FetchType.EAGER,mappedBy = "schedule",cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY,mappedBy = "schedule",cascade = CascadeType.ALL)
     public Tbltimeoff getTimeOffs() {
         return timeOffs;
     }
@@ -50,7 +50,7 @@ public class Tblschedule {
     }
 
     //one schedule can have many clock-ins/outs
-    @OneToMany(fetch = FetchType.EAGER,mappedBy = "schedule",cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "schedule",cascade = CascadeType.ALL)
     public Set<Tblclock> getClocks() {
         return clocks;
     }
@@ -60,7 +60,7 @@ public class Tblschedule {
     }
 
     //many schedules can belong to one employee
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", referencedColumnName = "id")
     public Tblemployee getEmployee() {
         return employee;
@@ -71,7 +71,7 @@ public class Tblschedule {
     }
 
     //many schedules can have one day
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "day_id", referencedColumnName = "day_id")
     public TblDay getDay() {
         return day;

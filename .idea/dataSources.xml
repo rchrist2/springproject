@@ -37,5 +37,11 @@
       <jdbc-driver>com.microsoft.sqlserver.jdbc.SQLServerDriver</jdbc-driver>
       <jdbc-url>jdbc:sqlserver://10.209.12.218:1433;database=4375db</jdbc-url>
     </data-source>
+    <data-source source="LOCAL" name="4375db@35.225.13.15" uuid="7d9bce58-6291-454e-ad91-d9bdbfa9a480">
+      <driver-ref>sqlserver.ms</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.microsoft.sqlserver.jdbc.SQLServerDriver</jdbc-driver>
+      <jdbc-url>jdbc:sqlserver://35.225.13.15;database=4375db</jdbc-url>
+    </data-source>
   </component>
 </project>

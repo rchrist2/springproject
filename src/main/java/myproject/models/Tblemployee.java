@@ -36,7 +36,7 @@ public class Tblemployee {
     }
 
     //one employee can only have one user account
-    @OneToOne(fetch = FetchType.EAGER,mappedBy = "employee",cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY,mappedBy = "employee",cascade = CascadeType.ALL)
     public Tblusers getUser() {
         return user;
     }
@@ -46,7 +46,7 @@ public class Tblemployee {
     }
 
     //one employee can have many time off requests
-    @OneToMany(fetch = FetchType.EAGER,mappedBy = "employee",cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "employee",cascade = CascadeType.ALL)
     public Set<Tbltimeoff> getTimeOffs() {
         return timeOffs;
     }
@@ -56,7 +56,7 @@ public class Tblemployee {
     }
 
     //many employees can belong to a role
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "roles_id", referencedColumnName = "role_id")
     public TblRoles getRole() {
         return role;
@@ -67,7 +67,7 @@ public class Tblemployee {
     }
 
     //one employee can have many schedules
-    @OneToMany(fetch = FetchType.EAGER,mappedBy = "employee",cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "employee",cascade = CascadeType.ALL)
     public Set<Tblschedule> getSchedules() {
         return schedules;
     }

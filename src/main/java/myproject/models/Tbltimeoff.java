@@ -20,7 +20,7 @@ public class Tbltimeoff {
     private Tblschedule schedule;
     Tblemployee employee;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "day_id", referencedColumnName = "day_id")
     public TblDay getDay() {
         return day;
@@ -30,7 +30,7 @@ public class Tbltimeoff {
         this.day = day;
     }
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", referencedColumnName = "id")
     public Tblemployee getEmployee() {
         return employee;
@@ -51,7 +51,7 @@ public class Tbltimeoff {
     }*/
 
     //only one time off request can belong to only one schedule
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "schedule_id", referencedColumnName = "schedule_id")
     public Tblschedule getSchedule() {
         return schedule;
