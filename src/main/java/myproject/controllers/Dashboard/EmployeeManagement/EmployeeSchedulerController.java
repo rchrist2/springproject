@@ -15,6 +15,7 @@ import myproject.controllers.WelcomeLoginSignup.LoginController;
 import myproject.models.*;
 import myproject.repositories.*;
 import myproject.services.ScheduleService;
+import myproject.services.TimeOffService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -104,6 +105,9 @@ public class EmployeeSchedulerController implements Initializable {
 
     @Autowired
     private ScheduleService scheduleService;
+
+    @Autowired
+    private TimeOffService timeOffService;
 
     @Autowired
     private DayRepository dayRepository;
@@ -265,6 +269,9 @@ public class EmployeeSchedulerController implements Initializable {
 
     @FXML
     private void handleAddSchedule(){
+        //get the current user
+        String currentUser = LoginController.userStore;
+
         LocalDate begOfWeek = sunday;
 
         List<String> listOfBegTimes = new ArrayList<>();
@@ -669,6 +676,8 @@ public class EmployeeSchedulerController implements Initializable {
                 List<Tblschedule> schedToAdd = new ArrayList<>();
                 StringBuilder schedErrorAdd = new StringBuilder();
                 List<Tblschedule> invalidDaysAdd = new ArrayList<>();
+                List<Tblschedule> hasFutureApprovedTimeOff = new ArrayList<>();
+                List<Tbltimeoff> theFutureTimeOffs = new ArrayList<>();
 
                 //set these to 0 to avoid out of bounds error
                 timeIndex = 0;
@@ -769,6 +778,35 @@ public class EmployeeSchedulerController implements Initializable {
                     for(Tblschedule sc : schedToAdd){
                         scheduleRepository.save(sc);
                     }
+
+                    hasFutureApprovedTimeOff.addAll(scheduleRepository.findScheduleForUserWithUnlinkedApprovedTimeOff(currentUser));
+                    theFutureTimeOffs.addAll(timeOffRepository.findUnlinkedApprovedTimeOffForUserSchedule(currentUser));
+                    String storeReasonDesc = "";
+
+                    if(!(hasFutureApprovedTimeOff.isEmpty() && theFutureTimeOffs.isEmpty())){
+                        for(Tbltimeoff t : theFutureTimeOffs){
+                            storeReasonDesc = t.getReasonDesc();
+                            timeOffService.deleteTimeOff(t.getTimeOffId());
+                        }
+                        for(Tblschedule s : hasFutureApprovedTimeOff){
+                            Tbltimeoff t = new Tbltimeoff();
+                            t.setBeginTimeOffDate(s.getScheduleDate());
+                            t.setEndTimeOffDate(s.getScheduleDate());
+                            t.setApproved(true);
+                            t.setReasonDesc(storeReasonDesc);
+                            t.setDay(s.getDay());
+                            t.setSchedule(s);
+                            t.setEmployee(s.getEmployee());
+
+                            timeOffRepository.save(t);
+                        }
+
+                        ErrorMessages.showInformationMessage("Time Off Requests Found",
+                                "Time off requests found for these schedules",
+                                "Time off requests have been found and updated for these schedules.");
+
+                    }
+
 
                     ErrorMessages.showInformationMessage("Successful", "Saved Schedule", selectedEmployee + "'s schedule was saved successfully");
                     loadDataToTable();

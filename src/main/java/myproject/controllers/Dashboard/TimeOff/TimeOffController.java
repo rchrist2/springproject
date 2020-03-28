@@ -316,14 +316,14 @@ public class TimeOffController implements Initializable {
                 SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
 
                 //get the selected entry's user
-                String selectedUser = tf.getSchedule().getEmployee().getUser().getUsername();
+                String selectedUser = tf.getEmployee().getUser().getUsername();
 
                 //ask the user if they are sure about the deletion
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.setTitle("Delete Time Off Request");
                 alert.setHeaderText("Are you sure?");
                 alert.setContentText("You are about to delete time off request for: " + selectedUser + " on " +
-                        tf.getSchedule().getScheduleDate() + " " +
+                        tf.getBeginTimeOffDate() + " to " + tf.getEndTimeOffDate() + " " +
                         timeFormat.format(tf.getBeginTimeOffDate()) + " to " + timeFormat.format(tf.getEndTimeOffDate()));
 
                 Optional<ButtonType> choice = alert.showAndWait();
