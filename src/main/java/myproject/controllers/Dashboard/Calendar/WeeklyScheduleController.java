@@ -14,10 +14,13 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
+import myproject.controllers.WelcomeLoginSignup.LoginController;
 import myproject.models.Tblemployee;
 import myproject.models.Tblschedule;
+import myproject.models.Tblusers;
 import myproject.repositories.EmployeeRepository;
 import myproject.repositories.ScheduleRepository;
+import myproject.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import static java.time.temporal.TemporalAdjusters.*;
@@ -67,6 +70,9 @@ public class WeeklyScheduleController implements Initializable {
     @Autowired
     private ScheduleRepository scheduleRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     private List<Tblemployee> listOfEmployees;
     private DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     private DateTimeFormatter dayFormat = DateTimeFormatter.ofPattern("MM/dd");
@@ -81,10 +87,22 @@ public class WeeklyScheduleController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        //get the current user
+        String currentUser = LoginController.userStore;
+        Tblusers currUser = userRepository.findUsername(currentUser);
+
         sunday = today.with(previousOrSame(DayOfWeek.SUNDAY));
         saturday = today.with(nextOrSame(DayOfWeek.SATURDAY));
 
-        listOfEmployees = employeeRepository.findAllEmployee();
+        //only managers and owners can see all schedules
+        if (currUser.getEmployee().getRole().getRoleName().equals("Manager")
+                || currUser.getEmployee().getRole().getRoleName().equals("Owner")){
+            listOfEmployees = employeeRepository.findAllEmployee();
+        }
+        else{ //if user is an employee, they can only see their schedule
+            listOfEmployees = employeeRepository.findAllEmployeeByUser(currentUser);
+        }
+
         gridpaneScrollPane.setFitToHeight(true);
 
         monthYearLabel.setText(LocalDate.now().getMonth().toString() + ", " + LocalDate.now().getYear());

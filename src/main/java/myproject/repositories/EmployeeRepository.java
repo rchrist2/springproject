@@ -17,6 +17,10 @@ public interface EmployeeRepository extends CrudRepository<Tblemployee, Integer>
     @Query(value = "SELECT * FROM tblemployee", nativeQuery = true)
     List<Tblemployee> findAllEmployee();
 
+    @Query(value = "SELECT * FROM tblemployee e JOIN tblusers u ON u.employee_id=e.id " +
+            "WHERE Username = :username", nativeQuery = true)
+    List<Tblemployee> findAllEmployeeByUser(@Param("username") String username);
+
     @Query(value = "SELECT * FROM tblemployee e " +
             "LEFT JOIN tblschedule s " +
             "ON e.id = s.employee_id " +
@@ -46,6 +50,17 @@ public interface EmployeeRepository extends CrudRepository<Tblemployee, Integer>
             "JOIN tblusers u ON em.id=u.employee_id " +
             "WHERE schedule_date BETWEEN CAST(:startOfTheWeek AS DATE) AND CAST(:endOfTheWeek AS DATE)", nativeQuery = true)
     List<Tblemployee> findCurrentEmployeeWithoutScheduleByWeek(@Param("startOfTheWeek") String startOfTheWeek, @Param("endOfTheWeek") String endOfTheWeek, @Param("username") String username);
+
+    @Query(value = "SELECT e.id, e.name, e.email, e.address, e.phone, e.roles_id " +
+            "FROM tblemployee e JOIN tblroles r ON r.role_id=e.roles_id WHERE role_name = :role OR role_name = :role2 " +
+            "EXCEPT " +
+            "SELECT em.id, em.name, em.email, em.address, em.phone, em.roles_id " +
+            "FROM tblemployee em " +
+            "JOIN tblschedule s " +
+            "ON em.id = s.employee_id " +
+            "JOIN tblusers u ON em.id=u.employee_id " +
+            "WHERE schedule_date BETWEEN CAST(:startOfTheWeek AS DATE) AND CAST(:endOfTheWeek AS DATE)", nativeQuery = true)
+    List<Tblemployee> findByRoleWithoutScheduleByWeek(@Param("startOfTheWeek") String startOfTheWeek, @Param("endOfTheWeek") String endOfTheWeek, @Param("role") String role, @Param("role2") String role2);
 
     @Query(value = "SELECT * FROM tblemployee e JOIN tblschedule s ON e.id = s.employee_id", nativeQuery = true)
     List<Tblemployee> findAllEmployeesWithSchedule();
@@ -78,6 +93,12 @@ public interface EmployeeRepository extends CrudRepository<Tblemployee, Integer>
             "JOIN tblschedule s ON e.id = s.employee_id JOIN tblusers u ON u.employee_id=e.id " +
             "WHERE schedule_date >= :startOfTheWeek AND schedule_date <= :endOfTheWeek AND Username = :username",nativeQuery = true)
     List<Tblemployee> findCurrentEmployeeByWeek(@Param("startOfTheWeek") String startOfTheWeek, @Param("endOfTheWeek") String endOfTheWeek, @Param("username") String username);
+
+    @Query(value = "SELECT DISTINCT e.id, e.name, e.email, e.address, e.phone, e.roles_id " +
+            "FROM tblemployee e JOIN tblroles r ON r.role_id=e.roles_id " +
+            "JOIN tblschedule s ON e.id = s.employee_id JOIN tblusers u ON u.employee_id=e.id " +
+            "WHERE schedule_date >= :startOfTheWeek AND schedule_date <= :endOfTheWeek AND (role_name = :role OR role_name = :role2)",nativeQuery = true)
+    List<Tblemployee> findByRoleByWeek(@Param("startOfTheWeek") String startOfTheWeek, @Param("endOfTheWeek") String endOfTheWeek, @Param("role") String role, @Param("role2") String role2);
 
     @Query(value = "SELECT * FROM tblemployee WHERE id = :id ", nativeQuery = true)
     Tblemployee findEmployeeById(@Param("id") int id);

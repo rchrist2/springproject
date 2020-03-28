@@ -239,27 +239,94 @@ public class ClockInOutController implements Initializable {
 
     @FXML
     private void editClock(){
-        try {
-            //open the CRUD form
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/CrudClock.fxml"));
-            fxmlLoader.setControllerFactory(springContext::getBean);
-            Parent parent = fxmlLoader.load();
-            Stage stage = new Stage();
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.initStyle(StageStyle.UNDECORATED);
-            stage.setTitle("Edit Clock In/Out Record");
+        String currentUser = LoginController.userStore;
+        Tblusers currUser = userRepository.findUsername(currentUser);
 
-            CrudClockController crudClockController = fxmlLoader.getController();
-            crudClockController.setLabel("Edit Clock Record for "
-                    + selectedClock.getSchedule().getEmployee().getName());
-            crudClockController.setClock(selectedClock);
-            crudClockController.setController(this);
+        if(!(currUser.getEmployee().getRole().getRoleName().equals("Owner"))
+                && selectedClock.getSchedule().getEmployee().getRole().getRoleName().equals("Owner")){
+            ErrorMessages.showErrorMessage("Insufficient privileges","Cannot edit an owner's clock record",
+                    "You do not have sufficient privileges to edit an owner's clock record.");
+        }
+        else{
+            try {
+                //open the CRUD form
+                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/CrudClock.fxml"));
+                fxmlLoader.setControllerFactory(springContext::getBean);
+                Parent parent = fxmlLoader.load();
+                Stage stage = new Stage();
+                stage.initModality(Modality.APPLICATION_MODAL);
+                stage.initStyle(StageStyle.UNDECORATED);
+                stage.setTitle("Edit Clock In/Out Record");
 
-            stage.setScene(new Scene(parent));
+                CrudClockController crudClockController = fxmlLoader.getController();
+                crudClockController.setLabel("Edit Clock Record for "
+                        + selectedClock.getSchedule().getEmployee().getName());
+                crudClockController.setClock(selectedClock);
+                crudClockController.setController(this);
 
-            stage.showAndWait();
+                stage.setScene(new Scene(parent));
 
-            //reload table w/ all users if the user column is visible (only visible if all users are shown)
+                stage.showAndWait();
+
+                //reload table w/ all users if the user column is visible (only visible if all users are shown)
+                if(userCol.isVisible()){
+                    reloadClockTableAllUsers();
+                    setDataForClockTableView();
+                    resetButtons();
+                }
+                else{
+                    reloadClockTable();
+                    setDataForClockTableView();
+                    resetButtons();
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    @FXML
+    private void deleteClock(){
+        //get the selected entry from the table
+        String currentUser = LoginController.userStore;
+        Tblusers currUser = userRepository.findUsername(currentUser);
+
+        if(!(currUser.getEmployee().getRole().getRoleName().equals("Owner"))
+                && selectedClock.getSchedule().getEmployee().getRole().getRoleName().equals("Owner")){
+            ErrorMessages.showErrorMessage("Insufficient privileges","Cannot delete an owner's clock record",
+                    "You do not have sufficient privileges to delete an owner's clock record.");
+        }
+        else{
+            Tblclock cl = selectedClock;
+            SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+
+            //get the selected entry's user and other info
+            String selectedUser = cl.getSchedule().getEmployee().getUser().getUsername();
+            String selectedDay = cl.getSchedule().getDay().getDayDesc();
+            String selectedDate = dateFormat.format(cl.getSchedule().getScheduleDate());
+
+            //ask the user if they are sure about deletion
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Delete Clock In/Out Record");
+            alert.setHeaderText("Are you sure?");
+            alert.setContentText("You are about to delete a clock in/out record for: " + selectedUser + " on " +
+                    selectedDay + ", " + selectedDate + " from " +
+                    timeFormat.format(cl.getPunchIn()) + " to " + timeFormat.format(cl.getPunchOut()));
+
+            Optional<ButtonType> choice = alert.showAndWait();
+
+            //if the user clicks "OK", delete the entry
+            if(choice.get() == ButtonType.OK) {
+                clockService.deleteClock(cl.getClockId());
+            }
+            else{
+                System.out.println("Delete cancelled");
+            }
+
+            //reload table with all users if the user column is visible
             if(userCol.isVisible()){
                 reloadClockTableAllUsers();
                 setDataForClockTableView();
@@ -270,53 +337,9 @@ public class ClockInOutController implements Initializable {
                 setDataForClockTableView();
                 resetButtons();
             }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
-    private void deleteClock(){
-        //get the selected entry from the table
-        Tblclock cl = selectedClock;
-        SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
-
-        //get the selected entry's user and other info
-        String selectedUser = cl.getSchedule().getEmployee().getUser().getUsername();
-        String selectedDay = cl.getSchedule().getDay().getDayDesc();
-        String selectedDate = dateFormat.format(cl.getSchedule().getScheduleDate());
-
-        //ask the user if they are sure about deletion
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Delete Clock In/Out Record");
-        alert.setHeaderText("Are you sure?");
-        alert.setContentText("You are about to delete a clock in/out record for: " + selectedUser + " on " +
-                selectedDay + ", " + selectedDate + " from " +
-                timeFormat.format(cl.getPunchIn()) + " to " + timeFormat.format(cl.getPunchOut()));
-
-        Optional<ButtonType> choice = alert.showAndWait();
-
-        //if the user clicks "OK", delete the entry
-        if(choice.get() == ButtonType.OK) {
-            clockService.deleteClock(cl.getClockId());
-        }
-        else{
-            System.out.println("Delete cancelled");
         }
 
-        //reload table with all users if the user column is visible
-        if(userCol.isVisible()){
-            reloadClockTableAllUsers();
-            setDataForClockTableView();
-            resetButtons();
-        }
-        else{
-            reloadClockTable();
-            setDataForClockTableView();
-            resetButtons();
-        }
+
     }
 
     private void setDataForClockTableView(){

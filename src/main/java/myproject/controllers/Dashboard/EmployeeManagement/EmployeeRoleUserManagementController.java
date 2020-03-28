@@ -263,6 +263,10 @@ public class EmployeeRoleUserManagementController implements Initializable {
     @SuppressWarnings("Duplicates")
     @FXML
     private void handleCrudButton(ActionEvent event) {
+        //get the current user
+        String currentUser = LoginController.userStore;
+        Tblusers currUser = userRepository.findUsername(currentUser);
+
         //Grab the button that was clicked
         Button clickedButton = (Button) event.getSource();
 
@@ -296,28 +300,36 @@ public class EmployeeRoleUserManagementController implements Initializable {
             case "Edit Employee":
                 System.out.println("Edit a Employee");
 
-                try {
-                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/CrudEmployee.fxml"));
-                    fxmlLoader.setControllerFactory(springContext::getBean);
-                    Parent parent = fxmlLoader.load();
-                    Stage stage = new Stage();
-                    stage.initModality(Modality.APPLICATION_MODAL);
-                    stage.initStyle(StageStyle.UNDECORATED);
-                    stage.setTitle("Employee Manager");
+                if(!(currUser.getEmployee().getRole().getRoleName().equals("Owner"))
+                && emp.getRole().getRoleName().equals("Owner")){
+                    ErrorMessages.showErrorMessage("Insufficient privileges","Cannot edit an owner account",
+                            "You do not have sufficient privileges to edit an owner's account.");
+                    break;
+                }
+                else{
+                    try {
+                        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/CrudEmployee.fxml"));
+                        fxmlLoader.setControllerFactory(springContext::getBean);
+                        Parent parent = fxmlLoader.load();
+                        Stage stage = new Stage();
+                        stage.initModality(Modality.APPLICATION_MODAL);
+                        stage.initStyle(StageStyle.UNDECORATED);
+                        stage.setTitle("Employee Manager");
 
-                    CrudEmployeeController crudEmployeeController = fxmlLoader.getController();
-                    crudEmployeeController.setLabel("Edit Employee", "Save");
-                    crudEmployeeController.setEmployeeForEdit();
-                    crudEmployeeController.setEmployee(emp);
-                    crudEmployeeController.setController(this);
+                        CrudEmployeeController crudEmployeeController = fxmlLoader.getController();
+                        crudEmployeeController.setLabel("Edit Employee", "Save");
+                        crudEmployeeController.setEmployeeForEdit();
+                        crudEmployeeController.setEmployee(emp);
+                        crudEmployeeController.setController(this);
 
-                    stage.setScene(new Scene(parent));
+                        stage.setScene(new Scene(parent));
 
-                    stage.showAndWait();
-                    reloadEmployeeTableView();
-                    resetButtons();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                        stage.showAndWait();
+                        reloadEmployeeTableView();
+                        resetButtons();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
                 break;
             case "Delete":
@@ -397,6 +409,10 @@ public class EmployeeRoleUserManagementController implements Initializable {
 
     @FXML
     private void handleSaveRole(ActionEvent event) {
+        //get the current user
+        String currentUser = LoginController.userStore;
+        Tblusers currUser = userRepository.findUsername(currentUser);
+
         Button button = (Button) event.getSource();
 
         TblRoles role = roleTableView.getSelectionModel().getSelectedItem();
@@ -424,57 +440,73 @@ public class EmployeeRoleUserManagementController implements Initializable {
                 }
                 break;
             case "Edit Role":
-                try {
-                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/CrudRole.fxml"));
-                    fxmlLoader.setControllerFactory(springContext::getBean);
-                    Parent parent = fxmlLoader.load();
-                    Stage stage = new Stage();
-                    stage.initModality(Modality.APPLICATION_MODAL);
-                    stage.initStyle(StageStyle.UNDECORATED);
-                    stage.setTitle("Role Manager");
-
-                    CrudRoleController crudRoleController = fxmlLoader.getController();
-                    crudRoleController.setLabel("Edit Role", "Update");
-                    crudRoleController.setRole(role);
-                    crudRoleController.setController(this);
-
-                    stage.setScene(new Scene(parent));
-                    stage.showAndWait();
-                    reloadRoleTableView();
-                } catch (Exception e) {
-                    e.printStackTrace();
+                if(!(currUser.getEmployee().getRole().getRoleName().equals("Owner"))
+                && role.getRoleName().equals("Owner")){
+                    ErrorMessages.showErrorMessage("Insufficient privileges","Cannot edit an owner role",
+                            "You do not have sufficient privileges to edit the owner role.");
+                    break;
                 }
-                break;
+                else{
+                    try {
+                        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/CrudRole.fxml"));
+                        fxmlLoader.setControllerFactory(springContext::getBean);
+                        Parent parent = fxmlLoader.load();
+                        Stage stage = new Stage();
+                        stage.initModality(Modality.APPLICATION_MODAL);
+                        stage.initStyle(StageStyle.UNDECORATED);
+                        stage.setTitle("Role Manager");
+
+                        CrudRoleController crudRoleController = fxmlLoader.getController();
+                        crudRoleController.setLabel("Edit Role", "Update");
+                        crudRoleController.setRole(role);
+                        crudRoleController.setController(this);
+
+                        stage.setScene(new Scene(parent));
+                        stage.showAndWait();
+                        reloadRoleTableView();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                }
             case "Delete":
-                System.out.println("Delete a Employee");
+                if(!(currUser.getEmployee().getRole().getRoleName().equals("Owner"))
+                        && role.getRoleName().equals("Owner")){
+                    ErrorMessages.showErrorMessage("Insufficient privileges","Cannot delete an owner role",
+                            "You do not have sufficient privileges to delete the owner role.");
+                    break;
+                }
+                else{
+                    System.out.println("Delete a Employee");
 
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setTitle("Delete Role");
-                alert.setHeaderText("Are you sure?");
-                alert.setContentText("You are about to delete: " + role.getRoleName());
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                    alert.setTitle("Delete Role");
+                    alert.setHeaderText("Are you sure?");
+                    alert.setContentText("You are about to delete: " + role.getRoleName());
 
-                Optional<ButtonType> choice = alert.showAndWait();
-                if (choice.get() == ButtonType.OK) {
-                    if (role != null && roleRepository.findAllEmployeeWithRoleId(role.getRoleId()).isEmpty()) {
+                    Optional<ButtonType> choice = alert.showAndWait();
+                    if (choice.get() == ButtonType.OK) {
+                        if (role != null && roleRepository.findAllEmployeeWithRoleId(role.getRoleId()).isEmpty()) {
 
                         /*
                           ON DELETE CASCADE works in a way we can't apply, so we have to delete
                           each row in order
                         */
-                        roleRepository.delete(role);
+                            roleRepository.delete(role);
 
-                        reloadRoleTableView();
-                    } else {
-                        StringBuilder roleError = new StringBuilder();
-                        for (String name : roleRepository.findAllEmployeeWithRoleId(role.getRoleId())) {
-                            roleError.append("\t- " + name + "\n");
+                            reloadRoleTableView();
+                        } else {
+                            StringBuilder roleError = new StringBuilder();
+                            for (String name : roleRepository.findAllEmployeeWithRoleId(role.getRoleId())) {
+                                roleError.append("\t- " + name + "\n");
+                            }
+
+                            ErrorMessages.showWarningMessage("Warning!", "Please make sure no employees have this role.",
+                                    "The following employees have this role: \n" + roleError);
                         }
-
-                        ErrorMessages.showWarningMessage("Warning!", "Please make sure no employees have this role.",
-                                "The following employees have this role: \n" + roleError);
                     }
+                    break;
                 }
-                break;
         }
     }
 

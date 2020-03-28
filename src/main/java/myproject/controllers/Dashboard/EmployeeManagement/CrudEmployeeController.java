@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 import myproject.ErrorMessages;
 import myproject.SecurePassword;
 import myproject.Validation;
+import myproject.controllers.WelcomeLoginSignup.LoginController;
 import myproject.models.TblRoles;
 import myproject.models.Tblemployee;
 import myproject.models.Tblusers;
@@ -106,13 +107,25 @@ public class CrudEmployeeController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        //get the current user
+        String currentUser = LoginController.userStore;
+        Tblusers currUser = userRepository.findUsername(currentUser);
+
         changePasswordChecked = false;
 
         listOfDaysObs = FXCollections.observableArrayList();
         listOfRoleObs = FXCollections.observableArrayList();
 
         listOfDaysObs.setAll(dayRepository.findAllDays());
-        listOfRoleObs.setAll(roleRepository.findAll());
+
+        //if they are not an owner, they are a manager and cannot create owner accounts
+        if(!(currUser.getEmployee().getRole().getRoleName().equals("Owner"))){
+            listOfRoleObs.add(roleRepository.findRole("Manager"));
+            listOfRoleObs.add(roleRepository.findRole("Employee"));
+        }
+        else{
+            listOfRoleObs.setAll(roleRepository.findAll());
+        }
 
         roleComboBox.setItems(listOfRoleObs);
 
