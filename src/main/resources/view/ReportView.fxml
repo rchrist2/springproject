@@ -1,14 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="myproject.controllers.Dashboard.Report.ReportController"
-            prefHeight="400.0" prefWidth="600.0">
-
+<AnchorPane prefHeight="750.0" prefWidth="985.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.Dashboard.Report.ReportController">
+   <children>
+      <Pane prefHeight="115.0" prefWidth="985.0" style="-fx-background-color: linear-gradient(to right, #39a7c3 , white); -fx-border-color: transparent transparent derive(black, 10%) transparent;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <VBox prefHeight="115.0" prefWidth="985.0">
+               <children>
+                  <Label fx:id="titleLabel" alignment="CENTER" prefHeight="75.0" prefWidth="985.0" text="Reports">
+                     <font>
+                        <Font name="System Bold Italic" size="36.0" />
+                     </font>
+                  </Label>
+                  <Pane prefWidth="985.0">
+                     <children>
+                        <HBox fx:id="employeeManagementNavBar" alignment="BOTTOM_RIGHT" prefHeight="40.0" prefWidth="985.0" spacing="15.0" style="-fx-background-color: linear-gradient(to right, #39a7c3 , white); -fx-border-color: transparent transparent derive(black, 0) transparent;">
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="15.0" />
+                           </padding>
+                        </HBox>
+                     </children>
+                  </Pane>
+               </children>
+            </VBox>
+         </children>
+      </Pane>
+      <AnchorPane layoutY="115.0" prefHeight="635.0" prefWidth="985.0" style="-fx-background-color: white;">
+         <children>
+            <Label layoutX="370.0" layoutY="83.0" text="Select Report:">
+               <font>
+                  <Font name="System Italic" size="18.0" />
+               </font>
+            </Label>
+            <TableView fx:id="reportTable" layoutX="68.0" layoutY="264.0" prefHeight="339.0" prefWidth="808.0" />
+            <SplitMenuButton fx:id="reportList" layoutX="485.0" layoutY="84.0" prefWidth="150.0" text="Select Report">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#showHours" text="Cumulative Hours" />
+                  <MenuItem mnemonicParsing="false" onAction="#showScheduleThisWeek" text="Schedule This Week" />
+                  <MenuItem mnemonicParsing="false" onAction="#showDaysOff" text="No. of Days Off" />
+               </items></SplitMenuButton>
+            <Label fx:id="tableUserLabel" layoutX="68.0" layoutY="232.0" text="_ Report for User">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+            <Button fx:id="saveReportButton" layoutX="784.0" layoutY="230.0" mnemonicParsing="false" onAction="#saveReport" style="-fx-background-color: #39a7c3;" text="Save Report" textFill="WHITE">
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </Button>
+         </children>
+      </AnchorPane>
+   </children>
 </AnchorPane>

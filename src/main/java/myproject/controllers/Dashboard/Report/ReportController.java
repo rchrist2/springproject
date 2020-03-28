@@ -1,17 +1,246 @@
 package myproject.controllers.Dashboard.Report;
 
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Stage;
+import myproject.ConnectionClass;
+import myproject.ErrorMessages;
+import myproject.controllers.WelcomeLoginSignup.LoginController;
+import myproject.models.TblRoles;
+import myproject.models.Tblclock;
+import myproject.models.Tblemployee;
+import myproject.models.Tblusers;
+import myproject.repositories.*;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.Row;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.ResourceBundle;
 
 @Component
 public class ReportController implements Initializable {
 
+    @Autowired
+    private ConfigurableApplicationContext springContext;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private EmployeeRepository employeeRepository;
+
+    @Autowired
+    private ScheduleRepository scheduleRepository;
+
+    @Autowired
+    private ClockRepository clockRepository;
+
+    @Autowired
+    private TimeOffRepository timeOffRepository;
+
+    @FXML
+    private Label tableUserLabel;
+
+    ConnectionClass connectClass;
+
+    @FXML
+    public TableView<ObservableList<String>> reportTable;
+
+    public ObservableList<ObservableList<String>> tableData;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        //get the current user
+        String currentUser = LoginController.userStore;
+        Tblusers currUser = userRepository.findUsername(currentUser);
+
+        tableUserLabel.setText("Report for " + currUser.getEmployee().getName());
+
+        tableData = FXCollections.observableArrayList();
+
+    }
+
+    @FXML
+    private void saveReport(ActionEvent event) throws IOException {
+        Stage stage = (Stage)((Node) event.getSource()).getScene().getWindow();
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        File selectedDirectory = directoryChooser.showDialog(stage);
+
+        Workbook workbook = new HSSFWorkbook();
+        Sheet spreadsheet = workbook.createSheet("sample");
+
+        Row row = spreadsheet.createRow(0);
+
+        for (int j = 0; j < reportTable.getColumns().size(); j++) {
+            row.createCell(j).setCellValue(reportTable.getColumns().get(j).getText());
+        }
+
+        for (int i = 0; i < reportTable.getItems().size(); i++) {
+            row = spreadsheet.createRow(i + 1);
+            for (int j = 0; j < reportTable.getColumns().size(); j++) {
+                if(reportTable.getColumns().get(j).getCellData(i) != null) {
+                    row.createCell(j).setCellValue(reportTable.getColumns().get(j).getCellData(i).toString());
+                }
+                else {
+                    row.createCell(j).setCellValue("");
+                }
+            }
+        }
+
+        String timeStamp = new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
+
+        FileOutputStream fileOut = new FileOutputStream(selectedDirectory.getAbsolutePath()
+                + "/Report " + timeStamp  + " - " + tableUserLabel.getText() + ".xls");
+        workbook.write(fileOut);
+        fileOut.close();
+
+    }
+
+    @FXML
+    private void showHours(){
+        //clear the columns and rows from the previous query
+        reportTable.getColumns().clear();
+        reportTable.getItems().clear();
+
+        //get the current user
+        String currentUser = LoginController.userStore;
+        Tblusers currUser = userRepository.findUsername(currentUser);
+
+        tableUserLabel.setText("Cumulative Hours This Week for " + currUser.getEmployee().getName());
+
+        //Connect to Database
+        Connection c;
+        try {
+            c = connectClass.connect();
+            String SQL = "SELECT CAST(ROUND(SUM(DATEDIFF(SECOND, punch_in, punch_out)/3600.0),2)AS DECIMAL(8,2)) AS \"Total Hours\"\n" +
+                    "FROM tblclock c JOIN tblschedule s ON s.schedule_id=c.schedule_id \n" +
+                    "JOIN tblemployee e ON s.employee_id=e.id JOIN tblusers u ON u.employee_id=e.id\n" +
+                    "WHERE Username = '" + currentUser + "' AND DATEPART(week, date_created) = DATEPART(week, GETDATE())";
+            ResultSet rs = c.createStatement().executeQuery(SQL);
+            int index = rs.getMetaData().getColumnCount();
+            //dynamically add table columns, so they are made based off database columns
+            //Not sure if this method will make it harder to add data later
+            for (int i = 0; i < index; i++) {
+                final int j = i;
+                TableColumn<ObservableList<String>, String> col = new TableColumn<>(rs.getMetaData().getColumnName(i + 1));
+                col.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().get(j)));
+                reportTable.getColumns().addAll(col);
+                //System.out.println("Column [" + i + "] ");
+                //add to observable list
+                while (rs.next()) {
+                    //Iterate Row
+                    ObservableList<String> row = FXCollections.observableArrayList();
+                    for (int k = 1; k <= rs.getMetaData().getColumnCount(); k++) {
+                        //Iterate Column
+                        row.add(rs.getString(k));
+                    }
+                    //System.out.println("Row [1] added " + row);
+                    tableData.add(row);
+                }
+                //add to tableview
+                reportTable.setItems(tableData);
+            }
+            c.close();
+        }
+        catch(Exception e){ //catch any exceptions
+            e.printStackTrace();
+            System.out.println("Error on Building Reports Table Data");
+        }
+
+    }
+
+    @FXML
+    private void showScheduleThisWeek(){
+        //clear the columns and rows from the previous query
+        reportTable.getColumns().clear();
+        reportTable.getItems().clear();
+
+        //get the current user
+        String currentUser = LoginController.userStore;
+        Tblusers currUser = userRepository.findUsername(currentUser);
+
+        tableUserLabel.setText("Schedule This Week for " + currUser.getEmployee().getName());
+
+        //Connect to Database
+        Connection c;
+        try {
+            c = connectClass.connect();
+            String SQL = "SELECT CONVERT(varchar(15),CAST(schedule_time_begin AS TIME),100) AS \"Start Time\"," +
+                    " CONVERT(varchar(15),CAST(schedule_time_end AS TIME),100) AS \"End Time\", " +
+                    "CAST(schedule_date AS DATE) AS \"Schedule Date\", " +
+                    "day_desc AS \"Day of Week\" FROM tblschedule s JOIN tblemployee e ON s.employee_id=e.id JOIN \n" +
+                    "tblusers u ON e.id=u.employee_id " +
+                    "JOIN tblday d ON s.day_id=d.day_id WHERE Username = '" + currentUser + "' " +
+                    "AND DATEPART(week, s.schedule_date) = DATEPART(week, GETDATE())";
+            ResultSet rs = c.createStatement().executeQuery(SQL);
+            int index = rs.getMetaData().getColumnCount();
+            //dynamically add table columns, so they are made based off database columns
+            //Not sure if this method will make it harder to add data later
+            for (int i = 0; i < index; i++) {
+                final int j = i;
+                TableColumn<ObservableList<String>, String> col = new TableColumn<>(rs.getMetaData().getColumnName(i + 1));
+                col.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().get(j)));
+                reportTable.getColumns().addAll(col);
+                //System.out.println("Column [" + i + "] ");
+                //add to observable list
+                while (rs.next()) {
+                    //Iterate Row
+                    ObservableList<String> row = FXCollections.observableArrayList();
+                    for (int k = 1; k <= rs.getMetaData().getColumnCount(); k++) {
+                        //Iterate Column
+                        row.add(rs.getString(k));
+                    }
+                    //System.out.println("Row [1] added " + row);
+                    tableData.add(row);
+                }
+                //add to tableview
+                reportTable.setItems(tableData);
+            }
+            c.close();
+        }
+        catch(Exception e){ //catch any exceptions
+            e.printStackTrace();
+            System.out.println("Error on Building Reports Table Data");
+        }
+
+    }
+
+    @FXML
+    private void showDaysOff(){
+        //clear the columns and rows from the previous query
+        reportTable.getColumns().clear();
+        reportTable.getItems().clear();
+
+        //get the current user
+        String currentUser = LoginController.userStore;
+        Tblusers currUser = userRepository.findUsername(currentUser);
+
+        tableUserLabel.setText("Days Taken Off for " + currUser.getEmployee().getName());
 
     }
 }

@@ -139,6 +139,13 @@ public class DashboardController implements Initializable {
                 newButton = clickedButton;
                 newButton.setDisable(true);
                 break;
+            case "Reports":
+                newButton.setDisable(false);
+                System.out.println("You clicked the Reports button");
+                switchWindow("/view/ReportView.fxml");
+                newButton = clickedButton;
+                newButton.setDisable(true);
+                break;
             case "Logout":
                 System.out.println("You clicked the Return to Sign In button");
 
