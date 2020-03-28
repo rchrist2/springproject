@@ -32,7 +32,7 @@ public class Tblusers {
     }
 
     //one user account can belong to only one employee
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "employee_id", referencedColumnName = "id")
     public Tblemployee getEmployee() {
         return employee;

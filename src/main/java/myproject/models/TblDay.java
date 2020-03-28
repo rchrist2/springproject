@@ -14,7 +14,7 @@ public class TblDay {
     private Set<Tbltimeoff> timeOffs;
 
     //one day can be used in many schedules
-    @OneToMany(fetch = FetchType.LAZY,mappedBy = "day",cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "day",cascade = CascadeType.ALL)
     public Set<Tblschedule> getSchedules() {
         return schedules;
     }
@@ -23,7 +23,7 @@ public class TblDay {
         this.schedules = schedules;
     }
 
-    @OneToMany(fetch = FetchType.LAZY,mappedBy = "day",cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "day",cascade = CascadeType.ALL)
     public Set<Tblclock> getClocks() {
         return clocks;
     }
@@ -32,7 +32,7 @@ public class TblDay {
         this.clocks = clocks;
     }
 
-    @OneToMany(fetch = FetchType.LAZY,mappedBy = "day",cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "day",cascade = CascadeType.ALL)
     public Set<Tbltimeoff> getTimeOffs() {
         return timeOffs;
     }

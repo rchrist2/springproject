@@ -27,7 +27,7 @@ public class Tblclock {
         this.dayDesc = dayDesc;
     }*/
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "day_id", referencedColumnName = "day_id")
     public TblDay getDay() {
         return day;
@@ -38,7 +38,7 @@ public class Tblclock {
     }
 
     //many clock-ins/outs can be used for one schedule
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "schedule_id", referencedColumnName = "schedule_id")
     public Tblschedule getSchedule() {
         return schedule;

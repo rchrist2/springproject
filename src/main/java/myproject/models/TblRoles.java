@@ -52,7 +52,7 @@ public class TblRoles {
     }
 
     //one role can belong to many employees
-    @OneToMany(fetch = FetchType.LAZY,mappedBy = "role",cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "role",cascade = CascadeType.ALL)
     public Set<Tblemployee> getEmployee() {
         return employees;
     }

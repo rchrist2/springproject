@@ -31,7 +31,6 @@ myproject\controllers\Dashboard\TimeOff\TimeOffApproveController.class
 myproject\controllers\WelcomeLoginSignup\ReplacePassController.class
 myproject\models\Tblclock.class
 myproject\ConnectionClass.class
-myproject\controllers\Dashboard\DashboardController$2.class
 myproject\repositories\DayRepository.class
 myproject\controllers\Dashboard\EmployeeManagement\EmployeeSchedulerController.class
 myproject\controllers\Dashboard\EmployeeManagement\EmployeeRoleUserManagementController.class
@@ -42,4 +41,3 @@ myproject\controllers\Dashboard\EmployeeManagement\CrudRoleController.class
 myproject\ErrorMessages.class
 myproject\services\RoleService.class
 myproject\controllers\Dashboard\EmployeeManagement\CrudEmployeeController.class
-myproject\controllers\Dashboard\DashboardController$1.class
