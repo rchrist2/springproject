@@ -38,6 +38,12 @@ public interface TimeOffRepository extends CrudRepository<Tbltimeoff, Integer> {
     @Query(value = "SELECT * FROM tbltimeoff ", nativeQuery = true)
     List<Tbltimeoff> findAllTimeOff();
 
+    //Returns a list of all time offs
+    @Query(value = "SELECT * FROM tbltimeoff t JOIN tblemployee e ON " +
+            "t.employee_id=e.id JOIN tblroles r ON r.role_id=e.roles_id" +
+            " WHERE role_name NOT IN ('Owner')", nativeQuery = true)
+    List<Tbltimeoff> findAllTimeOffByRole();
+
     @Modifying
     @Query(value = "DELETE FROM tbltimeoff WHERE time_off_id = :id", nativeQuery = true)
     void deleteTimeOff(@Param("id") int id);

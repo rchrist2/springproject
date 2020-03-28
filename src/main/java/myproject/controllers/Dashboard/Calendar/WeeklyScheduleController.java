@@ -95,9 +95,11 @@ public class WeeklyScheduleController implements Initializable {
         saturday = today.with(nextOrSame(DayOfWeek.SATURDAY));
 
         //only managers and owners can see all schedules
-        if (currUser.getEmployee().getRole().getRoleName().equals("Manager")
-                || currUser.getEmployee().getRole().getRoleName().equals("Owner")){
+        if (currUser.getEmployee().getRole().getRoleName().equals("Owner")){
             listOfEmployees = employeeRepository.findAllEmployee();
+        }
+        else if(currUser.getEmployee().getRole().getRoleName().equals("Manager")){
+            listOfEmployees = employeeRepository.findAllEmployeeByRole();
         }
         else{ //if user is an employee, they can only see their schedule
             listOfEmployees = employeeRepository.findAllEmployeeByUser(currentUser);

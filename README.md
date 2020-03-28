@@ -97,3 +97,7 @@ https://www.baeldung.com/spring-email
 https://loading.io/license/
 https://stackoverflow.com/questions/45778386/in-javafx-how-to-remove-a-specific-node-from-a-gridpane-with-the-coordinate-of
 https://www.javaguides.net/2020/02/java-sha-512-hash-with-salt-example.html
+https://stackoverflow.com/questions/9375938/javafx-filechooser
+https://stackoverflow.com/questions/46017483/javafx-export-tableview-to-excel-with-name-of-columns
+https://stackoverflow.com/questions/5175728/how-to-get-the-current-date-time-in-java
+https://stackoverflow.com/questions/10828492/convert-time-datatype-into-am-pm-format

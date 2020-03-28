@@ -239,15 +239,6 @@ public class ClockInOutController implements Initializable {
 
     @FXML
     private void editClock(){
-        String currentUser = LoginController.userStore;
-        Tblusers currUser = userRepository.findUsername(currentUser);
-
-        if(!(currUser.getEmployee().getRole().getRoleName().equals("Owner"))
-                && selectedClock.getSchedule().getEmployee().getRole().getRoleName().equals("Owner")){
-            ErrorMessages.showErrorMessage("Insufficient privileges","Cannot edit an owner's clock record",
-                    "You do not have sufficient privileges to edit an owner's clock record.");
-        }
-        else{
             try {
                 //open the CRUD form
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/CrudClock.fxml"));
@@ -283,22 +274,11 @@ public class ClockInOutController implements Initializable {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
 
     }
 
     @FXML
     private void deleteClock(){
-        //get the selected entry from the table
-        String currentUser = LoginController.userStore;
-        Tblusers currUser = userRepository.findUsername(currentUser);
-
-        if(!(currUser.getEmployee().getRole().getRoleName().equals("Owner"))
-                && selectedClock.getSchedule().getEmployee().getRole().getRoleName().equals("Owner")){
-            ErrorMessages.showErrorMessage("Insufficient privileges","Cannot delete an owner's clock record",
-                    "You do not have sufficient privileges to delete an owner's clock record.");
-        }
-        else{
             Tblclock cl = selectedClock;
             SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
             SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
@@ -337,7 +317,6 @@ public class ClockInOutController implements Initializable {
                 setDataForClockTableView();
                 resetButtons();
             }
-        }
 
 
     }
@@ -371,7 +350,17 @@ public class ClockInOutController implements Initializable {
         clockTable.setItems(listOfClock);
         userCol.setVisible(true);
 
-        listOfClock.addAll(clockRepository.findClockThisWeekAllUser());
+        //get the current user
+        String currentUser = LoginController.userStore;
+        Tblusers currUser = userRepository.findUsername(currentUser);
+
+        if (currUser.getEmployee().getRole().getRoleName().equals("Owner")){
+            listOfClock.addAll(clockRepository.findClockThisWeekAllUser());
+        }
+        else if(currUser.getEmployee().getRole().getRoleName().equals("Manager")){
+            listOfClock.addAll(clockRepository.findClockThisWeekAllUserByRole());
+        }
+
         filteredListOfClock = new FilteredList<>(listOfClock);
         clockTable.setItems(filteredListOfClock);
         tableUserLabel.setText("Clock History This Week for All Users");

@@ -172,14 +172,24 @@ public class EmployeeRoleUserManagementController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        //get the current user
+        String currentUser = LoginController.userStore;
+        Tblusers currUser = userRepository.findUsername(currentUser);
+
         //Initialize the observable list and add all the employees to the list
         listOfEmployees = FXCollections.observableArrayList();
         listOfRoles = FXCollections.observableArrayList();
         listOfUsers = FXCollections.observableArrayList();
 
-        listOfEmployees.addAll(employeeRepository.findAllEmployee());
-        listOfRoles.addAll(roleRepository.findAll());
-        listOfUsers.addAll(userRepository.findAll());
+        if (currUser.getEmployee().getRole().getRoleName().equals("Owner")){
+            listOfEmployees.addAll(employeeRepository.findAllEmployee());
+            listOfRoles.addAll(roleRepository.findAll());
+            listOfUsers.addAll(userRepository.findAll());
+        }
+        else if(currUser.getEmployee().getRole().getRoleName().equals("Manager")){
+            listOfEmployees.addAll(employeeRepository.findAllEmployeeByRole());
+            listOfRoles.addAll(roleRepository.findNotOwnerRoles());
+        }
 
         reloadEmployeeTableView();
         setDataForEmployeeTableView();
@@ -243,7 +253,16 @@ public class EmployeeRoleUserManagementController implements Initializable {
     private void reloadEmployeeTableView() {
         listOfEmployees.clear();
 
-        listOfEmployees.addAll(employeeRepository.findAllEmployee());
+        //get the current user
+        String currentUser = LoginController.userStore;
+        Tblusers currUser = userRepository.findUsername(currentUser);
+
+        if (currUser.getEmployee().getRole().getRoleName().equals("Owner")){
+            listOfEmployees.addAll(employeeRepository.findAllEmployee());
+        }
+        else if(currUser.getEmployee().getRole().getRoleName().equals("Manager")){
+            listOfEmployees.addAll(employeeRepository.findAllEmployeeByRole());
+        }
 
         filteredListOfEmployees = new FilteredList<>(listOfEmployees);
 
@@ -263,10 +282,6 @@ public class EmployeeRoleUserManagementController implements Initializable {
     @SuppressWarnings("Duplicates")
     @FXML
     private void handleCrudButton(ActionEvent event) {
-        //get the current user
-        String currentUser = LoginController.userStore;
-        Tblusers currUser = userRepository.findUsername(currentUser);
-
         //Grab the button that was clicked
         Button clickedButton = (Button) event.getSource();
 
@@ -300,37 +315,30 @@ public class EmployeeRoleUserManagementController implements Initializable {
             case "Edit Employee":
                 System.out.println("Edit a Employee");
 
-                if(!(currUser.getEmployee().getRole().getRoleName().equals("Owner"))
-                && emp.getRole().getRoleName().equals("Owner")){
-                    ErrorMessages.showErrorMessage("Insufficient privileges","Cannot edit an owner account",
-                            "You do not have sufficient privileges to edit an owner's account.");
-                    break;
-                }
-                else{
-                    try {
-                        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/CrudEmployee.fxml"));
-                        fxmlLoader.setControllerFactory(springContext::getBean);
-                        Parent parent = fxmlLoader.load();
-                        Stage stage = new Stage();
-                        stage.initModality(Modality.APPLICATION_MODAL);
-                        stage.initStyle(StageStyle.UNDECORATED);
-                        stage.setTitle("Employee Manager");
+                 try {
+                     FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/CrudEmployee.fxml"));
+                     fxmlLoader.setControllerFactory(springContext::getBean);
+                     Parent parent = fxmlLoader.load();
+                     Stage stage = new Stage();
+                     stage.initModality(Modality.APPLICATION_MODAL);
+                     stage.initStyle(StageStyle.UNDECORATED);
+                     stage.setTitle("Employee Manager");
 
-                        CrudEmployeeController crudEmployeeController = fxmlLoader.getController();
-                        crudEmployeeController.setLabel("Edit Employee", "Save");
-                        crudEmployeeController.setEmployeeForEdit();
-                        crudEmployeeController.setEmployee(emp);
-                        crudEmployeeController.setController(this);
+                     CrudEmployeeController crudEmployeeController = fxmlLoader.getController();
+                     crudEmployeeController.setLabel("Edit Employee", "Save");
+                     crudEmployeeController.setEmployeeForEdit();
+                     crudEmployeeController.setEmployee(emp);
+                     crudEmployeeController.setController(this);
 
-                        stage.setScene(new Scene(parent));
+                     stage.setScene(new Scene(parent));
 
-                        stage.showAndWait();
-                        reloadEmployeeTableView();
-                        resetButtons();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
+                     stage.showAndWait();
+                     reloadEmployeeTableView();
+                     resetButtons();
+                 } catch (IOException e) {
+                     e.printStackTrace();
+                 }
+
                 break;
             case "Delete":
                 System.out.println("Delete a Employee");
@@ -395,7 +403,16 @@ public class EmployeeRoleUserManagementController implements Initializable {
     private void reloadRoleTableView() {
         listOfRoles.clear();
 
-        listOfRoles.addAll(roleRepository.findAll());
+        //get the current user
+        String currentUser = LoginController.userStore;
+        Tblusers currUser = userRepository.findUsername(currentUser);
+
+        if (currUser.getEmployee().getRole().getRoleName().equals("Owner")){
+            listOfRoles.addAll(roleRepository.findAll());
+        }
+        else if(currUser.getEmployee().getRole().getRoleName().equals("Manager")){
+            listOfRoles.addAll(roleRepository.findNotOwnerRoles());
+        }
 
         filteredListOfRoles = new FilteredList<>(listOfRoles);
 
@@ -440,13 +457,6 @@ public class EmployeeRoleUserManagementController implements Initializable {
                 }
                 break;
             case "Edit Role":
-                if(!(currUser.getEmployee().getRole().getRoleName().equals("Owner"))
-                && role.getRoleName().equals("Owner")){
-                    ErrorMessages.showErrorMessage("Insufficient privileges","Cannot edit an owner role",
-                            "You do not have sufficient privileges to edit the owner role.");
-                    break;
-                }
-                else{
                     try {
                         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/CrudRole.fxml"));
                         fxmlLoader.setControllerFactory(springContext::getBean);
@@ -468,15 +478,7 @@ public class EmployeeRoleUserManagementController implements Initializable {
                         e.printStackTrace();
                     }
                     break;
-                }
             case "Delete":
-                if(!(currUser.getEmployee().getRole().getRoleName().equals("Owner"))
-                        && role.getRoleName().equals("Owner")){
-                    ErrorMessages.showErrorMessage("Insufficient privileges","Cannot delete an owner role",
-                            "You do not have sufficient privileges to delete the owner role.");
-                    break;
-                }
-                else{
                     System.out.println("Delete a Employee");
 
                     Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -506,7 +508,6 @@ public class EmployeeRoleUserManagementController implements Initializable {
                         }
                     }
                     break;
-                }
         }
     }
 

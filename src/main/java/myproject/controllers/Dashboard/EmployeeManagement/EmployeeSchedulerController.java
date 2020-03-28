@@ -156,10 +156,14 @@ public class EmployeeSchedulerController implements Initializable {
         listOfEmployees = FXCollections.observableArrayList();
         listOfSchedules = FXCollections.observableArrayList();
 
-        //if user is not an owner or manager, only show their specific schedule
-        if (userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
-                || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner")){
+        //limit schedules shown by role
+        if (userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner")){
             listOfEmployees.setAll(employeeRepository.findAllEmployeesWithoutScheduleByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert)));
+
+            employeeListView.setItems(listOfEmployees);
+        }
+        else if(userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")){
+            listOfEmployees.setAll(employeeRepository.findByRoleWithoutScheduleByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert)));
 
             employeeListView.setItems(listOfEmployees);
         }
@@ -187,18 +191,8 @@ public class EmployeeSchedulerController implements Initializable {
 
     @FXML
     private void handleSelectedEmployee(){
-        //get the current user
-        String currentUser = LoginController.userStore;
-        Tblusers currUser = userRepository.findUsername(currentUser);
-
         if(employeeListView.getSelectionModel().getSelectedItem() != null){
             selectedEmployee = employeeRepository.findEmployeeById(employeeListView.getSelectionModel().getSelectedItem().getId());
-            if(!(currUser.getEmployee().getRole().getRoleName().equals("Owner"))
-                    &&  selectedEmployee.getRole().getRoleName().equals("Owner")) {
-                ErrorMessages.showErrorMessage("Insufficient privileges", "Cannot edit an owner schedule",
-                        "You do not have sufficient privileges to edit an owner's schedule.");
-            }
-            else{
                 employeeSelectError.setVisible(false);
                 scheduleGridPane.setDisable(false);
                 scheduleButton.setDisable(false);
@@ -212,9 +206,9 @@ public class EmployeeSchedulerController implements Initializable {
                 listOfEmployeeLabel.setDisable(true);
 
                 selectButton.setDisable(true);
-            }
 
-        } else {
+        }
+        else {
             //employeeSelectError.setVisible(true);
             //employeeSelectError.setText("Please select a employee");
             //employeeSelectError.setTextFill(Color.RED);
@@ -803,23 +797,6 @@ public class EmployeeSchedulerController implements Initializable {
 
         scheduleTableView.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) ->{
             if(newValue != null) {
-                if(!(currUser.getEmployee().getRole().getRoleName().equals("Owner"))
-                        &&  scheduleTableView.getSelectionModel().getSelectedItem().getRole().getRoleName().equals("Owner")){
-                    ErrorMessages.showErrorMessage("Insufficient privileges","Cannot edit an owner schedule",
-                            "You do not have sufficient privileges to edit an owner's schedule.");
-
-                    scheduleGridPane.setDisable(true);
-                    employeeLabel.setVisible(false);
-                    resetButton.setDisable(true);
-                    selectButton.setDisable(false);
-                    scheduleButton.setDisable(true);
-                    employeeListView.setDisable(false);
-                    listOfEmployeeLabel.setDisable(false);
-
-                    resetCheckBoxes();
-                    resetSpinners();
-                }
-                else{
                     //resetSpinners();
                     employeeListView.setDisable(true);
 
@@ -893,7 +870,6 @@ public class EmployeeSchedulerController implements Initializable {
                                 saturdayEndSpinner.setDisable(false);
                                 break;
                         }
-                    }
 
                     scheduleButton.setDisable(false);
                     scheduleButton.setText("Update Schedule");
@@ -932,14 +908,25 @@ public class EmployeeSchedulerController implements Initializable {
         System.out.println("Saturday Date: " + saturday);
 
         //if user is not an owner or manager, only show their specific schedule
-        if (userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner")
-        || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")){
+        if (userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner")){
             for (Tblemployee emp : employeeRepository.findAllEmployeeByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert))) {
                 System.out.println("Schedule: " + emp.getSchedules());
             }
 
             listOfSchedules.addAll(employeeRepository.findAllEmployeeByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert)));
             listOfEmployees.addAll(employeeRepository.findAllEmployeesWithoutScheduleByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert)));
+
+            filteredEmployeeList = new FilteredList<>(listOfSchedules);
+
+            scheduleTableView.setItems(filteredEmployeeList);
+        }
+        else if (userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")){
+            for (Tblemployee emp : employeeRepository.findByRoleByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert))) {
+                System.out.println("Schedule: " + emp.getSchedules());
+            }
+
+            listOfSchedules.addAll(employeeRepository.findByRoleByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert)));
+            listOfEmployees.addAll(employeeRepository.findByRoleWithoutScheduleByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert)));
 
             filteredEmployeeList = new FilteredList<>(listOfSchedules);
 
