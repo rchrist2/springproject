@@ -464,7 +464,7 @@ public class TimeOffController implements Initializable {
         String currentUser = LoginController.userStore;
 
         scheduleData.clear();
-        scheduleData.addAll(scheduleRepository.findScheduleThisWeekForUser(currentUser));
+        scheduleData.addAll(scheduleRepository.findScheduleForUser(currentUser));
 
         if(!(scheduleData.isEmpty())){
             scheduleList.setItems(scheduleData);
