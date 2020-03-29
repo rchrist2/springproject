@@ -1,6 +1,7 @@
 package myproject.controllers.Dashboard.Report;
 
 
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -9,9 +10,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import myproject.ConnectionClass;
@@ -35,11 +34,15 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 @Component
@@ -113,11 +116,33 @@ public class ReportController implements Initializable {
         }
 
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
+        Path path = Paths.get(selectedDirectory.getAbsolutePath());
 
-        FileOutputStream fileOut = new FileOutputStream(selectedDirectory.getAbsolutePath()
+        File file = new File(path
                 + "/Report " + timeStamp  + " - " + tableUserLabel.getText() + ".xls");
-        workbook.write(fileOut);
-        fileOut.close();
+
+        if(file.isFile()){
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Save File");
+            alert.setHeaderText("File already exists");
+            alert.setContentText("Would you like to overwrite existing file?");
+
+            Optional<ButtonType> choice = alert.showAndWait();
+            if (choice.get() == ButtonType.OK) {
+                FileOutputStream fileOut = new FileOutputStream(selectedDirectory.getAbsolutePath()
+                        + "/Report " + timeStamp  + " - " + tableUserLabel.getText() + ".xls");
+
+                workbook.write(fileOut);
+                fileOut.close();
+            }
+        }
+        else{
+            FileOutputStream fileOut = new FileOutputStream(selectedDirectory.getAbsolutePath()
+                    + "/Report " + timeStamp  + " - " + tableUserLabel.getText() + ".xls");
+
+            workbook.write(fileOut);
+            fileOut.close();
+        }
 
     }
 
@@ -138,9 +163,11 @@ public class ReportController implements Initializable {
         try {
             c = connectClass.connect();
             String SQL = "SELECT CAST(ROUND(SUM(DATEDIFF(SECOND, punch_in, punch_out)/3600.0),2)AS DECIMAL(8,2)) AS \"Total Hours\"\n" +
+                    ", CAST(DATEADD(day, -1*(DATEPART(WEEKDAY, date_created)-1), date_created) as DATE) as \"Week Of\" " +
                     "FROM tblclock c JOIN tblschedule s ON s.schedule_id=c.schedule_id \n" +
                     "JOIN tblemployee e ON s.employee_id=e.id JOIN tblusers u ON u.employee_id=e.id\n" +
-                    "WHERE Username = '" + currentUser + "' AND DATEPART(week, date_created) = DATEPART(week, GETDATE())";
+                    "WHERE Username = '" + currentUser + "' AND DATEPART(week, date_created) = DATEPART(week, GETDATE())" +
+                    "GROUP BY CAST(DATEADD(day, -1*(DATEPART(WEEKDAY, date_created)-1), date_created) as DATE)";
             ResultSet rs = c.createStatement().executeQuery(SQL);
             int index = rs.getMetaData().getColumnCount();
             //dynamically add table columns, so they are made based off database columns
@@ -241,6 +268,51 @@ public class ReportController implements Initializable {
         Tblusers currUser = userRepository.findUsername(currentUser);
 
         tableUserLabel.setText("Days Taken Off for " + currUser.getEmployee().getName());
+
+        //Connect to Database
+        Connection c;
+        try {
+            c = connectClass.connect();
+            String SQL = "SELECT COUNT(*) AS \"No. of Approved Days Off\", " +
+                    " YEAR(t.begin_time_off_date) AS \"Year Of\" " +
+                    "FROM tblschedule s " +
+                    "JOIN tbltimeoff t ON t.schedule_id=s.schedule_id JOIN \n" +
+                    "tblemployee e ON s.employee_id=e.id JOIN \n" +
+                    "tblusers u ON e.id=u.employee_id " +
+                    "WHERE Username = '" + currentUser + "' " +
+                    "AND t.approved = 1 " +
+                    "AND YEAR(t.begin_time_off_date) = '2020' " +
+                    "GROUP BY YEAR(t.begin_time_off_date)";
+            ResultSet rs = c.createStatement().executeQuery(SQL);
+            int index = rs.getMetaData().getColumnCount();
+            //dynamically add table columns, so they are made based off database columns
+            //Not sure if this method will make it harder to add data later
+            for (int i = 0; i < index; i++) {
+                final int j = i;
+                TableColumn<ObservableList<String>, String> col = new TableColumn<>(rs.getMetaData().getColumnName(i + 1));
+                col.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().get(j)));
+                reportTable.getColumns().addAll(col);
+                //System.out.println("Column [" + i + "] ");
+                //add to observable list
+                while (rs.next()) {
+                    //Iterate Row
+                    ObservableList<String> row = FXCollections.observableArrayList();
+                    for (int k = 1; k <= rs.getMetaData().getColumnCount(); k++) {
+                        //Iterate Column
+                        row.add(rs.getString(k));
+                    }
+                    //System.out.println("Row [1] added " + row);
+                    tableData.add(row);
+                }
+                //add to tableview
+                reportTable.setItems(tableData);
+            }
+            c.close();
+        }
+        catch(Exception e){ //catch any exceptions
+            e.printStackTrace();
+            System.out.println("Error on Building Reports Table Data");
+        }
 
     }
 }
