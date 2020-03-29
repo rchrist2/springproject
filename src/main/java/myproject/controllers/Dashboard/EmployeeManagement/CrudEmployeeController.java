@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 
 import java.net.URL;
 import java.util.Arrays;
+import java.util.List;
 import java.util.ResourceBundle;
 
 @Component
@@ -119,13 +120,11 @@ public class CrudEmployeeController implements Initializable {
         listOfDaysObs.setAll(dayRepository.findAllDays());
 
         //if they are not an owner, they are a manager and cannot create owner accounts
-        if(!(currUser.getEmployee().getRole().getRoleName().equals("Owner"))){
-            listOfRoleObs.add(roleRepository.findRole("Manager"));
-            listOfRoleObs.add(roleRepository.findRole("Employee"));
-        }
-        else{
+        if(!(currUser.getEmployee().getRole().getRoleName().equals("Owner")))
+            listOfRoleObs.setAll(roleRepository.findAllExceptOwner());
+        else
             listOfRoleObs.setAll(roleRepository.findAll());
-        }
+
 
         roleComboBox.setItems(listOfRoleObs);
 
@@ -188,26 +187,31 @@ public class CrudEmployeeController implements Initializable {
                 || addressText.getText().isEmpty()
                 || phoneText.getText().isEmpty()
                 || usernameText.getText().isEmpty()
-                || passwordText.getText().isEmpty()
                 || roleComboBox.getSelectionModel().getSelectedItem() == null)){
-            if(usernameText.getText().equals(emailText.getText())){
-                if(Validation.validateEmail(usernameText.getText())){
+            if(Validation.validateEmail(emailText.getText())){
+                if(usernameText.getText().equals(emailText.getText())){
                     switch (selectedButton.getText()){
                         case "Add":
                             try {
-                                employeeRepository.save(newEmp);
+                                if(!passwordText.getText().isEmpty()) {
+                                    employeeRepository.save(newEmp);
 
-                                //Creates the hash for the password and the salt
-                                byte[] salt = SecurePassword.getSalt();
-                                String hashedPassword = SecurePassword.getSecurePassword(passwordText.getText(), salt);
-                                Tblusers newUser = new Tblusers(usernameText.getText(), passwordText.getText(), salt, hashedPassword, newEmp);
+                                    //Creates the hash for the password and the salt
+                                    byte[] salt = SecurePassword.getSalt();
+                                    String hashedPassword = SecurePassword.getSecurePassword(passwordText.getText(), salt);
+                                    Tblusers newUser = new Tblusers(usernameText.getText(), passwordText.getText(), salt, hashedPassword, newEmp);
 
-                                userRepository.save(newUser);
+                                    userRepository.save(newUser);
 
-                                Stage stage = (Stage)saveButton.getScene().getWindow();
-                                ErrorMessages.showInformationMessage("Successful", "Employee Success", "Added " + nameText.getText() + " successfully");
+                                    Stage stage = (Stage) saveButton.getScene().getWindow();
+                                    ErrorMessages.showInformationMessage("Successful", "Employee Success", "Added " + nameText.getText() + " successfully");
 
-                                stage.close();
+                                    stage.close();
+                                } else {
+                                    ErrorMessages.showErrorMessage("Fields are empty",
+                                            "There are empty fields",
+                                            "Please select items from drop-down menus or enter text for fieldsasdf");
+                                }
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 ErrorMessages.showWarningMessage("Error", "Error Adding Employee",
@@ -253,6 +257,11 @@ public class CrudEmployeeController implements Initializable {
                                         ErrorMessages.showWarningMessage("Password Mismatch", "Passwords do not equal",
                                                 "Passwords do not match, please re-check your password");
                                     }
+                                } else {
+                                    ErrorMessages.showInformationMessage("Success", "Employee Changed Successfully",
+                                            "The employee was saved");
+
+                                    stage.close();
                                 }
 
                             } catch (Exception e) {
@@ -262,13 +271,13 @@ public class CrudEmployeeController implements Initializable {
                     }
                 }
                 else{
-                    ErrorMessages.showErrorMessage("Error!","Username is not an email address",
-                            "Username must be a valid email address.");
+                    ErrorMessages.showErrorMessage("Error!","Email and username doesn't match",
+                            "Make sure your email and username are the same");
                 }
             }
             else{
-                ErrorMessages.showErrorMessage("Error!","Email does not match",
-                        "Username and employee email must be the same.");
+                ErrorMessages.showErrorMessage("Error!","Invalid email",
+                        "Email provided is not valid");
             }
 
         }

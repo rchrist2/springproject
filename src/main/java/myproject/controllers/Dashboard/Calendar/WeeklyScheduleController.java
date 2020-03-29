@@ -120,8 +120,6 @@ public class WeeklyScheduleController implements Initializable {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(strDateFormat);
 
         for (int i = 1; i <= listOfEmployees.size(); i++) {
-            int x = 0;
-
             //The beginning of the current week, makes sure that with each new employee
             //the week "restarts" back to the first day
             LocalDate currentDay = sunday;
@@ -131,39 +129,125 @@ public class WeeklyScheduleController implements Initializable {
             //Get the name of the employee in the list and add it to the gridpane
             Label employeeName = new Label(name.getName());
             employeeName.setStyle("-fx-padding: 5 0 5 0");
+
+            //Remove name label to prevent labels placing on top of each other
+            removeLabelFromPreviousDates(i, 0, weeklyCalendarGridPane);
             weeklyCalendarGridPane.add(employeeName, 0, i);
+
+            //set hour formatting for 12-hr clock
+            SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
+
+            //Store the hours of the employees in a list
+            List<Tblschedule> employeeSchedule = scheduleRepository.findScheduleForEmployee(name.getId());
 
             //Loop through the days of the week and check if the employee
             //is working on that day
             for (int j = 1; j <= 7; j++) {
-                //set hour formatting for 12-hr clock
-                SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
-
                 //Delete the existing label from gridpane for the new week
                 removeLabelFromPreviousDates(i, j, weeklyCalendarGridPane);
+            }
 
-                //Store the hours of the employees in a list
-                List<Tblschedule> employeeSchedule = scheduleRepository.findScheduleForEmployee(name.getId());
+            for (Tblschedule tblSchedule : employeeSchedule){
+                switch(tblSchedule.getDay().getDayDesc().toLowerCase()){
+                    case "sunday":
+                        if (tblSchedule.getScheduleDate().compareTo(Date.valueOf(sunday)) >= 0
+                                && tblSchedule.getScheduleDate().compareTo(Date.valueOf(saturday)) <= 0
+                                && tblSchedule.getEmployee().getName().equals(employeeName.getText())) {
 
-                for (Tblschedule tblSchedule : employeeSchedule){
-                    //Check to see if the current day matches the day in the employee schedule
-                    if(tblSchedule.getDay().getDayDesc().toLowerCase().equals(currentDay.getDayOfWeek().toString().toLowerCase())
-                        && tblSchedule.getScheduleDate().compareTo(Date.valueOf(sunday)) >= 0 && tblSchedule.getScheduleDate().compareTo(Date.valueOf(saturday)) <= 0
-                        && tblSchedule.getEmployee().getName().equals(employeeName.getText())){
-                        Label hours = new Label();
-                        hours.setText(timeFormat.format(tblSchedule.getScheduleTimeBegin()) + " - "
-                                + timeFormat.format(tblSchedule.getScheduleTimeEnd()));
+                            Label hours = new Label();
+                            hours.setText(timeFormat.format(tblSchedule.getScheduleTimeBegin()) + " - "
+                                    + timeFormat.format(tblSchedule.getScheduleTimeEnd()));
 
-                        hours.setFont(Font.font("System", 11));
-                        hours.setStyle("-fx-padding: 0 0 0 5");
+                            hours.setFont(Font.font("System", 11));
+                            hours.setStyle("-fx-padding: 0 0 0 5");
+                            weeklyCalendarGridPane.add(hours, 1, i);
+                        }
+                        break;
+                    case "monday":
+                        if (tblSchedule.getScheduleDate().compareTo(Date.valueOf(sunday)) >= 0
+                                && tblSchedule.getScheduleDate().compareTo(Date.valueOf(saturday)) <= 0
+                                && tblSchedule.getEmployee().getName().equals(employeeName.getText())) {
 
-                        weeklyCalendarGridPane.add(hours, j, i);
-                    }
+                            Label hours = new Label();
+                            hours.setText(timeFormat.format(tblSchedule.getScheduleTimeBegin()) + " - "
+                                    + timeFormat.format(tblSchedule.getScheduleTimeEnd()));
+
+                            hours.setFont(Font.font("System", 11));
+                            hours.setStyle("-fx-padding: 0 0 0 5");
+                            weeklyCalendarGridPane.add(hours, 2, i);
+                        }
+                        break;
+                    case "tuesday":
+                        if (tblSchedule.getScheduleDate().compareTo(Date.valueOf(sunday)) >= 0
+                                && tblSchedule.getScheduleDate().compareTo(Date.valueOf(saturday)) <= 0
+                                && tblSchedule.getEmployee().getName().equals(employeeName.getText())) {
+
+                            Label hours = new Label();
+                            hours.setText(timeFormat.format(tblSchedule.getScheduleTimeBegin()) + " - "
+                                    + timeFormat.format(tblSchedule.getScheduleTimeEnd()));
+
+                            hours.setFont(Font.font("System", 11));
+                            hours.setStyle("-fx-padding: 0 0 0 5");
+                            weeklyCalendarGridPane.add(hours, 3, i);
+                        }
+                        break;
+                    case "wednesday":
+                        if (tblSchedule.getScheduleDate().compareTo(Date.valueOf(sunday)) >= 0
+                                && tblSchedule.getScheduleDate().compareTo(Date.valueOf(saturday)) <= 0
+                                && tblSchedule.getEmployee().getName().equals(employeeName.getText())) {
+
+                            Label hours = new Label();
+                            hours.setText(timeFormat.format(tblSchedule.getScheduleTimeBegin()) + " - "
+                                    + timeFormat.format(tblSchedule.getScheduleTimeEnd()));
+
+                            hours.setFont(Font.font("System", 11));
+                            hours.setStyle("-fx-padding: 0 0 0 5");
+                            weeklyCalendarGridPane.add(hours, 4, i);
+                        }
+                        break;
+                    case "thursday":
+                        if (tblSchedule.getScheduleDate().compareTo(Date.valueOf(sunday)) >= 0
+                                && tblSchedule.getScheduleDate().compareTo(Date.valueOf(saturday)) <= 0
+                                && tblSchedule.getEmployee().getName().equals(employeeName.getText())) {
+
+                            Label hours = new Label();
+                            hours.setText(timeFormat.format(tblSchedule.getScheduleTimeBegin()) + " - "
+                                    + timeFormat.format(tblSchedule.getScheduleTimeEnd()));
+
+                            hours.setFont(Font.font("System", 11));
+                            hours.setStyle("-fx-padding: 0 0 0 5");
+                            weeklyCalendarGridPane.add(hours, 5, i);
+                        }
+                        break;
+                    case "friday":
+                        if (tblSchedule.getScheduleDate().compareTo(Date.valueOf(sunday)) >= 0
+                                && tblSchedule.getScheduleDate().compareTo(Date.valueOf(saturday)) <= 0
+                                && tblSchedule.getEmployee().getName().equals(employeeName.getText())) {
+
+                            Label hours = new Label();
+                            hours.setText(timeFormat.format(tblSchedule.getScheduleTimeBegin()) + " - "
+                                    + timeFormat.format(tblSchedule.getScheduleTimeEnd()));
+
+                            hours.setFont(Font.font("System", 11));
+                            hours.setStyle("-fx-padding: 0 0 0 5");
+                            weeklyCalendarGridPane.add(hours, 6, i);
+                        }
+                        break;
+                    case "saturday":
+                        if (tblSchedule.getScheduleDate().compareTo(Date.valueOf(sunday)) >= 0
+                                && tblSchedule.getScheduleDate().compareTo(Date.valueOf(saturday)) <= 0
+                                && tblSchedule.getEmployee().getName().equals(employeeName.getText())) {
+
+                            Label hours = new Label();
+                            hours.setText(timeFormat.format(tblSchedule.getScheduleTimeBegin()) + " - "
+                                    + timeFormat.format(tblSchedule.getScheduleTimeEnd()));
+
+                            hours.setFont(Font.font("System", 11));
+                            hours.setStyle("-fx-padding: 0 0 0 5");
+                            weeklyCalendarGridPane.add(hours, 7, i);
+                        }
+                        break;
                 }
-
-                //Add one day to the current day
-                //Use the current day to compare the time off
-                currentDay = currentDay.plusDays(1);
             }
         }
         Instant end = Instant.now();
