@@ -20,9 +20,9 @@ public interface TimeOffRepository extends CrudRepository<Tbltimeoff, Integer> {
             "JOIN tblemployee e ON e.id=s.employee_id " +
             "JOIN tblusers u ON u.employee_id=e.id " +
             "WHERE t.schedule_id IS NULL " +
-            "AND t.approved=1 " +
+            "AND (t.approved=1 OR t.approved=0) " +
             "AND Username = :username", nativeQuery = true)
-    List<Tbltimeoff> findUnlinkedApprovedTimeOffForUserSchedule(@Param("username") String user);
+    List<Tbltimeoff> findUnlinkedTimeOffForUserSchedule(@Param("username") String user);
 
     @Query(value = "SELECT * FROM tbltimeoff t JOIN tblschedule s ON t.schedule_id=s.schedule_id " +
             "WHERE t.schedule_id = :id AND s.employee_id=:empId", nativeQuery = true)
