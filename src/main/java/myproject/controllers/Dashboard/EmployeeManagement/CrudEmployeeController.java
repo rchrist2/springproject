@@ -121,7 +121,7 @@ public class CrudEmployeeController implements Initializable {
 
         //if they are not an owner, they are a manager and cannot create owner accounts
         if(!(currUser.getEmployee().getRole().getRoleName().equals("Owner")))
-            listOfRoleObs.setAll(roleRepository.findAllExceptOwner());
+            listOfRoleObs.setAll(roleRepository.findNotOwnerRoles());
         else
             listOfRoleObs.setAll(roleRepository.findAll());
 

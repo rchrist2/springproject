@@ -254,12 +254,7 @@ public class TimeOffController implements Initializable {
         if((userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
                 || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner")
                 && selectedTimeOff.isApproved()) || !(selectedTimeOff.isApproved())) {
-            if(!(currUser.getEmployee().getRole().getRoleName().equals("Owner"))
-                    && selectedTimeOff.getEmployee().getRole().getRoleName().equals("Owner")){
-                ErrorMessages.showErrorMessage("Insufficient privileges","Cannot edit an owner's time off request",
-                        "You do not have sufficient privileges to edit an owner's time off request.");
-            }
-            else{
+
                 try {
                     //open the CRUD form
                     FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/CrudTimeOff.fxml"));
@@ -297,7 +292,6 @@ public class TimeOffController implements Initializable {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }
 
         }
         else{
@@ -318,23 +312,18 @@ public class TimeOffController implements Initializable {
         if((userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
                 || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner")
                 && selectedTimeOff.isApproved())  || !(selectedTimeOff.isApproved())) {
-            if(!(currUser.getEmployee().getRole().getRoleName().equals("Owner"))
-            && selectedTimeOff.getEmployee().getRole().getRoleName().equals("Owner")){
-                ErrorMessages.showErrorMessage("Insufficient privileges","Cannot delete an owner's time off request",
-                        "You do not have sufficient privileges to delete an owner's time off request.");
-            }
-            else{
+
                 SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
 
                 //get the selected entry's user
-                String selectedUser = tf.getSchedule().getEmployee().getUser().getUsername();
+                String selectedUser = tf.getEmployee().getUser().getUsername();
 
                 //ask the user if they are sure about the deletion
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.setTitle("Delete Time Off Request");
                 alert.setHeaderText("Are you sure?");
                 alert.setContentText("You are about to delete time off request for: " + selectedUser + " on " +
-                        tf.getSchedule().getScheduleDate() + " " +
+                        tf.getBeginTimeOffDate() + " to " + tf.getEndTimeOffDate() + " " +
                         timeFormat.format(tf.getBeginTimeOffDate()) + " to " + timeFormat.format(tf.getEndTimeOffDate()));
 
                 Optional<ButtonType> choice = alert.showAndWait();
@@ -359,7 +348,6 @@ public class TimeOffController implements Initializable {
                     reloadScheduleList();
                 }
             }
-        }
         else {
             ErrorMessages.showErrorMessage("Insufficient privileges to delete","Cannot delete an approved request",
                         "You do not have the privileges to delete an already approved request");
@@ -432,7 +420,17 @@ public class TimeOffController implements Initializable {
         timeOffTable.setItems(listOfTimeOffs);
         userCol.setVisible(true);
 
-        listOfTimeOffs.addAll(timeOffRepository.findAllTimeOff());
+        //get the current user
+        String currentUser = LoginController.userStore;
+        Tblusers currUser = userRepository.findUsername(currentUser);
+
+        if (currUser.getEmployee().getRole().getRoleName().equals("Owner")){
+            listOfTimeOffs.addAll(timeOffRepository.findAllTimeOff());
+        }
+        else if(currUser.getEmployee().getRole().getRoleName().equals("Manager")){
+            listOfTimeOffs.addAll(timeOffRepository.findAllTimeOffByRole());
+        }
+
         //filteredListOfTimeOff = new FilteredList<>(listOfTimeOffs);
 
         timeOffTable.setItems(listOfTimeOffs);
