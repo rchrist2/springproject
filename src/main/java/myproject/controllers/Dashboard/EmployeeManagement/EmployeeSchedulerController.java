@@ -616,9 +616,16 @@ public class EmployeeSchedulerController implements Initializable {
                         s.setDay(dayRepository.findDayByID(dayRepository.findDay(day).getDayId()));
                         timeIndex++;
 
-                        scheduleRepository.save(s);
-                        int newId = s.getScheduleId();
-                        newSchedList.add(s);
+                        //don't let the user add a day that's already an approved day off in tbltimeoff
+                        Tbltimeoff t = timeOffRepository.findByDate(s.getScheduleDate());
+                        if(t != null){
+                            System.out.println("Prevented user from adding day off.");
+                        }
+                        else{
+                            scheduleRepository.save(s);
+                            int newId = s.getScheduleId();
+                            newSchedList.add(s);
+                        }
                     }
 
                     //give related clock and time off records the new schedule ids
@@ -775,6 +782,7 @@ public class EmployeeSchedulerController implements Initializable {
                     listOfEmployeeLabel.setDisable(true);
                 }
                 else { //if no invalid time ranges were found, add the schedules
+
                     for(Tblschedule sc : schedToAdd){
                         scheduleRepository.save(sc);
                     }

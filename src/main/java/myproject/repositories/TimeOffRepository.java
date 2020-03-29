@@ -9,10 +9,16 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Date;
 import java.util.List;
 
 @Repository
 public interface TimeOffRepository extends CrudRepository<Tbltimeoff, Integer> {
+
+    @Query(value = "SELECT * FROM tbltimeoff t " +
+            "WHERE begin_time_off_date=:date AND end_time_off_date=:date " +
+            "AND approved=1", nativeQuery = true)
+    Tbltimeoff findByDate(@Param("date") Date date);
 
     @Query(value = "SELECT * FROM tblschedule s RIGHT JOIN tbltimeoff t " +
             "ON s.schedule_date >= t.begin_time_off_date " +
