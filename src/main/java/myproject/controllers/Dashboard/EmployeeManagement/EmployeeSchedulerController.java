@@ -616,9 +616,16 @@ public class EmployeeSchedulerController implements Initializable {
                         s.setDay(dayRepository.findDayByID(dayRepository.findDay(day).getDayId()));
                         timeIndex++;
 
-                        scheduleRepository.save(s);
-                        int newId = s.getScheduleId();
-                        newSchedList.add(s);
+                        //don't let the user add a day that's already an approved day off in tbltimeoff
+                        Tbltimeoff t = timeOffRepository.findByDate(s.getScheduleDate());
+                        if(t != null){
+                            System.out.println("Prevented user from adding day off.");
+                        }
+                        else{
+                            scheduleRepository.save(s);
+                            int newId = s.getScheduleId();
+                            newSchedList.add(s);
+                        }
                     }
 
                     //give related clock and time off records the new schedule ids
@@ -676,7 +683,7 @@ public class EmployeeSchedulerController implements Initializable {
                 List<Tblschedule> schedToAdd = new ArrayList<>();
                 StringBuilder schedErrorAdd = new StringBuilder();
                 List<Tblschedule> invalidDaysAdd = new ArrayList<>();
-                List<Tblschedule> hasFutureApprovedTimeOff = new ArrayList<>();
+                List<Tblschedule> hasFutureTimeOff = new ArrayList<>();
                 List<Tbltimeoff> theFutureTimeOffs = new ArrayList<>();
 
                 //set these to 0 to avoid out of bounds error
@@ -775,24 +782,27 @@ public class EmployeeSchedulerController implements Initializable {
                     listOfEmployeeLabel.setDisable(true);
                 }
                 else { //if no invalid time ranges were found, add the schedules
+
                     for(Tblschedule sc : schedToAdd){
                         scheduleRepository.save(sc);
                     }
 
-                    hasFutureApprovedTimeOff.addAll(scheduleRepository.findScheduleForUserWithUnlinkedApprovedTimeOff(currentUser));
-                    theFutureTimeOffs.addAll(timeOffRepository.findUnlinkedApprovedTimeOffForUserSchedule(currentUser));
+                    hasFutureTimeOff.addAll(scheduleRepository.findScheduleForUserWithUnlinkedTimeOff(currentUser));
+                    theFutureTimeOffs.addAll(timeOffRepository.findUnlinkedTimeOffForUserSchedule(currentUser));
                     String storeReasonDesc = "";
+                    boolean wasApproved = false;
 
-                    if(!(hasFutureApprovedTimeOff.isEmpty() && theFutureTimeOffs.isEmpty())){
+                    if(!(hasFutureTimeOff.isEmpty() && theFutureTimeOffs.isEmpty())){
                         for(Tbltimeoff t : theFutureTimeOffs){
                             storeReasonDesc = t.getReasonDesc();
+                            wasApproved = t.isApproved();
                             timeOffService.deleteTimeOff(t.getTimeOffId());
                         }
-                        for(Tblschedule s : hasFutureApprovedTimeOff){
+                        for(Tblschedule s : hasFutureTimeOff){
                             Tbltimeoff t = new Tbltimeoff();
                             t.setBeginTimeOffDate(s.getScheduleDate());
                             t.setEndTimeOffDate(s.getScheduleDate());
-                            t.setApproved(true);
+                            t.setApproved(wasApproved);
                             t.setReasonDesc(storeReasonDesc);
                             t.setDay(s.getDay());
                             t.setSchedule(s);
