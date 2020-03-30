@@ -852,7 +852,7 @@ public class EmployeeSchedulerController implements Initializable {
                     List<String> days = scheduleRepository.findEmployeeDays(selectedEmployee.getId(), sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert));
 
                     schedList.clear();
-                    schedList = scheduleRepository.findScheduleForEmployeeSchedList(selectedEmployee.getId());
+                    schedList = scheduleRepository.findScheduleForEmployeeSchedList(selectedEmployee.getId(), sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert));
                     System.out.println("Schedlist: " + schedList);
 
                     SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm:ss a");

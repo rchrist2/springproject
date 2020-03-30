@@ -136,6 +136,8 @@ public class ClockInOutController implements Initializable {
         addActionListenersForCrudButtons(clockEditButton);
         addToggleGroupForRadioButtons();
 
+        currentWeekCheck.setSelected(true);
+
         clockTable.getSelectionModel().selectedItemProperty().addListener((obs, old, newv) -> {
             selectedClock = newv;
         });
@@ -355,15 +357,29 @@ public class ClockInOutController implements Initializable {
         Tblusers currUser = userRepository.findUsername(currentUser);
 
         if (currUser.getEmployee().getRole().getRoleName().equals("Owner")){
-            listOfClock.addAll(clockRepository.findClockThisWeekAllUser());
+            if(currentWeekCheck.isSelected()){
+                listOfClock.addAll(clockRepository.findClockThisWeekAllUser());
+                tableUserLabel.setText("Clock History This Week for All Users");
+            }
+            else{
+                listOfClock.addAll(clockRepository.findAll());
+                tableUserLabel.setText("Clock History All Time for All Users");
+            }
+
         }
         else if(currUser.getEmployee().getRole().getRoleName().equals("Manager")){
-            listOfClock.addAll(clockRepository.findClockThisWeekAllUserByRole());
+            if(currentWeekCheck.isSelected()){
+                listOfClock.addAll(clockRepository.findClockThisWeekAllUserByRole());
+                tableUserLabel.setText("Clock History This Week for All Users");
+            }
+            else{
+                listOfClock.addAll(clockRepository.findAllByRole());
+                tableUserLabel.setText("Clock History All Time for All Users");
+            }
         }
 
         filteredListOfClock = new FilteredList<>(listOfClock);
         clockTable.setItems(filteredListOfClock);
-        tableUserLabel.setText("Clock History This Week for All Users");
         setDataForClockTableView();
     }
 
@@ -376,10 +392,17 @@ public class ClockInOutController implements Initializable {
         clockTable.setItems(listOfClock);
         userCol.setVisible(false);
 
-        listOfClock.addAll(clockRepository.findClockThisWeekForUser(currentUser));
+        if(allTimeCheck.isSelected()){
+            listOfClock.addAll(clockRepository.findClockForUser(currentUser));
+            tableUserLabel.setText("Clock History All Time for " + currUser.getEmployee().getName());
+        }
+        else{
+            listOfClock.addAll(clockRepository.findClockThisWeekForUser(currentUser));
+            tableUserLabel.setText("Clock History This Week for " + currUser.getEmployee().getName());
+        }
+
         filteredListOfClock = new FilteredList<>(listOfClock);
         clockTable.setItems(filteredListOfClock);
-        tableUserLabel.setText("Clock History This Week for " + currUser.getEmployee().getName());
         setDataForClockTableView();
     }
 
@@ -401,26 +424,11 @@ public class ClockInOutController implements Initializable {
         //if the user column is visible (which is only for managers/owner)
         if(userCol.isVisible()){
             //reload the table to show all users (only for managers/owner)
-            listOfClock.clear();
-            clockTable.setItems(listOfClock);
-
-            listOfClock.addAll(clockRepository.findClockThisWeekAllUser());
-            filteredListOfClock = new FilteredList<>(listOfClock);
-            clockTable.setItems(filteredListOfClock);
-            tableUserLabel.setText("Clock History This Week for All Users");
+            reloadClockTableAllUsers();
             setDataForClockTableView();
         }
         else{
-            String currentUser = LoginController.userStore;
-            Tblusers currUser = userRepository.findUsername(currentUser);
-
-            listOfClock.clear();
-            clockTable.setItems(listOfClock);
-
-            listOfClock.addAll(clockRepository.findClockThisWeekForUser(currentUser));
-            filteredListOfClock = new FilteredList<>(listOfClock);
-            clockTable.setItems(filteredListOfClock);
-            tableUserLabel.setText("Clock History This Week for " + currUser.getEmployee().getName());
+            reloadClockTable();
             setDataForClockTableView();
         }
     }
@@ -430,26 +438,11 @@ public class ClockInOutController implements Initializable {
         //if the user column is visible (which is only for managers/owner)
         if(userCol.isVisible()){
             //reload the table to show all users (only for managers/owner)
-            listOfClock.clear();
-            clockTable.setItems(listOfClock);
-
-            listOfClock.addAll(clockRepository.findAll());
-            filteredListOfClock = new FilteredList<>(listOfClock);
-            clockTable.setItems(filteredListOfClock);
-            tableUserLabel.setText("Clock History All Time for All Users");
+            reloadClockTableAllUsers();
             setDataForClockTableView();
         }
         else{
-            String currentUser = LoginController.userStore;
-            Tblusers currUser = userRepository.findUsername(currentUser);
-
-            listOfClock.clear();
-            clockTable.setItems(listOfClock);
-
-            listOfClock.addAll(clockRepository.findClockForUser(currentUser));
-            filteredListOfClock = new FilteredList<>(listOfClock);
-            clockTable.setItems(filteredListOfClock);
-            tableUserLabel.setText("Clock History All Time for " + currUser.getEmployee().getName());
+            reloadClockTable();
             setDataForClockTableView();
         }
     }
