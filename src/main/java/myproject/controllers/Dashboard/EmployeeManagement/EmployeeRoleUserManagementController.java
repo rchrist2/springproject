@@ -40,6 +40,8 @@ import java.net.URL;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -172,6 +174,8 @@ public class EmployeeRoleUserManagementController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        Instant start = Instant.now();
+
         //get the current user
         String currentUser = LoginController.userStore;
         Tblusers currUser = userRepository.findUsername(currentUser);
@@ -213,6 +217,10 @@ public class EmployeeRoleUserManagementController implements Initializable {
             titleLabel.setText(t1.getText() + " Management");
         });
 
+        Instant end = Instant.now();
+        Duration timeElapsed = Duration.between(start, end);
+
+        System.out.println("The time elapsed is: " + timeElapsed);
     }
 
     private void setSearchBars(){
