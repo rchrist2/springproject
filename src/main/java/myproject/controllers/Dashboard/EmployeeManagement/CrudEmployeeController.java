@@ -8,6 +8,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 import myproject.ErrorMessages;
 import myproject.SecurePassword;
 import myproject.Validation;
@@ -48,6 +49,9 @@ public class CrudEmployeeController implements Initializable {
             usernameText,
             passwordText,
             newPasswordText;
+
+    @FXML
+    private Tooltip phoneTip;
 
     @FXML
     private VBox timePerDayVBox;
@@ -132,6 +136,9 @@ public class CrudEmployeeController implements Initializable {
             if(newV != null)
                 descriptionLabel.setText(roleRepository.findRoleDescFromRoleId(roleComboBox.getSelectionModel().getSelectedItem().getRoleId()));
         });
+
+        phoneTip.setText("ex.\t 281-545-2213\n" +
+                "\t(832) 939-9182");
     }
 
     public void setLabel(String string, String buttonLabel){
@@ -178,113 +185,102 @@ public class CrudEmployeeController implements Initializable {
     public void handleSaveEmployee(ActionEvent event){
 
         Button selectedButton = (Button)event.getSource();
-        TblRoles selectedRole = roleRepository.findRole(roleComboBox.getSelectionModel().getSelectedItem().getRoleName());
-        Tblemployee newEmp = new Tblemployee(nameText.getText(), emailText.getText(), addressText.getText(), phoneText.getText(), selectedRole);
-        Tblemployee updateEmp = selectedEmployee;
 
-        if(!(nameText.getText().isEmpty()
-                || emailText.getText().isEmpty()
-                || addressText.getText().isEmpty()
-                || phoneText.getText().isEmpty()
-                || usernameText.getText().isEmpty()
-                || roleComboBox.getSelectionModel().getSelectedItem() == null)){
-            if(Validation.validateEmail(emailText.getText())){
-                if(usernameText.getText().equals(emailText.getText())){
-                    switch (selectedButton.getText()){
-                        case "Add":
-                            try {
-                                if(!passwordText.getText().isEmpty()) {
-                                    employeeRepository.save(newEmp);
+        if(!(nameText.getText().isEmpty() || emailText.getText().isEmpty() || addressText.getText().isEmpty()
+                || phoneText.getText().isEmpty() || usernameText.getText().isEmpty() || roleComboBox.getSelectionModel().getSelectedItem() == null)) {
 
-                                    //Creates the hash for the password and the salt
+            TblRoles selectedRole = roleRepository.findRole(roleComboBox.getSelectionModel().getSelectedItem().getRoleName());
+            Tblemployee newEmp = new Tblemployee(nameText.getText(), emailText.getText(), addressText.getText(), phoneText.getText(), selectedRole);
+            Tblemployee updateEmp = selectedEmployee;
+
+            Pair[] error = Validation.validateCrudAccount(nameText.getText(), emailText.getText(), addressText.getText(),
+                    phoneText.getText(), usernameText.getText(), roleComboBox.getSelectionModel().getSelectedItem());
+
+            if(!(Boolean)error[0].getKey()){
+                switch (selectedButton.getText()) {
+                    case "Add":
+                        try {
+                            if (!passwordText.getText().isEmpty()) {
+                                employeeRepository.save(newEmp);
+
+                                //Creates the hash for the password and the salt
+                                byte[] salt = SecurePassword.getSalt();
+                                String hashedPassword = SecurePassword.getSecurePassword(passwordText.getText(), salt);
+                                Tblusers newUser = new Tblusers(usernameText.getText(), passwordText.getText(), salt, hashedPassword, newEmp);
+
+                                userRepository.save(newUser);
+
+                                Stage stage = (Stage) saveButton.getScene().getWindow();
+                                ErrorMessages.showInformationMessage("Successful", "Employee Success", "Added " + nameText.getText() + " successfully");
+
+                                stage.close();
+                            } else {
+                                ErrorMessages.showErrorMessage("Fields are empty",
+                                        "There are empty fields",
+                                        "Please select items from drop-down menus or enter text for");
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            ErrorMessages.showWarningMessage("Error", "Error Adding Employee",
+                                    "Something went wrong trying to add an employee");
+
+                            System.out.println("Adding Employee Error");
+                        }
+
+                        break;
+                    case "Save":
+
+                        Stage stage = (Stage) saveButton.getScene().getWindow();
+                        try {
+                            //changed this to use setters since previous method doesn't update user
+                            updateEmp.setName(nameText.getText());
+                            updateEmp.setEmail(emailText.getText());
+                            updateEmp.setAddress(addressText.getText());
+                            updateEmp.setPhone(phoneText.getText());
+                            updateEmp.setRole(roleComboBox.getSelectionModel().getSelectedItem());
+                            updateEmp.getUser().setUsername(usernameText.getText());
+
+                            employeeRepository.save(updateEmp);
+
+                            if (changePasswordChecked) {
+                                if (SecurePassword.checkPassword(userRepository.findHashFromUserId(updateEmp.getId()),
+                                        passwordText.getText(), userRepository.findSaltFromUserId(updateEmp.getId()))) {
+
+                                    Tblusers changePasswordUser = userRepository.findUsername(usernameText.getText());
+
                                     byte[] salt = SecurePassword.getSalt();
-                                    String hashedPassword = SecurePassword.getSecurePassword(passwordText.getText(), salt);
-                                    Tblusers newUser = new Tblusers(usernameText.getText(), passwordText.getText(), salt, hashedPassword, newEmp);
+                                    String newPassword = SecurePassword.getSecurePassword(newPasswordText.getText(), salt);
 
-                                    userRepository.save(newUser);
+                                    changePasswordUser.setHashedPassword(newPassword);
+                                    changePasswordUser.setSaltPassword(salt);
 
-                                    Stage stage = (Stage) saveButton.getScene().getWindow();
-                                    ErrorMessages.showInformationMessage("Successful", "Employee Success", "Added " + nameText.getText() + " successfully");
+                                    userRepository.save(changePasswordUser);
 
+                                    ErrorMessages.showInformationMessage("Success", "Password Changed Successfully",
+                                            "The password was changed successfully");
                                     stage.close();
+                                    System.out.println("Saved");
                                 } else {
-                                    ErrorMessages.showErrorMessage("Fields are empty",
-                                            "There are empty fields",
-                                            "Please select items from drop-down menus or enter text for fieldsasdf");
+                                    ErrorMessages.showWarningMessage("Password Mismatch", "Passwords do not equal",
+                                            "Passwords do not match, please re-check your password");
                                 }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                ErrorMessages.showWarningMessage("Error", "Error Adding Employee",
-                                        "Something went wrong trying to add an employee");
+                            } else {
+                                ErrorMessages.showInformationMessage("Success", "Employee Changed Successfully",
+                                        "The employee was saved");
 
-                                System.out.println("Adding Employee Error");
+                                stage.close();
                             }
 
-                            break;
-                        case "Save":
-
-                            Stage stage = (Stage)saveButton.getScene().getWindow();
-                            try {
-                                //changed this to use setters since previous method doesn't update user
-                                updateEmp.setName(nameText.getText());
-                                updateEmp.setEmail(emailText.getText());
-                                updateEmp.setAddress(addressText.getText());
-                                updateEmp.setPhone(phoneText.getText());
-                                updateEmp.setRole(roleComboBox.getSelectionModel().getSelectedItem());
-                                updateEmp.getUser().setUsername(usernameText.getText());
-
-                                employeeRepository.save(updateEmp);
-
-                                if(changePasswordChecked){
-                                    if (SecurePassword.checkPassword(userRepository.findHashFromUserId(updateEmp.getId()),
-                                            passwordText.getText(), userRepository.findSaltFromUserId(updateEmp.getId()))) {
-
-                                        Tblusers changePasswordUser = userRepository.findUsername(usernameText.getText());
-
-                                        byte[] salt = SecurePassword.getSalt();
-                                        String newPassword = SecurePassword.getSecurePassword(newPasswordText.getText(), salt);
-
-                                        changePasswordUser.setHashedPassword(newPassword);
-                                        changePasswordUser.setSaltPassword(salt);
-
-                                        userRepository.save(changePasswordUser);
-
-                                        ErrorMessages.showInformationMessage("Success", "Password Changed Successfully",
-                                                "The password was changed successfully");
-                                        stage.close();
-                                        System.out.println("Saved");
-                                    } else {
-                                        ErrorMessages.showWarningMessage("Password Mismatch", "Passwords do not equal",
-                                                "Passwords do not match, please re-check your password");
-                                    }
-                                } else {
-                                    ErrorMessages.showInformationMessage("Success", "Employee Changed Successfully",
-                                            "The employee was saved");
-
-                                    stage.close();
-                                }
-
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            break;
-                    }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        break;
                 }
-                else{
-                    ErrorMessages.showErrorMessage("Error!","Email and username doesn't match",
-                            "Make sure your email and username are the same");
-                }
+            } else {
+                ErrorMessages.showErrorMessage("Error", "Invalid values provided", error[0].getValue().toString());
             }
-            else{
-                ErrorMessages.showErrorMessage("Error!","Invalid email",
-                        "Email provided is not valid");
-            }
-
-        }
-        else{
-            ErrorMessages.showErrorMessage("Fields are empty",
-                    "There are empty fields",
-                    "Please select items from drop-down menus or enter text for fields");
+        } else {
+            ErrorMessages.showErrorMessage("Error", "Invalid values", "Please provides values for each field");
         }
     }
 
