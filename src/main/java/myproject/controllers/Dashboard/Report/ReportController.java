@@ -167,6 +167,7 @@ public class ReportController implements Initializable {
                     "FROM tblclock c JOIN tblschedule s ON s.schedule_id=c.schedule_id \n" +
                     "JOIN tblemployee e ON s.employee_id=e.id JOIN tblusers u ON u.employee_id=e.id\n" +
                     "WHERE Username = '" + currentUser + "' AND DATEPART(week, date_created) = DATEPART(week, GETDATE())" +
+                    " AND punch_out <> '00:00:00' " +
                     "GROUP BY CAST(DATEADD(day, -1*(DATEPART(WEEKDAY, date_created)-1), date_created) as DATE)";
             ResultSet rs = c.createStatement().executeQuery(SQL);
             int index = rs.getMetaData().getColumnCount();

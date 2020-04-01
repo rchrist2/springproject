@@ -14,6 +14,7 @@ import myproject.ErrorMessages;
 import myproject.controllers.WelcomeLoginSignup.LoginController;
 import myproject.models.*;
 import myproject.repositories.*;
+import myproject.services.ClockService;
 import myproject.services.ScheduleService;
 import myproject.services.TimeOffService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,6 +109,9 @@ public class EmployeeSchedulerController implements Initializable {
 
     @Autowired
     private TimeOffService timeOffService;
+
+    @Autowired
+    private ClockService clockService;
 
     @Autowired
     private DayRepository dayRepository;
@@ -633,14 +637,14 @@ public class EmployeeSchedulerController implements Initializable {
                         if(!(tfs.isEmpty())){
                             //loop through each new id
                             for(Tblschedule d : newSchedList){
-                                //find the schedule with each new id
-                                //Tblschedule newSched = scheduleRepository.findByScheduleId(d.getScheduleId());
-
                                 //if the schedule day matches the day of the related time offs, set the id
                                 for(Tbltimeoff t : tfs){
                                     if(d.getDay().getDayDesc().equals(t.getDay().getDayDesc())){
                                         t.setSchedule(d);
                                         timeOffRepository.save(t);
+                                    }
+                                    else{ //else if the day was actually removed from the schedule
+                                        timeOffService.deleteTimeOff(t.getTimeOffId());
                                     }
                                 }
                             }
@@ -654,6 +658,9 @@ public class EmployeeSchedulerController implements Initializable {
                                     if(k.getDay().getDayDesc().equals(c.getDay().getDayDesc())){
                                         c.setSchedule(k);
                                         clockRepository.save(c);
+                                    }
+                                    else{ //else if the day was actually removed from the schedule
+                                        clockService.deleteClock(c.getClockId());
                                     }
                                 }
                             }

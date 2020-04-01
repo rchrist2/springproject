@@ -125,7 +125,7 @@ public class CrudEmployeeController implements Initializable {
 
         //if they are not an owner, they are a manager and cannot create owner accounts
         if(!(currUser.getEmployee().getRole().getRoleName().equals("Owner")))
-            listOfRoleObs.setAll(roleRepository.findNotOwnerRoles());
+            listOfRoleObs.setAll(roleRepository.findNotOwnerManagerRoles());
         else
             listOfRoleObs.setAll(roleRepository.findAll());
 
@@ -189,7 +189,7 @@ public class CrudEmployeeController implements Initializable {
         if(!(nameText.getText().isEmpty() || emailText.getText().isEmpty() || addressText.getText().isEmpty()
                 || phoneText.getText().isEmpty() || usernameText.getText().isEmpty() || roleComboBox.getSelectionModel().getSelectedItem() == null)) {
 
-            TblRoles selectedRole = roleRepository.findRole(roleComboBox.getSelectionModel().getSelectedItem().getRoleName());
+            TblRoles selectedRole = roleRepository.findRole(roleComboBox.getSelectionModel().getSelectedItem().getRoleId());
             Tblemployee newEmp = new Tblemployee(nameText.getText(), emailText.getText(), addressText.getText(), phoneText.getText(), selectedRole);
             Tblemployee updateEmp = selectedEmployee;
 

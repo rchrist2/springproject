@@ -99,10 +99,11 @@ public class WeeklyScheduleController implements Initializable {
             listOfEmployees = employeeRepository.findAllEmployee();
         }
         else if(currUser.getEmployee().getRole().getRoleName().equals("Manager")){
+            //manager can see only other managers and employee schedules
             listOfEmployees = employeeRepository.findAllEmployeeByRole();
         }
-        else{ //if user is an employee, they can only see their schedule
-            listOfEmployees = employeeRepository.findAllEmployeeByUser(currentUser);
+        else{ //if user is an employee, they can only see employee schedules
+            listOfEmployees = employeeRepository.findAllEmployeeByRoleEmployee();
         }
 
         gridpaneScrollPane.setFitToHeight(true);

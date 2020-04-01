@@ -33,6 +33,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.Date;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
@@ -120,13 +121,23 @@ public class ClockInOutController implements Initializable {
 
         //initialize the schedule drop down menu for current week
         scheduleData = FXCollections.observableArrayList();
-        scheduleData.addAll(scheduleRepository.findScheduleThisWeekForUser(currentUser));
+
+        //only load schedules equal to the current day
+        scheduleData.addAll(scheduleRepository.findScheduleThisWeekForUserSameDay(currentUser));
 
         if(!(scheduleData.isEmpty())){
             scheduleList.setItems(scheduleData);
+
+            //find the day equal to today and select that
+            for(Tblschedule s : scheduleData){
+                if(s.getScheduleDate().toLocalDate().equals(LocalDate.now())){
+                    scheduleList.getSelectionModel().select(s);
+                }
+            }
         }
-        else{
+        else{ //if no schedules were found for today
             scheduleList.setItems(null);
+            scheduleList.setPromptText("No Schedules Today");
         }
 
         setLastActionLabel();

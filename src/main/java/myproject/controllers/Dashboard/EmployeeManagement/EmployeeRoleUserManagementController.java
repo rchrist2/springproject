@@ -191,8 +191,10 @@ public class EmployeeRoleUserManagementController implements Initializable {
             listOfUsers.addAll(userRepository.findAll());
         }
         else if(currUser.getEmployee().getRole().getRoleName().equals("Manager")){
-            listOfEmployees.addAll(employeeRepository.findAllEmployeeByRole());
-            listOfRoles.addAll(roleRepository.findNotOwnerRoles());
+            //a manager can only see their own account and all employee accounts
+            listOfEmployees.addAll(employeeRepository.findAllEmployeeByRoleEmployee());
+            //listOfEmployees.add(employeeRepository.findAllEmployeeByUser(currentUser));
+            listOfRoles.addAll(roleRepository.findNotOwnerManagerRoles());
         }
 
         reloadEmployeeTableView();
@@ -269,7 +271,9 @@ public class EmployeeRoleUserManagementController implements Initializable {
             listOfEmployees.addAll(employeeRepository.findAllEmployee());
         }
         else if(currUser.getEmployee().getRole().getRoleName().equals("Manager")){
-            listOfEmployees.addAll(employeeRepository.findAllEmployeeByRole());
+            //a manager can only see their own account and all employee accounts
+            listOfEmployees.addAll(employeeRepository.findAllEmployeeByRoleEmployee());
+            //listOfEmployees.add(employeeRepository.findAllEmployeeByUser(currentUser));
         }
 
         filteredListOfEmployees = new FilteredList<>(listOfEmployees);
@@ -419,7 +423,7 @@ public class EmployeeRoleUserManagementController implements Initializable {
             listOfRoles.addAll(roleRepository.findAll());
         }
         else if(currUser.getEmployee().getRole().getRoleName().equals("Manager")){
-            listOfRoles.addAll(roleRepository.findNotOwnerRoles());
+            listOfRoles.addAll(roleRepository.findNotOwnerManagerRoles());
         }
 
         filteredListOfRoles = new FilteredList<>(listOfRoles);

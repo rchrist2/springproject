@@ -1,6 +1,7 @@
 package myproject.repositories;
 
 import myproject.models.Tblemployee;
+import myproject.models.Tbltimeoff;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -19,7 +20,12 @@ public interface EmployeeRepository extends CrudRepository<Tblemployee, Integer>
 
     @Query(value = "SELECT * FROM tblemployee e JOIN tblusers u ON u.employee_id=e.id " +
             "WHERE Username = :username", nativeQuery = true)
-    List<Tblemployee> findAllEmployeeByUser(@Param("username") String username);
+    Tblemployee findAllEmployeeByUser(@Param("username") String username);
+
+    @Query(value = "SELECT * FROM tblemployee e JOIN tblroles r ON r.role_id=e.roles_id " +
+            "WHERE role_name NOT IN ('Owner','Manager')", nativeQuery = true)
+    List<Tblemployee> findAllEmployeeByRoleEmployee();
+
     @Query(value = "SELECT * FROM tblemployee e JOIN tblroles r ON r.role_id=e.roles_id " +
             "WHERE role_name NOT IN ('Owner')", nativeQuery = true)
     List<Tblemployee> findAllEmployeeByRole();

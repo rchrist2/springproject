@@ -8,9 +8,12 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import myproject.ErrorMessages;
+import myproject.controllers.WelcomeLoginSignup.LoginController;
 import myproject.models.TblRoles;
 import myproject.models.Tblemployee;
+import myproject.models.Tblusers;
 import myproject.repositories.RoleRepository;
+import myproject.repositories.UserRepository;
 import myproject.services.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -44,6 +47,9 @@ public class CrudRoleController implements Initializable {
     private RoleRepository roleRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private RoleService roleService;
 
     private ObservableList<String> roleObservableList;
@@ -52,7 +58,16 @@ public class CrudRoleController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        roleObservableList = FXCollections.observableArrayList(Arrays.asList("Manager", "Employee"));
+        //get the current user
+        String currentUser = LoginController.userStore;
+        Tblusers currUser = userRepository.findUsername(currentUser);
+
+        if(currUser.getEmployee().getRole().getRoleName().equals("Owner")){
+            roleObservableList = FXCollections.observableArrayList(Arrays.asList("Manager","Employee"));
+        }
+        else{
+            roleObservableList = FXCollections.observableArrayList(Arrays.asList("Employee"));
+        }
 
         roleComboBox.setItems(roleObservableList);
 
