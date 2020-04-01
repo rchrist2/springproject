@@ -50,6 +50,11 @@ public interface TimeOffRepository extends CrudRepository<Tbltimeoff, Integer> {
             "WHERE Username = :username", nativeQuery = true)
     List<Tbltimeoff> findAllTimeOffByUser(@Param("username") String user);
 
+    @Query(value = "SELECT * FROM tbltimeoff t LEFT JOIN tblschedule s ON t.schedule_id=s.schedule_id " +
+            "JOIN tblemployee e ON e.id=t.employee_id JOIN tblusers u ON e.id=u.employee_id " +
+            "WHERE Username = :username", nativeQuery = true)
+    Tbltimeoff findTimeOffByUser(@Param("username") String user);
+
     //Returns a list of all time offs
     @Query(value = "SELECT * FROM tbltimeoff ", nativeQuery = true)
     List<Tbltimeoff> findAllTimeOff();
@@ -57,7 +62,7 @@ public interface TimeOffRepository extends CrudRepository<Tbltimeoff, Integer> {
     //Returns a list of all time offs
     @Query(value = "SELECT * FROM tbltimeoff t JOIN tblemployee e ON " +
             "t.employee_id=e.id JOIN tblroles r ON r.role_id=e.roles_id" +
-            " WHERE role_name NOT IN ('Owner')", nativeQuery = true)
+            " WHERE role_name NOT IN ('Owner','Manager')", nativeQuery = true)
     List<Tbltimeoff> findAllTimeOffByRole();
 
     @Modifying

@@ -105,7 +105,6 @@ public class CrudTimeOffController implements Initializable {
         hrList = FXCollections.observableArrayList();
 
         setDataForHourPMLists();
-        enableApproveList();
         addToggleGroupForRadioButtons();
     }
 
@@ -167,6 +166,7 @@ public class CrudTimeOffController implements Initializable {
             approveSelect = "Deny";
         }
         approveList.getSelectionModel().select(approveSelect);
+        enableApproveList(tf1);
 
         reasonInput.setText(tf1.getReasonDesc());
 
@@ -291,8 +291,10 @@ public class CrudTimeOffController implements Initializable {
         //get the current user
         String currentUser = LoginController.userStore;
 
-        if (!(userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
-                || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner"))) {
+        if (!(userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner"))
+        || !((userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
+                && !(selectedTimeOff.getEmployee().getRole().getRoleName().equals("Manager")
+                || selectedTimeOff.getEmployee().getRole().getRoleName().equals("Owner"))))) {
             ErrorMessages.showErrorMessage("Insufficient privileges","Cannot approve/deny request",
                     "You do not have sufficient privileges to approve or deny this request.");
         }
@@ -320,13 +322,14 @@ public class CrudTimeOffController implements Initializable {
        // endHrList.setValueFactory(eHours);
     }
 
-    private void enableApproveList(){
+    private void enableApproveList(Tbltimeoff t){
         //get the current user
         String currentUser = LoginController.userStore;
 
         //give only managers and owner ability to approve/disapprove
-        if (userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
-                || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner")) {
+        if ((userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner"))
+                || ((userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
+                && !(t.getEmployee().getRole().getRoleName().equals("Manager"))))) {
 
             approveList.setDisable(false);
             errorMsgPane.setVisible(false);

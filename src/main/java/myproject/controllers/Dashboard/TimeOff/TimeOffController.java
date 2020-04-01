@@ -251,9 +251,11 @@ public class TimeOffController implements Initializable {
         Tblusers currUser = userRepository.findUsername(currentUser);
 
         //can only edit an approved request if you are manager or owner
-        if((userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
-                || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner")
-                && selectedTimeOff.isApproved()) || !(selectedTimeOff.isApproved())) {
+        if((userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner")
+                && selectedTimeOff.isApproved()  || !(selectedTimeOff.isApproved()))
+                || ((userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
+                && (selectedTimeOff.isApproved()  || !(selectedTimeOff.isApproved()))
+                && !(selectedTimeOff.getEmployee().getRole().getRoleName().equals("Manager"))))) {
 
                 try {
                     //open the CRUD form
@@ -308,10 +310,12 @@ public class TimeOffController implements Initializable {
         //get the selected entry from the table
         Tbltimeoff tf = selectedTimeOff;
 
-        //can only delete an approved request if you are manager or owner
-        if((userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
-                || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner")
-                && selectedTimeOff.isApproved())  || !(selectedTimeOff.isApproved())) {
+        //can only delete an approved request if you are owner
+        if((userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner")
+                && selectedTimeOff.isApproved()  || !(selectedTimeOff.isApproved()))
+                || ((userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
+                && (selectedTimeOff.isApproved()  || !(selectedTimeOff.isApproved()))
+                && !(selectedTimeOff.getEmployee().getRole().getRoleName().equals("Manager"))))) {
 
                 SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
 
@@ -429,6 +433,7 @@ public class TimeOffController implements Initializable {
         }
         else if(currUser.getEmployee().getRole().getRoleName().equals("Manager")){
             listOfTimeOffs.addAll(timeOffRepository.findAllTimeOffByRole());
+            listOfTimeOffs.addAll(timeOffRepository.findAllTimeOffByUser(currentUser));
         }
 
         //filteredListOfTimeOff = new FilteredList<>(listOfTimeOffs);

@@ -252,6 +252,13 @@ public class ClockInOutController implements Initializable {
 
     @FXML
     private void editClock(){
+        //get the current user
+        String currentUser = LoginController.userStore;
+        Tblusers currUser = userRepository.findUsername(currentUser);
+
+        if((userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner"))
+                || ((userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
+                && !(selectedClock.getSchedule().getEmployee().getRole().getRoleName().equals("Manager"))))){
             try {
                 //open the CRUD form
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/CrudClock.fxml"));
@@ -287,11 +294,24 @@ public class ClockInOutController implements Initializable {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+        else{
+            ErrorMessages.showErrorMessage("Insufficient privileges","Cannot edit clock record",
+                    "You do not have sufficient privileges to edit this clock record.");
+        }
+
 
     }
 
     @FXML
     private void deleteClock(){
+        //get the current user
+        String currentUser = LoginController.userStore;
+        Tblusers currUser = userRepository.findUsername(currentUser);
+
+        if((userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner"))
+                || ((userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
+                && !(selectedClock.getSchedule().getEmployee().getRole().getRoleName().equals("Manager"))))){
             Tblclock cl = selectedClock;
             SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
             SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
@@ -330,7 +350,11 @@ public class ClockInOutController implements Initializable {
                 setDataForClockTableView();
                 resetButtons();
             }
-
+        }
+        else{
+            ErrorMessages.showErrorMessage("Insufficient privileges","Cannot delete clock record",
+                    "You do not have sufficient privileges to delete this clock record.");
+        }
 
     }
 
@@ -381,6 +405,7 @@ public class ClockInOutController implements Initializable {
         else if(currUser.getEmployee().getRole().getRoleName().equals("Manager")){
             if(currentWeekCheck.isSelected()){
                 listOfClock.addAll(clockRepository.findClockThisWeekAllUserByRole());
+                listOfClock.addAll(clockRepository.findClockForUser(currentUser));
                 tableUserLabel.setText("Clock History This Week for All Users");
             }
             else{

@@ -223,8 +223,10 @@ public class ReportController implements Initializable {
                     "CAST(schedule_date AS DATE) AS \"Schedule Date\", " +
                     "day_desc AS \"Day of Week\" FROM tblschedule s JOIN tblemployee e ON s.employee_id=e.id JOIN \n" +
                     "tblusers u ON e.id=u.employee_id " +
+                    "LEFT JOIN tbltimeoff t ON t.schedule_id=s.schedule_id " +
                     "JOIN tblday d ON s.day_id=d.day_id WHERE Username = '" + currentUser + "' " +
-                    "AND DATEPART(week, s.schedule_date) = DATEPART(week, GETDATE())";
+                    "AND DATEPART(week, s.schedule_date) = DATEPART(week, GETDATE())" +
+                    " AND (t.schedule_id IS NULL OR NOT t.approved=1)";
             ResultSet rs = c.createStatement().executeQuery(SQL);
             int index = rs.getMetaData().getColumnCount();
             //dynamically add table columns, so they are made based off database columns

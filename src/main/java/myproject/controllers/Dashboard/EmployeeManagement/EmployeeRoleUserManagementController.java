@@ -193,7 +193,7 @@ public class EmployeeRoleUserManagementController implements Initializable {
         else if(currUser.getEmployee().getRole().getRoleName().equals("Manager")){
             //a manager can only see their own account and all employee accounts
             listOfEmployees.addAll(employeeRepository.findAllEmployeeByRoleEmployee());
-            //listOfEmployees.add(employeeRepository.findAllEmployeeByUser(currentUser));
+            listOfEmployees.add(employeeRepository.findAllEmployeeByUser(currentUser));
             listOfRoles.addAll(roleRepository.findNotOwnerManagerRoles());
         }
 
@@ -273,7 +273,7 @@ public class EmployeeRoleUserManagementController implements Initializable {
         else if(currUser.getEmployee().getRole().getRoleName().equals("Manager")){
             //a manager can only see their own account and all employee accounts
             listOfEmployees.addAll(employeeRepository.findAllEmployeeByRoleEmployee());
-            //listOfEmployees.add(employeeRepository.findAllEmployeeByUser(currentUser));
+            listOfEmployees.add(employeeRepository.findAllEmployeeByUser(currentUser));
         }
 
         filteredListOfEmployees = new FilteredList<>(listOfEmployees);
@@ -294,6 +294,10 @@ public class EmployeeRoleUserManagementController implements Initializable {
     @SuppressWarnings("Duplicates")
     @FXML
     private void handleCrudButton(ActionEvent event) {
+        //get the current user
+        String currentUser = LoginController.userStore;
+        Tblusers currUser = userRepository.findUsername(currentUser);
+
         //Grab the button that was clicked
         Button clickedButton = (Button) event.getSource();
 
@@ -327,61 +331,76 @@ public class EmployeeRoleUserManagementController implements Initializable {
             case "Edit Employee":
                 System.out.println("Edit a Employee");
 
-                 try {
-                     FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/CrudEmployee.fxml"));
-                     fxmlLoader.setControllerFactory(springContext::getBean);
-                     Parent parent = fxmlLoader.load();
-                     Stage stage = new Stage();
-                     stage.initModality(Modality.APPLICATION_MODAL);
-                     stage.initStyle(StageStyle.UNDECORATED);
-                     stage.setTitle("Employee Manager");
+                if(emp.getUser().getUsername().equals(currentUser)
+                        && currUser.getEmployee().getRole().getRoleName().equals("Manager")){
+                    ErrorMessages.showErrorMessage("Error!", "Insufficient privileges",
+                            "You do not have sufficient privileges to edit this account.");
+                }
+                else{
+                    try {
+                        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/CrudEmployee.fxml"));
+                        fxmlLoader.setControllerFactory(springContext::getBean);
+                        Parent parent = fxmlLoader.load();
+                        Stage stage = new Stage();
+                        stage.initModality(Modality.APPLICATION_MODAL);
+                        stage.initStyle(StageStyle.UNDECORATED);
+                        stage.setTitle("Employee Manager");
 
-                     CrudEmployeeController crudEmployeeController = fxmlLoader.getController();
-                     crudEmployeeController.setLabel("Edit Employee", "Save");
-                     crudEmployeeController.setEmployeeForEdit();
-                     crudEmployeeController.setEmployee(emp);
-                     crudEmployeeController.setController(this);
+                        CrudEmployeeController crudEmployeeController = fxmlLoader.getController();
+                        crudEmployeeController.setLabel("Edit Employee", "Save");
+                        crudEmployeeController.setEmployeeForEdit();
+                        crudEmployeeController.setEmployee(emp);
+                        crudEmployeeController.setController(this);
 
-                     stage.setScene(new Scene(parent));
+                        stage.setScene(new Scene(parent));
 
-                     stage.showAndWait();
-                     reloadEmployeeTableView();
-                     resetButtons();
-                 } catch (IOException e) {
-                     e.printStackTrace();
-                 }
+                        stage.showAndWait();
+                        reloadEmployeeTableView();
+                        resetButtons();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
 
                 break;
             case "Delete":
-                System.out.println("Delete a Employee");
+                if(emp.getUser().getUsername().equals(currentUser)
+                        && currUser.getEmployee().getRole().getRoleName().equals("Manager")){
+                    ErrorMessages.showErrorMessage("Error!", "Insufficient privileges",
+                            "You do not have sufficient privileges to delete this account.");
+                }
+                else{
+                    System.out.println("Delete a Employee");
 
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setTitle("Delete Employee");
-                alert.setHeaderText("Are you sure?");
-                alert.setContentText("You are about to delete: " + emp.getName());
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                    alert.setTitle("Delete Employee");
+                    alert.setHeaderText("Are you sure?");
+                    alert.setContentText("You are about to delete: " + emp.getName());
 
-                Optional<ButtonType> choice = alert.showAndWait();
-                if (choice.get() == ButtonType.OK) {
-                    if (emp != null) {
+                    Optional<ButtonType> choice = alert.showAndWait();
+                    if (choice.get() == ButtonType.OK) {
+                        if (emp != null) {
 
                         /*
                           ON DELETE CASCADE works in a way we can't apply, so we have to delete
                           each row in order
                         */
 
-                        if(!emp.getUser().getUsername().equals(LoginController.userStore)) {
-                            scheduleService.deleteSchedule(emp.getId());
+                            if(!emp.getUser().getUsername().equals(LoginController.userStore)) {
+                                scheduleService.deleteSchedule(emp.getId());
 
-                            employeeService.deleteEmployee(emp.getId());
-                        } else {
-                            ErrorMessages.showWarningMessage("Warning!", "Deleting user while logged in",
-                                    "Cannot delete an account while logged in as the same employee");
+                                employeeService.deleteEmployee(emp.getId());
+                            } else {
+                                ErrorMessages.showWarningMessage("Warning!", "Deleting user while logged in",
+                                        "Cannot delete an account while logged in as the same employee");
+                            }
                         }
-                    }
 
-                    reloadEmployeeTableView();
-                    resetButtons();
-                    System.out.println("Table View reloaded!");
+                        reloadEmployeeTableView();
+                        resetButtons();
+                        System.out.println("Table View reloaded!");
+                    }
                 }
                 break;
         }
