@@ -38,7 +38,7 @@ public class DashboardController implements Initializable {
             loggedUserLabel;
 
     @FXML
-    private Button calendarButton, employeeButton, buttonButton;
+    private Button calendarButton, employeeButton, employeeButton1, buttonButton;
 
     @FXML
     private Pane dashboardPane,
@@ -87,8 +87,9 @@ public class DashboardController implements Initializable {
         //don't allow regular employees to see the management page
         if (!(currUser.getEmployee().getRole().getRoleName().equals("Manager")
                 || currUser.getEmployee().getRole().getRoleName().equals("Owner"))){
-            System.out.println("User does not have privileges to enter Management");
+            System.out.println("User does not have privileges to enter Management or Scheduler");
             buttonVBox.getChildren().remove(employeeButton);
+            buttonVBox.getChildren().remove(employeeButton1);
         }
 
     }
@@ -114,6 +115,7 @@ public class DashboardController implements Initializable {
                  newButton.setDisable(false);
                  System.out.println("You clicked the Employee Management button");
                  switchWindow("/view/EmployeeManagementView.fxml");
+                 dashboardPane.setStyle("-fx-background-color: white");
                  newButton = clickedButton;
                  newButton.setDisable(true);
 
@@ -122,6 +124,7 @@ public class DashboardController implements Initializable {
                 newButton.setDisable(false);
                 System.out.println("You clicked the Employee Scheduler button");
                 switchWindow("/view/EmployeeScheduler.fxml");
+                dashboardPane.setStyle("-fx-background-color: white");
                 newButton = clickedButton;
                 newButton.setDisable(true);
                 break;
@@ -129,6 +132,7 @@ public class DashboardController implements Initializable {
                 newButton.setDisable(false);
                 System.out.println("You clicked the Clock In/Out button");
                 switchWindow("/view/ClockInOutView.fxml");
+                dashboardPane.setStyle("-fx-background-color: white");
                 newButton = clickedButton;
                 newButton.setDisable(true);
                 break;
@@ -136,6 +140,7 @@ public class DashboardController implements Initializable {
                 newButton.setDisable(false);
                 System.out.println("You clicked the Request Time Off button");
                 switchWindow("/view/TimeOffView.fxml");
+                dashboardPane.setStyle("-fx-background-color: white");
                 newButton = clickedButton;
                 newButton.setDisable(true);
                 break;
@@ -143,6 +148,7 @@ public class DashboardController implements Initializable {
                 newButton.setDisable(false);
                 System.out.println("You clicked the Reports button");
                 switchWindow("/view/ReportView.fxml");
+                dashboardPane.setStyle("-fx-background-color: white");
                 newButton = clickedButton;
                 newButton.setDisable(true);
                 break;
@@ -177,6 +183,7 @@ public class DashboardController implements Initializable {
 
                 break;
             case "Weekly Calendar":
+                dashboardPane.setStyle(null);
                 newButton.setDisable(false);
                 switchWindow("/view/WeeklySchedule.fxml");
                 System.out.println("You clicked the Weekly Calendar button");

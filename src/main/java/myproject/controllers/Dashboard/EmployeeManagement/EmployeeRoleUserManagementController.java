@@ -95,6 +95,15 @@ public class EmployeeRoleUserManagementController implements Initializable {
     private AnchorPane roleAnchor;
 
     @FXML
+    private AnchorPane fullPane;
+
+    @FXML
+    private Pane headerPane;
+
+    @FXML
+    private TabPane rolesTab;
+
+    @FXML
     private TextField roleText, searchRoleText;
 
     @FXML
@@ -183,18 +192,25 @@ public class EmployeeRoleUserManagementController implements Initializable {
         //Initialize the observable list and add all the employees to the list
         listOfEmployees = FXCollections.observableArrayList();
         listOfRoles = FXCollections.observableArrayList();
-        listOfUsers = FXCollections.observableArrayList();
+        //listOfUsers = FXCollections.observableArrayList();
 
         if (currUser.getEmployee().getRole().getRoleName().equals("Owner")){
             listOfEmployees.addAll(employeeRepository.findAllEmployee());
             listOfRoles.addAll(roleRepository.findAll());
-            listOfUsers.addAll(userRepository.findAll());
+            //listOfUsers.addAll(userRepository.findAll());
         }
         else if(currUser.getEmployee().getRole().getRoleName().equals("Manager")){
             //a manager can only see their own account and all employee accounts
             listOfEmployees.addAll(employeeRepository.findAllEmployeeByRoleEmployee());
             listOfEmployees.add(employeeRepository.findAllEmployeeByUser(currentUser));
-            listOfRoles.addAll(roleRepository.findNotOwnerManagerRoles());
+
+            //hide roles tab and only show employee page
+            managementTabPane.getTabs().remove(rolesTab);
+            fullPane.getChildren().remove(managementTabPane);
+            fullPane.getChildren().add(empAnchor);
+            employeeTableView.setPrefHeight(530);
+
+            //listOfRoles.addAll(roleRepository.findNotOwnerManagerRoles());
         }
 
         reloadEmployeeTableView();

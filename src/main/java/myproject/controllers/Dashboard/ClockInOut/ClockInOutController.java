@@ -376,7 +376,7 @@ public class ClockInOutController implements Initializable {
             return property;
         });
 
-        //show the users for each time off request using SimpleObjectProperty
+        //show the users for each clock record using SimpleObjectProperty
         userCol.setCellValueFactory(tf ->
                 new SimpleObjectProperty<>(tf.getValue().getSchedule().getEmployee().getUser().getUsername()));
     }

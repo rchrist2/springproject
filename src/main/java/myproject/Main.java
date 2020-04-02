@@ -75,7 +75,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         scene = new Scene(root);
         primaryStage.initStyle(StageStyle.TRANSPARENT);
-        primaryStage.setTitle("Management Home Page");
+        primaryStage.setTitle("Vishala Grocery Scheduler");
         scene.setFill(Color.TRANSPARENT);
         primaryStage.setScene(scene);
 

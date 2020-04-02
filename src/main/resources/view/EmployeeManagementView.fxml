@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
@@ -14,80 +19,84 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="750.0" prefWidth="985.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.Dashboard.EmployeeManagement.EmployeeRoleUserManagementController">
+<AnchorPane prefHeight="750.0" prefWidth="985.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.Dashboard.EmployeeManagement.EmployeeRoleUserManagementController">
    <children>
-      <TabPane fx:id="managementTabPane" layoutY="115.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="115.0">
-         <tabs>
-            <Tab fx:id="employeeTab" closable="false" style="-fx-pref-width: 100; -fx-pref-height: 40; -fx-font-size: 16;" text="Employee">
-               <content>
-                  <AnchorPane fx:id="empAnchor" style="-fx-background-color: white;">
-                     <children>
-                        <TextField fx:id="searchText" layoutX="715.0" layoutY="30.0" prefHeight="30.0" prefWidth="215.0" promptText="Search.." />
-                        <Button fx:id="addNewEmployeeButton" layoutX="50.0" layoutY="30.0" mnemonicParsing="false" onAction="#handleCrudButton" prefHeight="31.0" prefWidth="152.0" style="-fx-background-color: #39a7c3;" text="Add New Employee" textFill="WHITE" AnchorPane.bottomAnchor="530.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="783.0" AnchorPane.topAnchor="30.0">
-                           <font>
-                              <Font name="System Italic" size="15.0" />
-                           </font>
-                        </Button>
-                        <Button fx:id="editEmployeeButton" disable="true" layoutX="211.0" layoutY="30.0" mnemonicParsing="false" onAction="#handleCrudButton" prefHeight="30.0" style="-fx-background-color: #39a7c3;" text="Edit Employee" textFill="WHITE">
-                           <font>
-                              <Font name="System Italic" size="15.0" />
-                           </font>
-                        </Button>
-                        <Button fx:id="deleteEmployeeButton" disable="true" layoutX="330.0" layoutY="30.0" mnemonicParsing="false" onAction="#handleCrudButton" prefHeight="30.0" style="-fx-background-color: red;" text="Delete" textFill="WHITE">
-                           <font>
-                              <Font name="System Italic" size="15.0" />
-                           </font>
-                        </Button>
-                        <TableView fx:id="employeeTableView" layoutX="55.0" layoutY="105.0" prefHeight="485.0" prefWidth="875.0" stylesheets="@../css/Dashboard.css" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="69.0">
-                           <columns>
-                              <TableColumn fx:id="nameColumn" maxWidth="100.0" minWidth="92.0" prefWidth="92.0" text="Name" />
-                              <TableColumn fx:id="emailColumn" maxWidth="180.0" minWidth="100.0" prefWidth="141.0" text="Email" />
-                              <TableColumn fx:id="addressColumn" maxWidth="180.0" minWidth="93.0" prefWidth="147.0" text="Address" />
-                              <TableColumn fx:id="phoneColumn" maxWidth="130.0" minWidth="0.0" prefWidth="116.0" text="Phone" />
-                              <TableColumn fx:id="employeeRoleColumn" maxWidth="120.0" minWidth="30.0" prefWidth="121.0" text="Role" />
-                              <TableColumn fx:id="descriptionColumn" maxWidth="400.0" minWidth="100.0" prefWidth="253.0" text="Description" />
-                           </columns>
-                           <columnResizePolicy>
-                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                           </columnResizePolicy>
-                        </TableView>
-                     </children>
-                  </AnchorPane>
-               </content>
-            </Tab>
-            <Tab fx:id="roleTab" closable="false" style="-fx-pref-width: 100; -fx-pref-height: 40; -fx-font-size: 16;" text="Role">
-               <content>
-                  <AnchorPane fx:id="roleAnchor" style="-fx-background-color: white;">
-                     <children>
-                        <TableView fx:id="roleTableView" layoutX="525.0" layoutY="86.0" prefHeight="484.0" prefWidth="885.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="69.0">
-                          <columns>
-                            <TableColumn fx:id="roleColumn" prefWidth="159.0" text="Role" />
-                            <TableColumn fx:id="roleDescColumn" prefWidth="723.0" text="Description" />
-                          </columns>
-                        </TableView>
-                        <Button fx:id="saveRoleButton" alignment="BASELINE_LEFT" contentDisplay="CENTER" layoutX="50.0" layoutY="30.0" mnemonicParsing="false" onAction="#handleSaveRole" prefHeight="30.0" prefWidth="130.0" style="-fx-background-color: #39a7c3;" text="+ Create Role" textFill="WHITE">
-                           <font>
-                              <Font name="System Italic" size="15.0" />
-                           </font>
-                        </Button>
-                        <Button fx:id="deleteRoleButton" disable="true" layoutX="285.0" layoutY="30.0" mnemonicParsing="false" onAction="#handleSaveRole" prefHeight="30.0" prefWidth="70.0" style="-fx-background-color: red;" styleClass="roleButton" text="Delete" textFill="WHITE">
-                           <font>
-                              <Font name="System Italic" size="15.0" />
-                           </font>
-                        </Button>
-                        <Button fx:id="editRoleButton" disable="true" layoutX="187.0" layoutY="30.0" mnemonicParsing="false" onAction="#handleSaveRole" prefHeight="30.0" prefWidth="91.0" style="-fx-background-color: #39a7c3;" styleClass="roleButton" text="Edit Role" textFill="WHITE">
-                           <font>
-                              <Font name="System Italic" size="15.0" />
-                           </font>
-                        </Button>
-                        <TextField fx:id="searchRoleText" layoutX="715.0" layoutY="30.0" prefHeight="30.0" prefWidth="215.0" promptText="Search.." />
-                     </children>
-                  </AnchorPane>
-               </content>
-            </Tab>
-         </tabs>
-      </TabPane>
-      <Pane prefHeight="115.0" prefWidth="985.0" style="-fx-background-color: linear-gradient(to right, #39a7c3 , white); -fx-border-color: transparent transparent derive(black, 10%) transparent;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <AnchorPane fx:id="fullPane" layoutY="115.0" style="-fx-background-color: white;">
+         <children>
+            <TabPane fx:id="managementTabPane" AnchorPane.bottomAnchor="115.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <tabs>
+                  <Tab fx:id="employeeTab" closable="false" style="-fx-pref-width: 100; -fx-pref-height: 40; -fx-font-size: 16;" text="Employee">
+                     <content>
+                        <AnchorPane fx:id="empAnchor" style="-fx-background-color: white;">
+                           <children>
+                              <TextField fx:id="searchText" layoutX="715.0" layoutY="30.0" prefHeight="30.0" prefWidth="215.0" promptText="Search.." />
+                              <Button fx:id="addNewEmployeeButton" layoutX="50.0" layoutY="30.0" mnemonicParsing="false" onAction="#handleCrudButton" prefHeight="31.0" prefWidth="152.0" style="-fx-background-color: #39a7c3;" text="Add New Employee" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Italic" size="15.0" />
+                                 </font>
+                              </Button>
+                              <Button fx:id="editEmployeeButton" disable="true" layoutX="211.0" layoutY="30.0" mnemonicParsing="false" onAction="#handleCrudButton" prefHeight="30.0" style="-fx-background-color: #39a7c3;" text="Edit Employee" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Italic" size="15.0" />
+                                 </font>
+                              </Button>
+                              <Button fx:id="deleteEmployeeButton" disable="true" layoutX="330.0" layoutY="30.0" mnemonicParsing="false" onAction="#handleCrudButton" prefHeight="30.0" style="-fx-background-color: red;" text="Delete" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Italic" size="15.0" />
+                                 </font>
+                              </Button>
+                              <TableView fx:id="employeeTableView" layoutX="55.0" layoutY="105.0" prefHeight="485.0" prefWidth="875.0" stylesheets="@../css/Dashboard.css" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="69.0">
+                                 <columns>
+                                    <TableColumn fx:id="nameColumn" maxWidth="100.0" minWidth="92.0" prefWidth="92.0" text="Name" />
+                                    <TableColumn fx:id="emailColumn" maxWidth="180.0" minWidth="100.0" prefWidth="141.0" text="Email" />
+                                    <TableColumn fx:id="addressColumn" maxWidth="180.0" minWidth="93.0" prefWidth="147.0" text="Address" />
+                                    <TableColumn fx:id="phoneColumn" maxWidth="130.0" minWidth="0.0" prefWidth="116.0" text="Phone" />
+                                    <TableColumn fx:id="employeeRoleColumn" maxWidth="120.0" minWidth="30.0" prefWidth="121.0" text="Role" />
+                                    <TableColumn fx:id="descriptionColumn" maxWidth="400.0" minWidth="100.0" prefWidth="253.0" text="Description" />
+                                 </columns>
+                                 <columnResizePolicy>
+                                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                 </columnResizePolicy>
+                              </TableView>
+                           </children>
+                        </AnchorPane>
+                     </content>
+                  </Tab>
+                  <Tab fx:id="roleTab" closable="false" style="-fx-pref-width: 100; -fx-pref-height: 40; -fx-font-size: 16;" text="Role">
+                     <content>
+                        <AnchorPane fx:id="roleAnchor" style="-fx-background-color: white;">
+                           <children>
+                              <TableView fx:id="roleTableView" layoutX="525.0" layoutY="86.0" prefHeight="484.0" prefWidth="885.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="69.0">
+                                <columns>
+                                  <TableColumn fx:id="roleColumn" prefWidth="159.0" text="Role" />
+                                  <TableColumn fx:id="roleDescColumn" prefWidth="723.0" text="Description" />
+                                </columns>
+                              </TableView>
+                              <Button fx:id="saveRoleButton" alignment="BASELINE_LEFT" contentDisplay="CENTER" layoutX="50.0" layoutY="30.0" mnemonicParsing="false" onAction="#handleSaveRole" prefHeight="30.0" prefWidth="130.0" style="-fx-background-color: #39a7c3;" text="+ Create Role" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Italic" size="15.0" />
+                                 </font>
+                              </Button>
+                              <Button fx:id="deleteRoleButton" disable="true" layoutX="285.0" layoutY="30.0" mnemonicParsing="false" onAction="#handleSaveRole" prefHeight="30.0" prefWidth="70.0" style="-fx-background-color: red;" styleClass="roleButton" text="Delete" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Italic" size="15.0" />
+                                 </font>
+                              </Button>
+                              <Button fx:id="editRoleButton" disable="true" layoutX="187.0" layoutY="30.0" mnemonicParsing="false" onAction="#handleSaveRole" prefHeight="30.0" prefWidth="91.0" style="-fx-background-color: #39a7c3;" styleClass="roleButton" text="Edit Role" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Italic" size="15.0" />
+                                 </font>
+                              </Button>
+                              <TextField fx:id="searchRoleText" layoutX="715.0" layoutY="30.0" prefHeight="30.0" prefWidth="215.0" promptText="Search.." />
+                           </children>
+                        </AnchorPane>
+                     </content>
+                  </Tab>
+               </tabs>
+            </TabPane>
+         </children>
+      </AnchorPane>
+      <Pane fx:id="headerPane" prefHeight="115.0" prefWidth="985.0" style="-fx-background-color: linear-gradient(to right, #39a7c3 , white); -fx-border-color: transparent transparent derive(black, 10%) transparent;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <VBox prefHeight="115.0" prefWidth="985.0">
                <children>

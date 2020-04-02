@@ -621,7 +621,7 @@ public class EmployeeSchedulerController implements Initializable {
                         timeIndex++;
 
                         //don't let the user add a day that's already an approved day off in tbltimeoff
-                        Tbltimeoff t = timeOffRepository.findByDate(s.getScheduleDate());
+                        Tbltimeoff t = timeOffRepository.findByDateAndEmployee(s.getScheduleDate(), selectedEmployee.getId());
                         if(t != null){
                             System.out.println("Prevented user from adding day off.");
                         }

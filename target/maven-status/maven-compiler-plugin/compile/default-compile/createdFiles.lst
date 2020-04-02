@@ -4,6 +4,7 @@ myproject\controllers\Dashboard\TimeOff\TimeOffController$1.class
 myproject\models\Tblemployee.class
 myproject\models\Tbltimeoff.class
 myproject\services\UserService.class
+myproject\Validation.class
 myproject\models\TimeClass.class
 myproject\repositories\ClockRepository.class
 myproject\services\TimeOffService.class
@@ -17,6 +18,7 @@ myproject\services\ScheduleService.class
 myproject\controllers\Dashboard\TimeOff\TimeOffController.class
 myproject\repositories\UserRepository.class
 myproject\controllers\Dashboard\DashboardController.class
+myproject\SecurePassword.class
 myproject\Main.class
 myproject\controllers\WelcomeLoginSignup\ForgotPassController$1.class
 myproject\models\Tblschedule.class
@@ -24,6 +26,7 @@ myproject\controllers\Dashboard\Calendar\WeeklyScheduleController.class
 myproject\models\TblDay.class
 myproject\controllers\Dashboard\ClockInOut\ClockInOutController.class
 myproject\controllers\WelcomeLoginSignup\ForgotPassController$2.class
+myproject\controllers\Dashboard\Report\ReportController.class
 myproject\models\YearMonthInstance.class
 myproject\models\TblRoles.class
 myproject\controllers\Dashboard\ClockInOut\CrudClockController.class
