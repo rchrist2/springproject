@@ -136,7 +136,7 @@ public class CrudClockController implements Initializable {
 
         //initialize the schedule dates for the current user
         scheduleData = FXCollections.observableArrayList();
-        scheduleData.addAll(scheduleRepository.findScheduleForUser(selectedClock.getSchedule().getEmployee().getUser().getUsername()));
+        scheduleData.addAll(scheduleRepository.findAllScheduleForUser(selectedClock.getSchedule().getEmployee().getUser().getUsername()));
         scheduleList.setItems(scheduleData);
 
         //get the schedule for this time off request and select it in drop-down
