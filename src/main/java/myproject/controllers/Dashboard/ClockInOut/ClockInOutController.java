@@ -12,6 +12,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -69,6 +70,18 @@ public class ClockInOutController implements Initializable {
     private Pane optionsPane2;
 
     @FXML
+    private Pane clockPane;
+
+    @FXML
+    private Pane tablePane;
+
+    @FXML
+    private Pane tablePaneMoved;
+
+    @FXML
+    private AnchorPane clockAnchor;
+
+    @FXML
     private Button clockDeleteButton;
 
     @FXML
@@ -115,33 +128,62 @@ public class ClockInOutController implements Initializable {
         //get the current user
         String currentUser = LoginController.userStore;
         Tblusers currUser = userRepository.findUsername(currentUser);
-        tableUserLabel.setText("Clock History This Week for " + currUser.getEmployee().getName());
 
         //initialize list of user's clock history
         listOfClock = FXCollections.observableArrayList();
-        listOfClock.addAll(clockRepository.findClockThisWeekForUser(currentUser));
+        //listOfClock.addAll(clockRepository.findClockThisWeekForUser(currentUser));
 
         //initialize the schedule drop down menu for current week
         //scheduleData = FXCollections.observableArrayList();
         today = scheduleRepository.findScheduleThisWeekForUserSameDay(currentUser);
         SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy");
 
+        currentWeekCheck.setSelected(true);
+
         //only show schedule equal to the current day
         if(!(today == null)){
             scheduleList.setText(today.getDay().getDayDesc() + ", " + dateFormat.format(today.getScheduleDate()));
         }
         else{ //if no schedules were found for today
-            scheduleList.setText("No Schedules Today");
+            if(currUser.getEmployee().getRole().getRoleName().equals("Owner")){
+                scheduleList.setText(null);
+            }
+            else{
+                scheduleList.setText("No Schedules Today");
+            }
         }
 
-        setLastActionLabel();
-        reloadClockTable();
-        setDataForClockTableView();
-        addActionListenersForCrudButtons(clockDeleteButton);
-        addActionListenersForCrudButtons(clockEditButton);
-        addToggleGroupForRadioButtons();
+        if(currUser.getEmployee().getRole().getRoleName().equals("Owner")){
+            listOfClock.addAll(clockRepository.findClockThisWeekAllUser());
 
-        currentWeekCheck.setSelected(true);
+            tableUserLabel.setText("Clock History This Week for All Users");
+
+            clockAnchor.getChildren().remove(clockPane);
+            clockAnchor.getChildren().remove(tablePane);
+            tablePaneMoved.getChildren().add(tablePane);
+            tablePane.setLayoutX(68);
+            tablePane.setLayoutY(30);
+            clockTable.setPrefHeight(508);
+            tablePaneMoved.setVisible(true);
+
+            reloadClockTableAllUsers();
+            setDataForClockTableView();
+            addActionListenersForCrudButtons(clockDeleteButton);
+            addActionListenersForCrudButtons(clockEditButton);
+            addToggleGroupForRadioButtons();
+        }
+        else{
+            listOfClock.addAll(clockRepository.findClockThisWeekForUser(currentUser));
+
+            tableUserLabel.setText("Clock History This Week for " + currUser.getEmployee().getName());
+
+            setLastActionLabel();
+            reloadClockTable();
+            setDataForClockTableView();
+            addActionListenersForCrudButtons(clockDeleteButton);
+            addActionListenersForCrudButtons(clockEditButton);
+            addToggleGroupForRadioButtons();
+        }
 
         clockTable.getSelectionModel().selectedItemProperty().addListener((obs, old, newv) -> {
             selectedClock = newv;
@@ -495,8 +537,7 @@ public class ClockInOutController implements Initializable {
         String currentUser = LoginController.userStore;
 
         //if the user is the owner or manager, they can see buttons to edit requests or show all users
-        if(userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
-                || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner")) {
+        if(userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")) {
 
             //only managers/owner can edit or delete clock history
             clockEditButton.setVisible(true);
@@ -526,6 +567,11 @@ public class ClockInOutController implements Initializable {
                 setDataForClockTableView();
             });
 
+        }
+        else if(userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner")){
+            //only managers/owner can edit or delete clock history
+            clockEditButton.setVisible(true);
+            clockDeleteButton.setVisible(true);
         }
     }
 

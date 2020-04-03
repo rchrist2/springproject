@@ -94,7 +94,10 @@ public class WeeklyScheduleController implements Initializable {
         sunday = today.with(previousOrSame(DayOfWeek.SUNDAY));
         saturday = today.with(nextOrSame(DayOfWeek.SATURDAY));
 
-        //only managers and owners can see all schedules
+        //everyone can see everyone's schedules
+        listOfEmployees = employeeRepository.findAllEmployee();
+
+        /*//only managers and owners can see all schedules
         if (currUser.getEmployee().getRole().getRoleName().equals("Owner")){
             listOfEmployees = employeeRepository.findAllEmployee();
         }
@@ -104,7 +107,7 @@ public class WeeklyScheduleController implements Initializable {
         }
         else{ //if user is an employee, they can only see employee schedules
             listOfEmployees = employeeRepository.findAllEmployeeByRoleEmployee();
-        }
+        }*/
 
         gridpaneScrollPane.setFitToHeight(true);
 

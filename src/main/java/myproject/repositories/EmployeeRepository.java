@@ -14,6 +14,17 @@ import java.util.List;
 @Repository
 public interface EmployeeRepository extends CrudRepository<Tblemployee, Integer> {
 
+    @Query(value = "SELECT COUNT(*) FROM tblemployee e JOIN tblroles r\n" +
+            "ON r.role_id=e.roles_id JOIN tblusers u ON u.employee_id=e.id\n" +
+            "WHERE role_name='Owner'", nativeQuery = true)
+    Integer numberOfOwner();
+
+    @Query(value = "SELECT COUNT(*), e.id, e.name, e.email, e.address, e.phone, e.roles_id FROM tblemployee e JOIN tblroles r\n" +
+            "ON r.role_id=e.roles_id JOIN tblusers u ON u.employee_id=e.id\n" +
+            "WHERE role_name='Owner'" +
+            "GROUP BY e.id, e.name, e.email, e.address, e.phone, e.roles_id", nativeQuery = true)
+    Tblemployee numberOfOwnerGetEmp();
+
     //Returns a list of all the employees
     @Query(value = "SELECT * FROM tblemployee", nativeQuery = true)
     List<Tblemployee> findAllEmployee();
