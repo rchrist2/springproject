@@ -15,10 +15,12 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import myproject.ErrorMessages;
 import myproject.controllers.WelcomeLoginSignup.LoginController;
+import myproject.controllers.WelcomeLoginSignup.WelcomeController;
 import myproject.models.Tblusers;
 import myproject.repositories.EmployeeRepository;
 import myproject.repositories.UserRepository;
@@ -161,6 +163,8 @@ public class DashboardController implements Initializable {
                     Parent parent = fxmlLoader.load();
                     Scene scene = new Scene(parent);
 
+                    scene.setFill(Color.TRANSPARENT);
+
                     Stage newStage = (Stage)dashboardAnchorPane.getScene().getWindow();
                     newStage.setScene(scene);
 
@@ -177,6 +181,7 @@ public class DashboardController implements Initializable {
                         newStage.setY(moveEvent.getScreenY() - yOffset);
                     });
 
+                    newStage.show();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -186,6 +191,7 @@ public class DashboardController implements Initializable {
                 dashboardPane.setStyle(null);
                 newButton.setDisable(false);
                 switchWindow("/view/WeeklySchedule.fxml");
+
                 System.out.println("You clicked the Weekly Calendar button");
                 newButton = clickedButton;
                 newButton.setDisable(true);

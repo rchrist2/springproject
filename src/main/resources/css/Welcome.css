@@ -1,0 +1,19 @@
+#loginButton {
+    -fx-background-color: #44b1cc;
+}
+
+#loginButton:hover {
+    -fx-background-color: #3a99b0!important;
+}
+
+#forgotPasswordButton {
+    -fx-background-color: #44b1cc;
+}
+
+#forgotPasswordButton:hover {
+    -fx-background-color: #3a99b0!important;
+}
+
+#backgroundLogin {
+    -fx-background-color: transparent;
+}
