@@ -17,3 +17,13 @@
 #backgroundLogin {
     -fx-background-color: transparent;
 }
+
+#loginTextfield {
+    -fx-background-color: #a9a9a9 , white , white;
+    -fx-background-insets: 0 -1 -1 -1, 0 0 0 0, 0 -1 -0.5 -1;
+}
+
+#loginTextfield:focused {
+    -fx-background-color: #a9a9a9 , white , white;
+    -fx-background-insets: 0 -1 -1 -1, 0 0 0 0, 0 -1 0 -1;
+}

@@ -4,7 +4,7 @@
 }
 
 .table-view .column-header {
-    -fx-background-color: white;
+    -fx-background-color: lightblue;
 }
 
 .table-view {

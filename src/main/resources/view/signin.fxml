@@ -18,8 +18,8 @@
             <Font name="System Bold" size="24.0" />
          </font>
       </Label>
-      <TextField fx:id="usernameText" layoutX="57.0" layoutY="175.0" prefHeight="25.0" prefWidth="211.0" />
-      <PasswordField fx:id="passwordText" layoutX="57.0" layoutY="244.0" prefHeight="25.0" prefWidth="211.0" />
+      <TextField id="loginTextfield" fx:id="usernameText" layoutX="57.0" layoutY="175.0" prefHeight="25.0" prefWidth="211.0" stylesheets="@../css/Welcome.css" />
+      <PasswordField id="loginTextfield" fx:id="passwordText" layoutX="57.0" layoutY="244.0" prefHeight="25.0" prefWidth="211.0" stylesheets="@../css/Welcome.css" />
       <Label layoutX="57.0" layoutY="149.0" text="Email">
          <font>
             <Font name="System Bold" size="12.0" />
