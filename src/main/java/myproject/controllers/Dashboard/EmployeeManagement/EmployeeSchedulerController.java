@@ -286,282 +286,167 @@ public class EmployeeSchedulerController implements Initializable {
         String errorString = "";
         boolean errors = false;
 
-        if(sundayCheck.isSelected()){
-
-            if(spinnerValidation(sundayStartSpinner.getValue(), sundayEndSpinner.getValue())) {
-                listOfBegTimes.add(sundayStartSpinner.getValue());
-                listOfEndTimes.add(sundayEndSpinner.getValue());
-            } else{
-
-                errors = true;
-                errorString += "- Sunday\n";
-            }
-
-            listOfDates.add(begOfWeek);
-            listOfDays.add("Sunday");
-
-            begOfWeek = sunday;
+        if(!(sundayCheck.isSelected() || mondayCheck.isSelected()
+        || tuesdayCheck.isSelected() || wednesdayCheck.isSelected()
+        || thursdayCheck.isSelected() || fridayCheck.isSelected()
+        || saturdayCheck.isSelected())){
+            ErrorMessages.showErrorMessage("Error!", "No days selected",
+                    "Please select a day for this employee's schedule.");
         }
+        else{
+            if(sundayCheck.isSelected()){
 
-        if(mondayCheck.isSelected()){
+                if(spinnerValidation(sundayStartSpinner.getValue(), sundayEndSpinner.getValue())) {
+                    listOfBegTimes.add(sundayStartSpinner.getValue());
+                    listOfEndTimes.add(sundayEndSpinner.getValue());
+                } else{
 
-            if(spinnerValidation(mondayStartSpinner.getValue(), mondayEndSpinner.getValue())){
-                listOfBegTimes.add(mondayStartSpinner.getValue());
-                listOfEndTimes.add(mondayEndSpinner.getValue());
-            } else {
-
-                errors = true;
-                errorString += "- Monday\n";
-            }
-
-            begOfWeek = begOfWeek.plusDays(1);
-
-            listOfDates.add(begOfWeek);
-            listOfDays.add("Monday");
-
-            begOfWeek = sunday;
-        }
-
-        if(tuesdayCheck.isSelected()){
-
-            if(spinnerValidation(tuesdayStartSpinner.getValue(), tuesdayEndSpinner.getValue())) {
-                listOfBegTimes.add(tuesdayStartSpinner.getValue());
-                listOfEndTimes.add(tuesdayEndSpinner.getValue());
-            } else{
-
-                errors = true;
-                errorString += "- Tuesday\n";
-            }
-
-            begOfWeek = begOfWeek.plusDays(2);
-
-            listOfDates.add(begOfWeek);
-            listOfDays.add("Tuesday");
-
-            begOfWeek = sunday;
-        }
-
-        if(wednesdayCheck.isSelected()){
-
-            if(spinnerValidation(wednesdayStartSpinner.getValue(), wednesdayEndSpinner.getValue())) {
-                listOfBegTimes.add(wednesdayStartSpinner.getValue());
-                listOfEndTimes.add(wednesdayEndSpinner.getValue());
-            } else{
-
-                errors = true;
-                errorString += "- Wednesday\n";
-            }
-
-            begOfWeek = begOfWeek.plusDays(3);
-
-            listOfDates.add(begOfWeek);
-            listOfDays.add("Wednesday");
-
-            begOfWeek = sunday;
-        }
-
-        if(thursdayCheck.isSelected()){
-
-            if(spinnerValidation(thursdayStartSpinner.getValue(), thursdayEndSpinner.getValue())) {
-                listOfBegTimes.add(thursdayStartSpinner.getValue());
-                listOfEndTimes.add(thursdayEndSpinner.getValue());
-            } else{
-
-                errors = true;
-                errorString += "- Thursday\n";
-            }
-
-            begOfWeek = begOfWeek.plusDays(4);
-
-            listOfDates.add(begOfWeek);
-            listOfDays.add("Thursday");
-
-            begOfWeek = sunday;
-        }
-
-        if(fridayCheck.isSelected()){
-
-            if(spinnerValidation(fridayStartSpinner.getValue(), fridayEndSpinner.getValue())) {
-                listOfBegTimes.add(fridayStartSpinner.getValue());
-                listOfEndTimes.add(fridayEndSpinner.getValue());
-            } else {
-
-                errors = true;
-                errorString += "- Friday\n";
-            }
-
-            begOfWeek = begOfWeek.plusDays(5);
-
-            listOfDates.add(begOfWeek);
-            listOfDays.add("Friday");
-
-            begOfWeek = sunday;
-        }
-
-        if(saturdayCheck.isSelected()){
-
-            if(spinnerValidation(saturdayStartSpinner.getValue(), saturdayEndSpinner.getValue())) {
-                listOfBegTimes.add(saturdayStartSpinner.getValue());
-                listOfEndTimes.add(saturdayEndSpinner.getValue());
-            } else{
-
-                errors = true;
-                errorString += "- Saturday\n";
-            }
-
-            begOfWeek = begOfWeek.plusDays(6);
-
-            listOfDates.add(begOfWeek);
-            listOfDays.add("Saturday");
-
-            begOfWeek = sunday;
-        }
-
-        if(errors){
-            ErrorMessages.showErrorMessage("Missing Time Error", "No Time Provided",
-                    "Please check the times on the following days:\n" + errorString);
-        }
-
-        int timeIndex = 0, i = 0;
-
-        if(!errors) {
-            //variables used for deletion
-            int id = 0;
-            List<Tbltimeoff> tfs = new ArrayList<>();
-            List<Tblclock> cls = new ArrayList<>();
-            List<Tblschedule> newSchedList = new ArrayList<>();
-
-            if(scheduleButton.getText().equals("Update Schedule")) {
-                System.out.println("Update a schedule");
-
-                //declare variables for validating time ranges
-                List<Tblschedule> invalidDays = new ArrayList<>();
-                List<Tblschedule> schedToDel = new ArrayList<>();
-
-                //get all spinner values to validate time range
-                for (String day : listOfDays) {
-                    Tblschedule s = new Tblschedule();
-                    String currBegTime = listOfBegTimes.get(timeIndex);
-                    String currEndTime = listOfEndTimes.get(timeIndex);
-
-                    //convert combobox values to 24 hour clock depending if AM or PM was selected
-                    if (currBegTime.contains("AM")) {
-
-                        //if the beginning hour is 12 am
-                        if (currBegTime.equals("12:00:00 AM")) {
-                            s.setScheduleTimeBegin(Time.valueOf("00"
-                                    + ":00:00"));
-                        } else {
-                            String begAMTime = currBegTime.replace(" AM","");
-                            s.setScheduleTimeBegin(Time.valueOf(begAMTime));
-                        }
-                    } else if (currBegTime.contains("PM")) {
-
-                        //if the beginning hour is 12 pm
-                        if (currBegTime.equals("12:00:00 PM")) {
-                            s.setScheduleTimeBegin(Time.valueOf("12"
-                                    + ":00:00"));
-                        } else {
-                            String begPMTime = currBegTime.replace(" PM","");
-                            s.setScheduleTimeBegin(Time.valueOf(begPMTime));
-                            s.setScheduleTimeBegin(Time.valueOf(s.getScheduleTimeBegin().toLocalTime().plusHours(12)));
-                        }
-                    }
-
-                    //convert combobox values to 24 hour clock depending if AM or PM was selected
-                    if (currEndTime.contains("AM")) {
-
-                        //if the beginning hour is 12 am
-                        if (currEndTime.equals("12:00:00 AM")) {
-                            s.setScheduleTimeEnd(Time.valueOf("00"
-                                    + ":00:00"));
-                        } else {
-                            String endAMTime = currEndTime.replace(" AM","");
-                            s.setScheduleTimeEnd(Time.valueOf(endAMTime));
-                        }
-                    } else if (currEndTime.contains("PM")) {
-
-                        //if the beginning hour is 12 pm
-                        if (currEndTime.equals("12:00:00 PM")) {
-                            s.setScheduleTimeEnd(Time.valueOf("12"
-                                    + ":00:00"));
-                        } else {
-                            String endPMTime = currEndTime.replace(" PM","");
-                            s.setScheduleTimeEnd(Time.valueOf(endPMTime));
-                            s.setScheduleTimeEnd(Time.valueOf(s.getScheduleTimeEnd().toLocalTime().plusHours(12)));
-                        }
-                    }
-
-                    s.setScheduleDate(Date.valueOf(listOfDates.get(i++)));
-                    s.setEmployee(employeeRepository.findEmployeeById(selectedEmployee.getId()));
-                    s.setDay(dayRepository.findDayByID(dayRepository.findDay(day).getDayId()));
-                    timeIndex++;
-
-                    if(!(s.getScheduleTimeBegin().before(s.getScheduleTimeEnd())
-                            && s.getScheduleTimeEnd().after(s.getScheduleTimeBegin()))){
-                        invalidDays.add(s);
-                    }
-
-                    schedToDel.add(s);
+                    errors = true;
+                    errorString += "- Sunday\n";
                 }
 
-                //show an error message for each invalid schedule
-                StringBuilder schedError = new StringBuilder();
-                for (Tblschedule s : invalidDays) {
-                    schedError.append("\t- " + s.getDay().getDayDesc() + "\n");
+                listOfDates.add(begOfWeek);
+                listOfDays.add("Sunday");
+
+                begOfWeek = sunday;
+            }
+
+            if(mondayCheck.isSelected()){
+
+                if(spinnerValidation(mondayStartSpinner.getValue(), mondayEndSpinner.getValue())){
+                    listOfBegTimes.add(mondayStartSpinner.getValue());
+                    listOfEndTimes.add(mondayEndSpinner.getValue());
+                } else {
+
+                    errors = true;
+                    errorString += "- Monday\n";
                 }
 
-                //show an error message with the days for each invalid schedule
-                if(!(invalidDays.isEmpty())){
-                    ErrorMessages.showErrorMessage("Invalid time values", "Time range for \n"
-                            + schedError
-                            + " is invalid", "Please edit the time range for this schedule. Updating failed");
-                    //prevents the table selection being null and permanently disabling spinners
-                    //TODO stop the spinners from disabling after closing alert
-                    scheduleGridPane.setDisable(false);
-                    employeeLabel.setVisible(true);
+                begOfWeek = begOfWeek.plusDays(1);
 
-                    resetButton.setDisable(false);
-                    selectButton.setDisable(true);
-                    scheduleButton.setDisable(false);
-                    employeeListView.setDisable(true);
-                    listOfEmployeeLabel.setDisable(true);
+                listOfDates.add(begOfWeek);
+                listOfDays.add("Monday");
 
-                } else { //if there are no invalid time ranges..
+                begOfWeek = sunday;
+            }
 
-                    //find related rows and set their schedule_ids to null
-                    for(Tblschedule sch : schedList){
-                        id = sch.getScheduleId();
-                        if(timeOffRepository.findScheduleTimeOff(id, selectedEmployee.getId()) != null){
-                            tfs.add(timeOffRepository.findScheduleTimeOff(id, selectedEmployee.getId()));
-                            tfs.forEach((t) -> t.setSchedule(null));
-                            for(Tbltimeoff t : tfs){
-                                timeOffRepository.save(t);
-                            }
+            if(tuesdayCheck.isSelected()){
 
-                        }
-                        if(clockRepository.findScheduleClock(id) != null){
-                            cls.addAll(clockRepository.findScheduleClock(id));
-                            cls.forEach((c) -> c.setSchedule(null));
-                            for(Tblclock c : cls){
-                                clockRepository.save(c);
-                            }
-                        }
-                    }
+                if(spinnerValidation(tuesdayStartSpinner.getValue(), tuesdayEndSpinner.getValue())) {
+                    listOfBegTimes.add(tuesdayStartSpinner.getValue());
+                    listOfEndTimes.add(tuesdayEndSpinner.getValue());
+                } else{
 
-                    //Delete the original schedule (Pre-updated schedule)
-                    System.out.println("Schedule to delete: " + schedList);
-                    for(Tblschedule sh : schedList){
-                        scheduleService.deleteScheduleByID(sh.getScheduleId());
-                        System.out.println("Deleted");
+                    errors = true;
+                    errorString += "- Tuesday\n";
+                }
 
-                    }
+                begOfWeek = begOfWeek.plusDays(2);
 
-                    //set these to 0 to prevent out of bounds error
-                    timeIndex = 0;
-                    i = 0;
+                listOfDates.add(begOfWeek);
+                listOfDays.add("Tuesday");
 
-                    //re-insert the schedule that was deleted
+                begOfWeek = sunday;
+            }
+
+            if(wednesdayCheck.isSelected()){
+
+                if(spinnerValidation(wednesdayStartSpinner.getValue(), wednesdayEndSpinner.getValue())) {
+                    listOfBegTimes.add(wednesdayStartSpinner.getValue());
+                    listOfEndTimes.add(wednesdayEndSpinner.getValue());
+                } else{
+
+                    errors = true;
+                    errorString += "- Wednesday\n";
+                }
+
+                begOfWeek = begOfWeek.plusDays(3);
+
+                listOfDates.add(begOfWeek);
+                listOfDays.add("Wednesday");
+
+                begOfWeek = sunday;
+            }
+
+            if(thursdayCheck.isSelected()){
+
+                if(spinnerValidation(thursdayStartSpinner.getValue(), thursdayEndSpinner.getValue())) {
+                    listOfBegTimes.add(thursdayStartSpinner.getValue());
+                    listOfEndTimes.add(thursdayEndSpinner.getValue());
+                } else{
+
+                    errors = true;
+                    errorString += "- Thursday\n";
+                }
+
+                begOfWeek = begOfWeek.plusDays(4);
+
+                listOfDates.add(begOfWeek);
+                listOfDays.add("Thursday");
+
+                begOfWeek = sunday;
+            }
+
+            if(fridayCheck.isSelected()){
+
+                if(spinnerValidation(fridayStartSpinner.getValue(), fridayEndSpinner.getValue())) {
+                    listOfBegTimes.add(fridayStartSpinner.getValue());
+                    listOfEndTimes.add(fridayEndSpinner.getValue());
+                } else {
+
+                    errors = true;
+                    errorString += "- Friday\n";
+                }
+
+                begOfWeek = begOfWeek.plusDays(5);
+
+                listOfDates.add(begOfWeek);
+                listOfDays.add("Friday");
+
+                begOfWeek = sunday;
+            }
+
+            if(saturdayCheck.isSelected()){
+
+                if(spinnerValidation(saturdayStartSpinner.getValue(), saturdayEndSpinner.getValue())) {
+                    listOfBegTimes.add(saturdayStartSpinner.getValue());
+                    listOfEndTimes.add(saturdayEndSpinner.getValue());
+                } else{
+
+                    errors = true;
+                    errorString += "- Saturday\n";
+                }
+
+                begOfWeek = begOfWeek.plusDays(6);
+
+                listOfDates.add(begOfWeek);
+                listOfDays.add("Saturday");
+
+                begOfWeek = sunday;
+            }
+
+            if(errors){
+                ErrorMessages.showErrorMessage("Missing Time Error", "No Time Provided",
+                        "Please check the times on the following days:\n" + errorString);
+            }
+
+            int timeIndex = 0, i = 0;
+
+            if(!errors) {
+                //variables used for deletion
+                int id = 0;
+                List<Tbltimeoff> tfs = new ArrayList<>();
+                List<Tblclock> cls = new ArrayList<>();
+                List<Tblschedule> newSchedList = new ArrayList<>();
+
+                if(scheduleButton.getText().equals("Update Schedule")) {
+                    System.out.println("Update a schedule");
+
+                    //declare variables for validating time ranges
+                    List<Tblschedule> invalidDays = new ArrayList<>();
+                    List<Tblschedule> schedToDel = new ArrayList<>();
+
+                    //get all spinner values to validate time range
                     for (String day : listOfDays) {
                         Tblschedule s = new Tblschedule();
                         String currBegTime = listOfBegTimes.get(timeIndex);
@@ -620,228 +505,352 @@ public class EmployeeSchedulerController implements Initializable {
                         s.setDay(dayRepository.findDayByID(dayRepository.findDay(day).getDayId()));
                         timeIndex++;
 
-                        //don't let the user add a day that's already an approved day off in tbltimeoff
-                        Tbltimeoff t = timeOffRepository.findByDateAndEmployee(s.getScheduleDate(), selectedEmployee.getId());
-                        if(t != null){
-                            System.out.println("Prevented user from adding day off.");
+                        if(!(s.getScheduleTimeBegin().before(s.getScheduleTimeEnd())
+                                && s.getScheduleTimeEnd().after(s.getScheduleTimeBegin()))){
+                            invalidDays.add(s);
                         }
-                        else{
-                            scheduleRepository.save(s);
-                            int newId = s.getScheduleId();
-                            newSchedList.add(s);
-                        }
+
+                        schedToDel.add(s);
                     }
 
-                    //give related clock and time off records the new schedule ids
-                    if(!(schedList.isEmpty())){
-                        if(!(tfs.isEmpty())){
-                            //loop through each new id
-                            for(Tblschedule d : newSchedList){
-                                //if the schedule day matches the day of the related time offs, set the id
+                    //show an error message for each invalid schedule
+                    StringBuilder schedError = new StringBuilder();
+                    for (Tblschedule s : invalidDays) {
+                        schedError.append("\t- " + s.getDay().getDayDesc() + "\n");
+                    }
+
+                    //show an error message with the days for each invalid schedule
+                    if(!(invalidDays.isEmpty())){
+                        ErrorMessages.showErrorMessage("Invalid time values", "Time range for \n"
+                                + schedError
+                                + " is invalid", "Please edit the time range for this schedule. Updating failed");
+                        //prevents the table selection being null and permanently disabling spinners
+                        //TODO stop the spinners from disabling after closing alert
+                        scheduleGridPane.setDisable(false);
+                        employeeLabel.setVisible(true);
+
+                        resetButton.setDisable(false);
+                        selectButton.setDisable(true);
+                        scheduleButton.setDisable(false);
+                        employeeListView.setDisable(true);
+                        listOfEmployeeLabel.setDisable(true);
+
+                    } else { //if there are no invalid time ranges..
+
+                        //find related rows and set their schedule_ids to null
+                        for(Tblschedule sch : schedList){
+                            id = sch.getScheduleId();
+                            if(timeOffRepository.findScheduleTimeOff(id, selectedEmployee.getId()) != null){
+                                tfs.add(timeOffRepository.findScheduleTimeOff(id, selectedEmployee.getId()));
+                                tfs.forEach((t) -> t.setSchedule(null));
                                 for(Tbltimeoff t : tfs){
-                                    if(d.getDay().getDayDesc().equals(t.getDay().getDayDesc())){
-                                        t.setSchedule(d);
-                                        timeOffRepository.save(t);
-                                    }
-                                    else{ //else if the day was actually removed from the schedule
-                                        timeOffService.deleteTimeOff(t.getTimeOffId());
-                                    }
+                                    timeOffRepository.save(t);
                                 }
-                            }
-                        }
 
-                        if(!(cls.isEmpty())){
-                            //do the same for clock ins/outs
-                            for(Tblschedule k : newSchedList){
-                                //Tblschedule newSched2 = scheduleRepository.findByScheduleId(k.getScheduleId());
+                            }
+                            if(clockRepository.findScheduleClock(id) != null){
+                                cls.addAll(clockRepository.findScheduleClock(id));
+                                cls.forEach((c) -> c.setSchedule(null));
                                 for(Tblclock c : cls){
-                                    if(k.getDay().getDayDesc().equals(c.getDay().getDayDesc())){
-                                        c.setSchedule(k);
-                                        clockRepository.save(c);
+                                    clockRepository.save(c);
+                                }
+                            }
+                        }
+
+                        //Delete the original schedule (Pre-updated schedule)
+                        System.out.println("Schedule to delete: " + schedList);
+                        for(Tblschedule sh : schedList){
+                            scheduleService.deleteScheduleByID(sh.getScheduleId());
+                            System.out.println("Deleted");
+
+                        }
+
+                        //set these to 0 to prevent out of bounds error
+                        timeIndex = 0;
+                        i = 0;
+
+                        //re-insert the schedule that was deleted
+                        for (String day : listOfDays) {
+                            Tblschedule s = new Tblschedule();
+                            String currBegTime = listOfBegTimes.get(timeIndex);
+                            String currEndTime = listOfEndTimes.get(timeIndex);
+
+                            //convert combobox values to 24 hour clock depending if AM or PM was selected
+                            if (currBegTime.contains("AM")) {
+
+                                //if the beginning hour is 12 am
+                                if (currBegTime.equals("12:00:00 AM")) {
+                                    s.setScheduleTimeBegin(Time.valueOf("00"
+                                            + ":00:00"));
+                                } else {
+                                    String begAMTime = currBegTime.replace(" AM","");
+                                    s.setScheduleTimeBegin(Time.valueOf(begAMTime));
+                                }
+                            } else if (currBegTime.contains("PM")) {
+
+                                //if the beginning hour is 12 pm
+                                if (currBegTime.equals("12:00:00 PM")) {
+                                    s.setScheduleTimeBegin(Time.valueOf("12"
+                                            + ":00:00"));
+                                } else {
+                                    String begPMTime = currBegTime.replace(" PM","");
+                                    s.setScheduleTimeBegin(Time.valueOf(begPMTime));
+                                    s.setScheduleTimeBegin(Time.valueOf(s.getScheduleTimeBegin().toLocalTime().plusHours(12)));
+                                }
+                            }
+
+                            //convert combobox values to 24 hour clock depending if AM or PM was selected
+                            if (currEndTime.contains("AM")) {
+
+                                //if the beginning hour is 12 am
+                                if (currEndTime.equals("12:00:00 AM")) {
+                                    s.setScheduleTimeEnd(Time.valueOf("00"
+                                            + ":00:00"));
+                                } else {
+                                    String endAMTime = currEndTime.replace(" AM","");
+                                    s.setScheduleTimeEnd(Time.valueOf(endAMTime));
+                                }
+                            } else if (currEndTime.contains("PM")) {
+
+                                //if the beginning hour is 12 pm
+                                if (currEndTime.equals("12:00:00 PM")) {
+                                    s.setScheduleTimeEnd(Time.valueOf("12"
+                                            + ":00:00"));
+                                } else {
+                                    String endPMTime = currEndTime.replace(" PM","");
+                                    s.setScheduleTimeEnd(Time.valueOf(endPMTime));
+                                    s.setScheduleTimeEnd(Time.valueOf(s.getScheduleTimeEnd().toLocalTime().plusHours(12)));
+                                }
+                            }
+
+                            s.setScheduleDate(Date.valueOf(listOfDates.get(i++)));
+                            s.setEmployee(employeeRepository.findEmployeeById(selectedEmployee.getId()));
+                            s.setDay(dayRepository.findDayByID(dayRepository.findDay(day).getDayId()));
+                            timeIndex++;
+
+                            //don't let the user add a day that's already an approved day off in tbltimeoff
+                            Tbltimeoff t = timeOffRepository.findByDateAndEmployee(s.getScheduleDate(), selectedEmployee.getId());
+                            if(t != null){
+                                System.out.println("Prevented user from adding day off.");
+                            }
+                            else{
+                                scheduleRepository.save(s);
+                                int newId = s.getScheduleId();
+                                newSchedList.add(s);
+                            }
+                        }
+
+                        //give related clock and time off records the new schedule ids
+                        if(!(schedList.isEmpty())){
+                            if(!(tfs.isEmpty())){
+                                //loop through each new id
+                                for(Tblschedule d : newSchedList){
+                                    //if the schedule day matches the day of the related time offs, set the id
+                                    for(Tbltimeoff t : tfs){
+                                        if(d.getDay().getDayDesc().equals(t.getDay().getDayDesc())){
+                                            t.setSchedule(d);
+                                            timeOffRepository.save(t);
+                                        }
+                                        else{ //else if the day was actually removed from the schedule
+                                            timeOffService.deleteTimeOff(t.getTimeOffId());
+                                        }
                                     }
-                                    else{ //else if the day was actually removed from the schedule
-                                        clockService.deleteClock(c.getClockId());
+                                }
+                            }
+
+                            if(!(cls.isEmpty())){
+                                //do the same for clock ins/outs
+                                for(Tblschedule k : newSchedList){
+                                    //Tblschedule newSched2 = scheduleRepository.findByScheduleId(k.getScheduleId());
+                                    for(Tblclock c : cls){
+                                        if(k.getDay().getDayDesc().equals(c.getDay().getDayDesc())){
+                                            c.setSchedule(k);
+                                            clockRepository.save(c);
+                                        }
+                                        else{ //else if the day was actually removed from the schedule
+                                            clockService.deleteClock(c.getClockId());
+                                        }
                                     }
                                 }
                             }
                         }
+                        ErrorMessages.showInformationMessage("Successful", "Saved Schedule", selectedEmployee + "'s schedule was saved successfully");
+                        loadDataToTable();
+
+                        scheduleGridPane.setDisable(true);
+                        employeeLabel.setVisible(false);
+
+                        resetButton.setDisable(true);
+                        selectButton.setDisable(false);
+                        scheduleButton.setDisable(true);
+                        employeeListView.setDisable(false);
+                        listOfEmployeeLabel.setDisable(false);
+
+                        resetCheckBoxes();
+                        resetSpinners();
                     }
-                    ErrorMessages.showInformationMessage("Successful", "Saved Schedule", selectedEmployee + "'s schedule was saved successfully");
-                    loadDataToTable();
 
-                    scheduleGridPane.setDisable(true);
-                    employeeLabel.setVisible(false);
+                }
+                else if(scheduleButton.getText().equals("Add Schedule")){
+                    System.out.println("Add a schedule");
 
-                    resetButton.setDisable(true);
-                    selectButton.setDisable(false);
-                    scheduleButton.setDisable(true);
-                    employeeListView.setDisable(false);
-                    listOfEmployeeLabel.setDisable(false);
+                    //declare variables to use for validating time ranges
+                    List<Tblschedule> schedToAdd = new ArrayList<>();
+                    StringBuilder schedErrorAdd = new StringBuilder();
+                    List<Tblschedule> invalidDaysAdd = new ArrayList<>();
+                    List<Tblschedule> hasFutureTimeOff = new ArrayList<>();
+                    List<Tbltimeoff> theFutureTimeOffs = new ArrayList<>();
 
-                    resetCheckBoxes();
-                    resetSpinners();
+                    //set these to 0 to avoid out of bounds error
+                    timeIndex = 0;
+                    i = 0;
+
+                    //gather schedules to be inserted, while also finding schedules w/ invalid time ranges
+                    for (String day : listOfDays) {
+                        Tblschedule s = new Tblschedule();
+                        String currBegTime = listOfBegTimes.get(timeIndex);
+                        String currEndTime = listOfEndTimes.get(timeIndex);
+
+                        //convert combobox values to 24 hour clock depending if AM or PM was selected
+                        if (currBegTime.contains("AM")) {
+
+                            //if the beginning hour is 12 am
+                            if (currBegTime.equals("12:00:00 AM")) {
+                                s.setScheduleTimeBegin(Time.valueOf("00"
+                                        + ":00:00"));
+                            } else {
+                                String begAMTime = currBegTime.replace(" AM","");
+                                s.setScheduleTimeBegin(Time.valueOf(begAMTime));
+                            }
+                        } else if (currBegTime.contains("PM")) {
+
+                            //if the beginning hour is 12 pm
+                            if (currBegTime.equals("12:00:00 PM")) {
+                                s.setScheduleTimeBegin(Time.valueOf("12"
+                                        + ":00:00"));
+                            } else {
+                                String begPMTime = currBegTime.replace(" PM","");
+                                s.setScheduleTimeBegin(Time.valueOf(begPMTime));
+                                s.setScheduleTimeBegin(Time.valueOf(s.getScheduleTimeBegin().toLocalTime().plusHours(12)));
+                            }
+                        }
+
+                        //convert combobox values to 24 hour clock depending if AM or PM was selected
+                        if (currEndTime.contains("AM")) {
+
+                            //if the beginning hour is 12 am
+                            if (currEndTime.equals("12:00:00 AM")) {
+                                s.setScheduleTimeEnd(Time.valueOf("00"
+                                        + ":00:00"));
+                            } else {
+                                String endAMTime = currEndTime.replace(" AM","");
+                                s.setScheduleTimeEnd(Time.valueOf(endAMTime));
+                            }
+                        } else if (currEndTime.contains("PM")) {
+
+                            //if the beginning hour is 12 pm
+                            if (currEndTime.equals("12:00:00 PM")) {
+                                s.setScheduleTimeEnd(Time.valueOf("12"
+                                        + ":00:00"));
+                            } else {
+                                String endPMTime = currEndTime.replace(" PM","");
+                                s.setScheduleTimeEnd(Time.valueOf(endPMTime));
+                                s.setScheduleTimeEnd(Time.valueOf(s.getScheduleTimeEnd().toLocalTime().plusHours(12)));
+                            }
+                        }
+
+                        s.setScheduleDate(Date.valueOf(listOfDates.get(i++)));
+                        s.setEmployee(employeeRepository.findEmployeeById(selectedEmployee.getId()));
+                        s.setDay(dayRepository.findDayByID(dayRepository.findDay(day).getDayId()));
+                        timeIndex++;
+
+                        //find all days with an invalid time range and add them to a list
+                        if(!(s.getScheduleTimeBegin().before(s.getScheduleTimeEnd())
+                                && s.getScheduleTimeEnd().after(s.getScheduleTimeBegin()))){
+                            invalidDaysAdd.add(s);
+                        }
+
+                        //add the schedules to be added into another list
+                        schedToAdd.add(s);
+                    }
+
+                    //show an error message for each invalid schedule
+                    for (Tblschedule sched : invalidDaysAdd) {
+                        schedErrorAdd.append("\t- " + sched.getDay().getDayDesc() + "\n");
+                    }
+
+                    //if invalid schedules were found, show an error
+                    if(!(invalidDaysAdd.isEmpty())){
+                        ErrorMessages.showErrorMessage("Invalid time values", "Time range for \n"
+                                + schedErrorAdd
+                                + " is invalid", "Please edit the time range for this schedule");
+
+                        //prevents the list selection being null and permanently disabling spinners
+
+                        scheduleGridPane.setDisable(false);
+                        employeeLabel.setVisible(true);
+
+                        resetButton.setDisable(false);
+                        selectButton.setDisable(true);
+                        scheduleButton.setDisable(false);
+                        employeeListView.setDisable(true);
+                        listOfEmployeeLabel.setDisable(true);
+                    }
+                    else { //if no invalid time ranges were found, add the schedules
+
+                        for(Tblschedule sc : schedToAdd){
+                            scheduleRepository.save(sc);
+                        }
+
+                        hasFutureTimeOff.addAll(scheduleRepository.findScheduleForUserWithUnlinkedTimeOff(currentUser));
+                        theFutureTimeOffs.addAll(timeOffRepository.findUnlinkedTimeOffForUserSchedule(currentUser));
+                        String storeReasonDesc = "";
+                        boolean wasApproved = false;
+
+                        if(!(hasFutureTimeOff.isEmpty() && theFutureTimeOffs.isEmpty())){
+                            for(Tbltimeoff t : theFutureTimeOffs){
+                                storeReasonDesc = t.getReasonDesc();
+                                wasApproved = t.isApproved();
+                                timeOffService.deleteTimeOff(t.getTimeOffId());
+                            }
+                            for(Tblschedule s : hasFutureTimeOff){
+                                Tbltimeoff t = new Tbltimeoff();
+                                t.setBeginTimeOffDate(s.getScheduleDate());
+                                t.setEndTimeOffDate(s.getScheduleDate());
+                                t.setApproved(wasApproved);
+                                t.setReasonDesc(storeReasonDesc);
+                                t.setDay(s.getDay());
+                                t.setSchedule(s);
+                                t.setEmployee(s.getEmployee());
+
+                                timeOffRepository.save(t);
+                            }
+
+                            ErrorMessages.showInformationMessage("Time Off Requests Found",
+                                    "Time off requests found for these schedules",
+                                    "Time off requests have been found and updated for these schedules.");
+
+                        }
+
+
+                        ErrorMessages.showInformationMessage("Successful", "Saved Schedule", selectedEmployee + "'s schedule was saved successfully");
+                        loadDataToTable();
+
+                        scheduleGridPane.setDisable(true);
+                        employeeLabel.setVisible(false);
+
+                        resetButton.setDisable(true);
+                        selectButton.setDisable(false);
+                        scheduleButton.setDisable(true);
+                        employeeListView.setDisable(false);
+                        listOfEmployeeLabel.setDisable(false);
+
+                        resetCheckBoxes();
+                        resetSpinners();
+                    }
                 }
 
             }
-            else if(scheduleButton.getText().equals("Add Schedule")){
-                System.out.println("Add a schedule");
-
-                //declare variables to use for validating time ranges
-                List<Tblschedule> schedToAdd = new ArrayList<>();
-                StringBuilder schedErrorAdd = new StringBuilder();
-                List<Tblschedule> invalidDaysAdd = new ArrayList<>();
-                List<Tblschedule> hasFutureTimeOff = new ArrayList<>();
-                List<Tbltimeoff> theFutureTimeOffs = new ArrayList<>();
-
-                //set these to 0 to avoid out of bounds error
-                timeIndex = 0;
-                i = 0;
-
-                //gather schedules to be inserted, while also finding schedules w/ invalid time ranges
-                for (String day : listOfDays) {
-                    Tblschedule s = new Tblschedule();
-                    String currBegTime = listOfBegTimes.get(timeIndex);
-                    String currEndTime = listOfEndTimes.get(timeIndex);
-
-                    //convert combobox values to 24 hour clock depending if AM or PM was selected
-                    if (currBegTime.contains("AM")) {
-
-                        //if the beginning hour is 12 am
-                        if (currBegTime.equals("12:00:00 AM")) {
-                            s.setScheduleTimeBegin(Time.valueOf("00"
-                                    + ":00:00"));
-                        } else {
-                            String begAMTime = currBegTime.replace(" AM","");
-                            s.setScheduleTimeBegin(Time.valueOf(begAMTime));
-                        }
-                    } else if (currBegTime.contains("PM")) {
-
-                        //if the beginning hour is 12 pm
-                        if (currBegTime.equals("12:00:00 PM")) {
-                            s.setScheduleTimeBegin(Time.valueOf("12"
-                                    + ":00:00"));
-                        } else {
-                            String begPMTime = currBegTime.replace(" PM","");
-                            s.setScheduleTimeBegin(Time.valueOf(begPMTime));
-                            s.setScheduleTimeBegin(Time.valueOf(s.getScheduleTimeBegin().toLocalTime().plusHours(12)));
-                        }
-                    }
-
-                    //convert combobox values to 24 hour clock depending if AM or PM was selected
-                    if (currEndTime.contains("AM")) {
-
-                        //if the beginning hour is 12 am
-                        if (currEndTime.equals("12:00:00 AM")) {
-                            s.setScheduleTimeEnd(Time.valueOf("00"
-                                    + ":00:00"));
-                        } else {
-                            String endAMTime = currEndTime.replace(" AM","");
-                            s.setScheduleTimeEnd(Time.valueOf(endAMTime));
-                        }
-                    } else if (currEndTime.contains("PM")) {
-
-                        //if the beginning hour is 12 pm
-                        if (currEndTime.equals("12:00:00 PM")) {
-                            s.setScheduleTimeEnd(Time.valueOf("12"
-                                    + ":00:00"));
-                        } else {
-                            String endPMTime = currEndTime.replace(" PM","");
-                            s.setScheduleTimeEnd(Time.valueOf(endPMTime));
-                            s.setScheduleTimeEnd(Time.valueOf(s.getScheduleTimeEnd().toLocalTime().plusHours(12)));
-                        }
-                    }
-
-                    s.setScheduleDate(Date.valueOf(listOfDates.get(i++)));
-                    s.setEmployee(employeeRepository.findEmployeeById(selectedEmployee.getId()));
-                    s.setDay(dayRepository.findDayByID(dayRepository.findDay(day).getDayId()));
-                    timeIndex++;
-
-                    //find all days with an invalid time range and add them to a list
-                    if(!(s.getScheduleTimeBegin().before(s.getScheduleTimeEnd())
-                            && s.getScheduleTimeEnd().after(s.getScheduleTimeBegin()))){
-                        invalidDaysAdd.add(s);
-                    }
-
-                    //add the schedules to be added into another list
-                    schedToAdd.add(s);
-                }
-
-                //show an error message for each invalid schedule
-                for (Tblschedule sched : invalidDaysAdd) {
-                    schedErrorAdd.append("\t- " + sched.getDay().getDayDesc() + "\n");
-                }
-
-                //if invalid schedules were found, show an error
-                if(!(invalidDaysAdd.isEmpty())){
-                    ErrorMessages.showErrorMessage("Invalid time values", "Time range for \n"
-                            + schedErrorAdd
-                            + " is invalid", "Please edit the time range for this schedule");
-
-                    //prevents the list selection being null and permanently disabling spinners
-
-                    scheduleGridPane.setDisable(false);
-                    employeeLabel.setVisible(true);
-
-                    resetButton.setDisable(false);
-                    selectButton.setDisable(true);
-                    scheduleButton.setDisable(false);
-                    employeeListView.setDisable(true);
-                    listOfEmployeeLabel.setDisable(true);
-                }
-                else { //if no invalid time ranges were found, add the schedules
-
-                    for(Tblschedule sc : schedToAdd){
-                        scheduleRepository.save(sc);
-                    }
-
-                    hasFutureTimeOff.addAll(scheduleRepository.findScheduleForUserWithUnlinkedTimeOff(currentUser));
-                    theFutureTimeOffs.addAll(timeOffRepository.findUnlinkedTimeOffForUserSchedule(currentUser));
-                    String storeReasonDesc = "";
-                    boolean wasApproved = false;
-
-                    if(!(hasFutureTimeOff.isEmpty() && theFutureTimeOffs.isEmpty())){
-                        for(Tbltimeoff t : theFutureTimeOffs){
-                            storeReasonDesc = t.getReasonDesc();
-                            wasApproved = t.isApproved();
-                            timeOffService.deleteTimeOff(t.getTimeOffId());
-                        }
-                        for(Tblschedule s : hasFutureTimeOff){
-                            Tbltimeoff t = new Tbltimeoff();
-                            t.setBeginTimeOffDate(s.getScheduleDate());
-                            t.setEndTimeOffDate(s.getScheduleDate());
-                            t.setApproved(wasApproved);
-                            t.setReasonDesc(storeReasonDesc);
-                            t.setDay(s.getDay());
-                            t.setSchedule(s);
-                            t.setEmployee(s.getEmployee());
-
-                            timeOffRepository.save(t);
-                        }
-
-                        ErrorMessages.showInformationMessage("Time Off Requests Found",
-                                "Time off requests found for these schedules",
-                                "Time off requests have been found and updated for these schedules.");
-
-                    }
-
-
-                    ErrorMessages.showInformationMessage("Successful", "Saved Schedule", selectedEmployee + "'s schedule was saved successfully");
-                    loadDataToTable();
-
-                    scheduleGridPane.setDisable(true);
-                    employeeLabel.setVisible(false);
-
-                    resetButton.setDisable(true);
-                    selectButton.setDisable(false);
-                    scheduleButton.setDisable(true);
-                    employeeListView.setDisable(false);
-                    listOfEmployeeLabel.setDisable(false);
-
-                    resetCheckBoxes();
-                    resetSpinners();
-                }
-            }
-
         }
     }
 

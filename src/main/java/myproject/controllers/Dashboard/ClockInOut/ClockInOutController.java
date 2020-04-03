@@ -60,7 +60,7 @@ public class ClockInOutController implements Initializable {
     private ClockService clockService;
 
     @FXML
-    private ComboBox<Tblschedule> scheduleList;
+    private Label scheduleList;
 
     @FXML
     private Pane optionsPane;
@@ -103,6 +103,8 @@ public class ClockInOutController implements Initializable {
 
     private Tblclock selectedClock;
 
+    private Tblschedule today;
+
     private ObservableList<Tblclock> listOfClock;
     private FilteredList<Tblclock> filteredListOfClock;
 
@@ -120,24 +122,16 @@ public class ClockInOutController implements Initializable {
         listOfClock.addAll(clockRepository.findClockThisWeekForUser(currentUser));
 
         //initialize the schedule drop down menu for current week
-        scheduleData = FXCollections.observableArrayList();
+        //scheduleData = FXCollections.observableArrayList();
+        today = scheduleRepository.findScheduleThisWeekForUserSameDay(currentUser);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy");
 
-        //only load schedules equal to the current day
-        scheduleData.addAll(scheduleRepository.findScheduleThisWeekForUserSameDay(currentUser));
-
-        if(!(scheduleData.isEmpty())){
-            scheduleList.setItems(scheduleData);
-
-            //find the day equal to today and select that
-            for(Tblschedule s : scheduleData){
-                if(s.getScheduleDate().toLocalDate().equals(LocalDate.now())){
-                    scheduleList.getSelectionModel().select(s);
-                }
-            }
+        //only show schedule equal to the current day
+        if(!(today == null)){
+            scheduleList.setText(today.getDay().getDayDesc() + ", " + dateFormat.format(today.getScheduleDate()));
         }
         else{ //if no schedules were found for today
-            scheduleList.setItems(null);
-            scheduleList.setPromptText("No Schedules Today");
+            scheduleList.setText("No Schedules Today");
         }
 
         setLastActionLabel();
@@ -163,20 +157,19 @@ public class ClockInOutController implements Initializable {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 
         //if a schedule was selected
-        if(!(scheduleList.getSelectionModel().isEmpty())) {
+        if(!(today == null)) {
 
             //check if the schedule date is equal to today's date
-            if(sdf.format(scheduleList.getSelectionModel().getSelectedItem()
-                    .getScheduleDate()).equals(sdf.format(dateNow))) {
+            if(sdf.format(today.getScheduleDate()).equals(sdf.format(dateNow))) {
 
                 Tblclock newClock = new Tblclock();
 
                 newClock.setPunchIn(java.sql.Time.valueOf(LocalTime.now()));
 
                 newClock.setPunchOut(java.sql.Time.valueOf("00:00:00"));
-                newClock.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
+                newClock.setSchedule(today);
                 newClock.setDateCreated(new java.sql.Timestamp(new java.util.Date().getTime()));
-                newClock.setDay(scheduleList.getSelectionModel().getSelectedItem().getDay());
+                newClock.setDay(today.getDay());
 
                 //save the new clock-in
                 clockRepository.save(newClock);
@@ -212,14 +205,13 @@ public class ClockInOutController implements Initializable {
         Date dateNow = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 
-        if(!(scheduleList.getSelectionModel().isEmpty())) {
+        if(!(today == null)) {
 
             //check if the schedule date is equal to today's date
-            if(sdf.format(scheduleList.getSelectionModel().getSelectedItem()
-                    .getScheduleDate()).equals(sdf.format(dateNow))) {
+            if(sdf.format(today.getScheduleDate()).equals(sdf.format(dateNow))) {
 
                 //finds recent clock record based on selected schedule
-                Tblclock newClock2 = clockRepository.findRecentClockForSchedule(scheduleList.getSelectionModel().getSelectedItem().getScheduleId());
+                Tblclock newClock2 = clockRepository.findRecentClockForSchedule(today.getScheduleId());
 
                 newClock2.setPunchOut(java.sql.Time.valueOf(LocalTime.now()));
 
@@ -372,7 +364,15 @@ public class ClockInOutController implements Initializable {
         punchOutCol.setCellValueFactory(Tblclock -> {
             SimpleStringProperty property = new SimpleStringProperty();
             SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
-            property.setValue(timeFormat.format(Tblclock.getValue().getPunchOut()));
+            String time = timeFormat.format(Tblclock.getValue().getPunchOut());
+
+            if(time.equals("12:00 AM")){
+                property.setValue("Not set");
+            }
+            else{
+                property.setValue(time);
+            }
+
             return property;
         });
 
