@@ -3,24 +3,20 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="650.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.WelcomeLoginSignup.WelcomeController">
+
+<AnchorPane id="backgroundLogin" fx:id="backgroundAnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="562.0" prefWidth="764.0" stylesheets="@../css/Welcome.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.WelcomeLoginSignup.WelcomeController">
    <children>
-      <HBox fillHeight="false" layoutX="1.0" layoutY="1.0" prefHeight="450.0" prefWidth="650.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <Pane fx:id="welcomeLogoPane" layoutY="96.0" prefHeight="370.0" prefWidth="764.0" style="-fx-background-color: linear-gradient(to right, #2596b3 , #6bd3eb);">
          <children>
-            <Pane fx:id="welcomeLogoPane" prefHeight="450.0" prefWidth="325.0" style="-fx-background-color: linear-gradient(to right, #2596b3 , #6bd3eb);">
-               <children>
-                  <ImageView fx:id="groceryImage" fitHeight="116.0" fitWidth="176.0" layoutX="75.0" layoutY="167.0" pickOnBounds="true">
-                     <image>
-                        <Image url="@../logo/transparentGrocery.png" />
-                     </image>
-                  </ImageView>
-               </children>
-            </Pane>
-            <Pane fx:id="welcomeLoginPane" prefHeight="450.0" prefWidth="325.0" />
+            <ImageView fx:id="groceryImage" fitHeight="116.0" fitWidth="176.0" layoutX="79.0" layoutY="127.0" pickOnBounds="true">
+               <image>
+                  <Image url="@../logo/transparentGrocery.png" />
+               </image>
+            </ImageView>
+            <Pane fx:id="welcomeLoginPane" layoutX="362.0" layoutY="-40.0" prefHeight="450.0" prefWidth="325.0" style="-fx-background-color: white;" />
          </children>
-      </HBox>
+      </Pane>
    </children>
 </AnchorPane>

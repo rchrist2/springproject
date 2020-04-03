@@ -7,6 +7,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import myproject.SecurePassword;
@@ -33,6 +34,9 @@ public class WelcomeController implements Initializable {
     @FXML
     private Pane welcomeLoginPane;
 
+    @FXML
+    private AnchorPane backgroundAnchorPane;
+
     private ConfigurableApplicationContext springContext;
     private UserRepository userRepository;
     private EmployeeRepository employeeRepository;
@@ -44,6 +48,10 @@ public class WelcomeController implements Initializable {
         this.springContext = springContext;
         this.userRepository = userRepository;
         this.employeeRepository = employeeRepository;
+    }
+
+    public void setBackgroundAnchorPane(){
+        backgroundAnchorPane.setStyle("-fx-background-color: transparent");
     }
 
     @Override

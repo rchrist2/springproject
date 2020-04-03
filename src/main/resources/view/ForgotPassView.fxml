@@ -1,23 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.image.*?>
-<?import java.lang.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="signupAnchor" prefHeight="450.0" prefWidth="325.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.WelcomeLoginSignup.ForgotPassController">
+<AnchorPane fx:id="signupAnchor" prefHeight="450.0" prefWidth="325.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.WelcomeLoginSignup.ForgotPassController">
    <children>
       <TextField fx:id="signupUsernameText" layoutX="60.0" layoutY="211.0" prefHeight="28.0" prefWidth="194.0" promptText="Email (e.g. johnsmith@mail.com)" AnchorPane.bottomAnchor="211.0" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="71.0" AnchorPane.topAnchor="211.0" />
-      <Button fx:id="signupButton" layoutX="70.0" layoutY="306.0" onAction="#sendCode" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #de1c00;" text="Submit" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="80.0">
+      <Button id="forgotPasswordButton" fx:id="signupButton" layoutX="70.0" layoutY="306.0" onAction="#sendCode" prefHeight="40.0" prefWidth="150.0" stylesheets="@../css/Welcome.css" text="Submit" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="80.0">
          <font>
-            <Font name="System Bold Italic" size="18.0" />
+            <Font name="System Bold" size="15.0" />
          </font>
       </Button>
       <Label layoutX="52.0" layoutY="373.0" prefHeight="53.0" prefWidth="163.0" text="Already have an account?" AnchorPane.bottomAnchor="24.0" AnchorPane.leftAnchor="52.0" AnchorPane.rightAnchor="110.0" AnchorPane.topAnchor="373.0" />

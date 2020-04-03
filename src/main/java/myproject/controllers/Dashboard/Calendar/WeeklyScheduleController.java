@@ -5,8 +5,11 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -62,6 +65,10 @@ public class WeeklyScheduleController implements Initializable {
                 saturdayLabel;
 
     @FXML
+    private Button nextMonthButton,
+                previousMonthButton;
+
+    @FXML
     private VBox titleVBox;
 
     @Autowired
@@ -114,6 +121,10 @@ public class WeeklyScheduleController implements Initializable {
 
         refreshDayLabels();
         populateWeeklyCalendar();
+
+/*        Image rightArrow = new Image(getClass().getResourceAsStream("pictures/transparentArrowRight.png"));
+        nextMonthButton.setGraphic(new ImageView(rightArrow));*/
+
     }
 
     private void populateWeeklyCalendar(){
