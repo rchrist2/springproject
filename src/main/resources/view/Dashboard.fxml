@@ -1,19 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="dashboardAnchorPane" prefHeight="780.0" prefWidth="1170.0" style="-fx-background-color: linear-gradient(to right, #2596b3, white); -fx-border-color: black;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.Dashboard.DashboardController">
+<AnchorPane fx:id="dashboardAnchorPane" prefHeight="780.0" prefWidth="1170.0" style="-fx-background-color: linear-gradient(to right, #2596b3, white); -fx-border-color: black;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.Dashboard.DashboardController">
    <children>
       <AnchorPane layoutX="2.0" prefHeight="756.0" prefWidth="1168.0" style="-fx-border-color: black; -fx-border-color: derive(black, 10%) transparent transparent transparent;" AnchorPane.bottomAnchor="-1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
@@ -21,6 +18,11 @@
                <children>
                   <VBox alignment="CENTER" prefHeight="138.0" prefWidth="170.0">
                      <children>
+                        <ImageView fitHeight="126.0" fitWidth="184.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../logo/transparentGrocery.png" />
+                           </image>
+                        </ImageView>
                         <Label fx:id="loggedUserLabel" text="Label">
                            <font>
                               <Font size="18.0" />

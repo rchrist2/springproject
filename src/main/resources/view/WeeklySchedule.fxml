@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -22,7 +23,14 @@
                <children>
                   <HBox alignment="CENTER">
                      <children>
-                        <Button fx:id="previousMonthButton" layoutX="968.0" layoutY="10.0" mnemonicParsing="false" onAction="#handlePreviousMonth" prefHeight="40.0" prefWidth="80.0" style="-fx-background-color: #39a7c3; -fx-border-color: black; -fx-border-radius: 20 20 20 20; -fx-background-radius: 20 20 20 20;" text="&lt;&lt;&lt;&lt;" />
+                        <Button fx:id="previousMonthButton" layoutX="968.0" layoutY="10.0" mnemonicParsing="false" onAction="#handlePreviousMonth" prefHeight="40.0" prefWidth="80.0" style="-fx-background-color: #39a7c3; -fx-border-color: black; -fx-border-radius: 20 20 20 20; -fx-background-radius: 20 20 20 20;">
+                           <graphic>
+                              <ImageView fitHeight="29.0" fitWidth="61.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../pictures/transparentArrowLeft.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic></Button>
                         <VBox fx:id="titleVBox" alignment="CENTER" prefHeight="75.0" prefWidth="510.0">
                            <children>
                               <Label fx:id="monthYearLabel" text="[Month], [Year]">
@@ -40,9 +48,9 @@
                         <Button fx:id="nextMonthButton" mnemonicParsing="false" onAction="#handleNextMonth" prefHeight="40.0" prefWidth="80.0" style="-fx-background-color: #39a7c3; -fx-border-color: black; -fx-background-radius: 20 20 20 20; -fx-border-radius: 20 20 20 20;">
                            <graphic>
                               <ImageView fitHeight="29.0" fitWidth="61.0" pickOnBounds="true" preserveRatio="true">
-                                 <!--<image>
+                                 <image>
                                     <Image url="@../pictures/transparentArrowRight.png" />
-                                 </image>-->
+                                 </image>
                               </ImageView>
                            </graphic></Button>
                      </children>

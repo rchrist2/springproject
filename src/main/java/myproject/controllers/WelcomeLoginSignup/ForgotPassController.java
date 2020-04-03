@@ -147,7 +147,7 @@ public class ForgotPassController implements Initializable {
 
                                 button.setPrefSize(paneLoadButton.getPrefWidth(), paneLoadButton.getPrefHeight());
                                 button.setText("Submit Code");
-                                button.setStyle("-fx-background-color: #de1c00; " +
+                                button.setStyle("-fx-background-color: #44b1cc; " +
                                         "-fx-font-style: italic; -fx-font-weight: bold; -fx-font-size: 18; -fx-font: System");
 
                                 button.setOnAction(event -> {
