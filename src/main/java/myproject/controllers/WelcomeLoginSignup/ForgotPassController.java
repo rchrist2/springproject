@@ -148,7 +148,7 @@ public class ForgotPassController implements Initializable {
                                 button.setPrefSize(paneLoadButton.getPrefWidth(), paneLoadButton.getPrefHeight());
                                 button.setText("Submit Code");
                                 button.setStyle("-fx-background-color: #44b1cc; " +
-                                        "-fx-font-style: italic; -fx-font-weight: bold; -fx-font-size: 18; -fx-font: System");
+                                        "-fx-font-weight: bold; -fx-font-size: 15; -fx-font: System");
 
                                 button.setOnAction(event -> {
                                     if(!(tf1.getText().isEmpty())){
@@ -165,7 +165,7 @@ public class ForgotPassController implements Initializable {
                                             }
                                         } else {
                                             ErrorMessages.showErrorMessage("Code mismatch", "Code does not match",
-                                                    "Please re-enter code");
+                                                    "Please re-enter code (the code is case-sensitive)");
                                         }
                                     }
                                     else{

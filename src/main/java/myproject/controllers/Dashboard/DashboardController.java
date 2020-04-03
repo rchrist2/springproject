@@ -84,7 +84,7 @@ public class DashboardController implements Initializable {
 
         //show the current user's full name
         Tblusers currUser = userRepository.findUsername(LoginController.userStore);
-        loggedUserLabel.setText("Welcome, " + currUser.getEmployee().getName());
+        loggedUserLabel.setText(currUser.getEmployee().getName());
 
         //don't allow regular employees to see the management page
         if (!(currUser.getEmployee().getRole().getRoleName().equals("Manager")
