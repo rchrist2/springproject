@@ -45,7 +45,7 @@
             <TableView fx:id="reportTable" layoutX="68.0" layoutY="264.0" prefHeight="339.0" prefWidth="808.0" />
             <SplitMenuButton fx:id="reportList" layoutX="485.0" layoutY="84.0" prefWidth="150.0" text="Select Report">
                <items>
-                  <MenuItem mnemonicParsing="false" onAction="#showHours" text="Cumulative Hours" />
+                  <MenuItem fx:id="currentUserHoursItem" mnemonicParsing="false" onAction="#showHours" text="Cumulative Hours" />
                   <MenuItem fx:id="perUserItem" mnemonicParsing="false" onAction="#showHoursPerUser" text="Cumulative Hours All Employees" visible="false" />
                   <MenuItem mnemonicParsing="false" onAction="#showScheduleThisWeek" text="Current Schedule" />
                   <MenuItem mnemonicParsing="false" onAction="#showDaysOff" text="No. of Days Off" />
@@ -61,19 +61,54 @@
                   <Cursor fx:constant="HAND" />
                </cursor>
             </Button>
-            <Pane fx:id="datePane" layoutX="244.0" layoutY="133.0" prefHeight="33.0" prefWidth="483.0" visible="false">
+            <Pane fx:id="datePane" layoutX="244.0" layoutY="133.0" prefHeight="33.0" prefWidth="561.0">
                <children>
-                  <Label layoutX="255.0" layoutY="5.0" text="to">
-                     <font>
-                        <Font name="System Italic" size="15.0" />
-                     </font>
-                  </Label>
-                  <DatePicker fx:id="beginDate" layoutX="132.0" layoutY="3.0" prefHeight="25.0" prefWidth="112.0">
-                     <opaqueInsets>
-                        <Insets />
-                     </opaqueInsets>
-                  </DatePicker>
-                  <DatePicker fx:id="endDate" layoutX="279.0" layoutY="3.0" prefHeight="25.0" prefWidth="112.0" />
+                  <Pane fx:id="datePaneUser" prefHeight="33.0" prefWidth="561.0" visible="false">
+                     <children>
+                        <Label layoutX="143.0" layoutY="6.0" text="to">
+                           <font>
+                              <Font name="System Italic" size="15.0" />
+                           </font>
+                        </Label>
+                        <DatePicker fx:id="beginDate1" layoutX="20.0" layoutY="4.0" prefHeight="25.0" prefWidth="112.0">
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </DatePicker>
+                        <DatePicker fx:id="endDate1" layoutX="167.0" layoutY="4.0" prefHeight="25.0" prefWidth="112.0" />
+                        <Label layoutX="290.0" layoutY="6.0" text="for">
+                           <font>
+                              <Font name="System Italic" size="15.0" />
+                           </font>
+                        </Label>
+                        <ComboBox fx:id="employeeList" layoutX="319.0" layoutY="4.0" prefHeight="25.0" prefWidth="150.0" promptText="Select Employee" />
+                        <Button fx:id="submitButton1" layoutX="493.0" layoutY="4.0" mnemonicParsing="false" style="-fx-background-color: #39a7c3;" text="Submit" textFill="WHITE">
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </Button>
+                     </children>
+                  </Pane>
+                  <Pane fx:id="datePaneNoUser" layoutX="96.0" prefHeight="27.0" prefWidth="339.0" visible="false">
+                     <children>
+                        <DatePicker fx:id="beginDate" prefHeight="25.0" prefWidth="112.0">
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </DatePicker>
+                        <DatePicker fx:id="endDate" layoutX="147.0" prefHeight="25.0" prefWidth="112.0" />
+                        <Label layoutX="123.0" layoutY="2.0" text="to">
+                           <font>
+                              <Font name="System Italic" size="15.0" />
+                           </font>
+                        </Label>
+                        <Button fx:id="submitButton" layoutX="285.0" mnemonicParsing="false" style="-fx-background-color: #39a7c3;" text="Submit" textFill="WHITE">
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </Button>
+                     </children>
+                  </Pane>
                </children>
             </Pane>
          </children>

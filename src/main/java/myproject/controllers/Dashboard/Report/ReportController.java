@@ -17,10 +17,7 @@ import javafx.stage.Stage;
 import myproject.ConnectionClass;
 import myproject.ErrorMessages;
 import myproject.controllers.WelcomeLoginSignup.LoginController;
-import myproject.models.TblRoles;
-import myproject.models.Tblclock;
-import myproject.models.Tblemployee;
-import myproject.models.Tblusers;
+import myproject.models.*;
 import myproject.repositories.*;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -78,10 +75,25 @@ public class ReportController implements Initializable {
     private MenuItem perUserItem;
 
     @FXML
-    private DatePicker beginDate, endDate;
+    private MenuItem currentUserHoursItem;
+
+    @FXML
+    private DatePicker beginDate, endDate, beginDate1, endDate1;
+
+    @FXML
+    private ComboBox<Tblemployee> employeeList;
 
     @FXML
     private Pane datePane;
+
+    @FXML
+    private Pane datePaneUser;
+
+    @FXML
+    private Pane datePaneNoUser;
+
+    @FXML
+    private Button submitButton, submitButton1;
 
     ConnectionClass connectClass;
 
@@ -89,6 +101,10 @@ public class ReportController implements Initializable {
     public TableView<ObservableList<String>> reportTable;
 
     public ObservableList<ObservableList<String>> tableData;
+
+    private ObservableList<Tblemployee> employeeData;
+
+    private Tblemployee selectedEmployee;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -99,6 +115,10 @@ public class ReportController implements Initializable {
         if(currUser.getEmployee().getRole().getRoleName().equals("Owner")
         || currUser.getEmployee().getRole().getRoleName().equals("Manager")){
             perUserItem.setVisible(true);
+        }
+
+        if(currUser.getEmployee().getRole().getRoleName().equals("Owner")){
+            currentUserHoursItem.setVisible(false);
         }
 
         tableData = FXCollections.observableArrayList();
@@ -248,8 +268,10 @@ public class ReportController implements Initializable {
                         "e.name as \"Name\" " +
                         "FROM tblclock c JOIN tblschedule s ON s.schedule_id=c.schedule_id \n" +
                         "JOIN tblemployee e ON s.employee_id=e.id JOIN tblusers u ON u.employee_id=e.id\n" +
+                        "JOIN tblroles r ON r.role_id = e.roles_id " +
                         "WHERE DATEPART(week, date_created) = DATEPART(week, GETDATE())" +
                         " AND punch_out <> '00:00:00' " +
+                        "AND role_name NOT IN ('Owner') " +
                         "GROUP BY CAST(DATEADD(day, -1*(DATEPART(WEEKDAY, date_created)-1), date_created) as DATE), e.name";
                 ResultSet rs = c.createStatement().executeQuery(SQL);
                 int index = rs.getMetaData().getColumnCount();
@@ -342,79 +364,170 @@ public class ReportController implements Initializable {
     @FXML
     private void showScheduleInRange(){
         //clear the columns, rows, and datepickers from the previous query
-        beginDate.getEditor().clear();
-        endDate.getEditor().clear();
         reportTable.getColumns().clear();
         reportTable.getItems().clear();
-        datePane.setVisible(true);
-
-        reportList.setText("Schedule Within Date Range");
 
         //get the current user
         String currentUser = LoginController.userStore;
         Tblusers currUser = userRepository.findUsername(currentUser);
+
+        if(currUser.getEmployee().getRole().getRoleName().equals("Owner")
+                || currUser.getEmployee().getRole().getRoleName().equals("Manager")){
+            datePane.setVisible(true);
+            datePaneNoUser.setVisible(false);
+            datePaneUser.setVisible(true);
+
+            employeeData = FXCollections.observableArrayList();
+            employeeData.addAll(employeeRepository.findAllEmployee());
+            employeeList.setItems(employeeData);
+        }
+        else{
+            datePane.setVisible(true);
+            datePaneNoUser.setVisible(true);
+        }
+
+        reportList.setText("Schedule Within Date Range");
 
         tableUserLabel.setText("");
 
         DateTimeFormatter sqlDateTimeConvert = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
 
-        endDate.valueProperty().addListener((obs, oldValue, newValue) ->{
-            if(newValue != null) {
-                //clear the columns and rows from the previous query
-                reportTable.getColumns().clear();
-                reportTable.getItems().clear();
+        if(!(currUser.getEmployee().getRole().getRoleName().equals("Owner")
+        || currUser.getEmployee().getRole().getRoleName().equals("Manager"))){
+                    submitButton.setOnAction(event -> {
+                        if(!(beginDate.getValue() == null || endDate.getValue() == null)){
+                            //clear the columns and rows from the previous query
+                            reportTable.getColumns().clear();
+                            reportTable.getItems().clear();
 
-                tableUserLabel.setText("Schedule from " + beginDate.getValue().format(dateFormat) +
-                        " to " + endDate.getValue().format(dateFormat) + " for " + currUser.getEmployee().getName());
+                            tableUserLabel.setText("Schedule from " + beginDate.getValue().format(dateFormat) +
+                                    " to " + endDate.getValue().format(dateFormat) + " for " + currUser.getEmployee().getName());
 
-                //Connect to Database
-                Connection c;
-                try {
-                    c = connectClass.connect();
-                    String SQL = "SELECT CONVERT(varchar(15),CAST(schedule_time_begin AS TIME),100) AS \"Start Time\"," +
-                            " CONVERT(varchar(15),CAST(schedule_time_end AS TIME),100) AS \"End Time\", " +
-                            "CAST(schedule_date AS DATE) AS \"Schedule Date\", " +
-                            "day_desc AS \"Day of Week\" FROM tblschedule s JOIN tblemployee e ON s.employee_id=e.id JOIN \n" +
-                            "tblusers u ON e.id=u.employee_id " +
-                            "LEFT JOIN tbltimeoff t ON t.schedule_id=s.schedule_id " +
-                            "JOIN tblday d ON s.day_id=d.day_id WHERE Username = '" + currentUser + "' " +
-                            "AND s.schedule_date >= '" + beginDate.getValue().format(sqlDateTimeConvert) +
-                            "' AND s.schedule_date <= '" + endDate.getValue().format(sqlDateTimeConvert) +
-                            "' " +
-                            " AND (t.schedule_id IS NULL OR NOT t.approved=1)";
-                    ResultSet rs = c.createStatement().executeQuery(SQL);
-                    int index = rs.getMetaData().getColumnCount();
-                    //dynamically add table columns, so they are made based off database columns
-                    //Not sure if this method will make it harder to add data later
-                    for (int i = 0; i < index; i++) {
-                        final int j = i;
-                        TableColumn<ObservableList<String>, String> col = new TableColumn<>(rs.getMetaData().getColumnName(i + 1));
-                        col.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().get(j)));
-                        reportTable.getColumns().addAll(col);
-                        //System.out.println("Column [" + i + "] ");
-                        //add to observable list
-                        while (rs.next()) {
-                            //Iterate Row
-                            ObservableList<String> row = FXCollections.observableArrayList();
-                            for (int k = 1; k <= rs.getMetaData().getColumnCount(); k++) {
-                                //Iterate Column
-                                row.add(rs.getString(k));
+                            //Connect to Database
+                            Connection c;
+                            try {
+                                c = connectClass.connect();
+                                String SQL = "SELECT CONVERT(varchar(15),CAST(schedule_time_begin AS TIME),100) AS \"Start Time\"," +
+                                        " CONVERT(varchar(15),CAST(schedule_time_end AS TIME),100) AS \"End Time\", " +
+                                        "CAST(schedule_date AS DATE) AS \"Schedule Date\", " +
+                                        "day_desc AS \"Day of Week\" FROM tblschedule s JOIN tblemployee e ON s.employee_id=e.id JOIN \n" +
+                                        "tblusers u ON e.id=u.employee_id " +
+                                        "LEFT JOIN tbltimeoff t ON t.schedule_id=s.schedule_id " +
+                                        "JOIN tblday d ON s.day_id=d.day_id WHERE Username = '" + currentUser + "' " +
+                                        "AND s.schedule_date >= '" + beginDate.getValue().format(sqlDateTimeConvert) +
+                                        "' AND s.schedule_date <= '" + endDate.getValue().format(sqlDateTimeConvert) +
+                                        "' " +
+                                        " AND (t.schedule_id IS NULL OR NOT t.approved=1)";
+                                ResultSet rs = c.createStatement().executeQuery(SQL);
+                                int index = rs.getMetaData().getColumnCount();
+                                //dynamically add table columns, so they are made based off database columns
+                                //Not sure if this method will make it harder to add data later
+                                for (int i = 0; i < index; i++) {
+                                    final int j = i;
+                                    TableColumn<ObservableList<String>, String> col = new TableColumn<>(rs.getMetaData().getColumnName(i + 1));
+                                    col.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().get(j)));
+                                    reportTable.getColumns().addAll(col);
+                                    //System.out.println("Column [" + i + "] ");
+                                    //add to observable list
+                                    while (rs.next()) {
+                                        //Iterate Row
+                                        ObservableList<String> row = FXCollections.observableArrayList();
+                                        for (int k = 1; k <= rs.getMetaData().getColumnCount(); k++) {
+                                            //Iterate Column
+                                            row.add(rs.getString(k));
+                                        }
+                                        //System.out.println("Row [1] added " + row);
+                                        tableData.add(row);
+                                    }
+                                    //add to tableview
+                                    reportTable.setItems(tableData);
+                                }
+                                c.close();
                             }
-                            //System.out.println("Row [1] added " + row);
-                            tableData.add(row);
+                            catch(Exception e){ //catch any exceptions
+                                e.printStackTrace();
+                                System.out.println("Error on Building Reports Table Data");
+                            }
                         }
-                        //add to tableview
-                        reportTable.setItems(tableData);
+                        else{
+                            ErrorMessages.showErrorMessage("Fields are empty",
+                                    "Date selections are blank",
+                                    "Please select a beginning and end date.");
+                        }
+
+                        });
+        }
+        else{
+            submitButton1.setOnAction(event -> {
+                    if(!(beginDate1.getValue() == null || endDate1.getValue() == null
+                    || employeeList.getSelectionModel().isEmpty())){
+                        //clear the columns and rows from the previous query
+                        reportTable.getColumns().clear();
+                        reportTable.getItems().clear();
+
+                        selectedEmployee = employeeList.getSelectionModel().getSelectedItem();
+                        String selectedUser = selectedEmployee.getUser().getUsername();
+
+                        tableUserLabel.setText("Schedule from " + beginDate1.getValue().format(dateFormat) +
+                                " to " + endDate1.getValue().format(dateFormat) + " for " + selectedEmployee.getName());
+
+                        //Connect to Database
+                        Connection c;
+                        try {
+                            c = connectClass.connect();
+                            String SQL = "SELECT CONVERT(varchar(15),CAST(schedule_time_begin AS TIME),100) AS \"Start Time\"," +
+                                    " CONVERT(varchar(15),CAST(schedule_time_end AS TIME),100) AS \"End Time\", " +
+                                    "CAST(schedule_date AS DATE) AS \"Schedule Date\", " +
+                                    "day_desc AS \"Day of Week\" FROM tblschedule s JOIN tblemployee e ON s.employee_id=e.id JOIN \n" +
+                                    "tblusers u ON e.id=u.employee_id " +
+                                    "LEFT JOIN tbltimeoff t ON t.schedule_id=s.schedule_id " +
+                                    "JOIN tblday d ON s.day_id=d.day_id WHERE Username = '" + selectedUser + "' " +
+                                    "AND s.schedule_date >= '" + beginDate1.getValue().format(sqlDateTimeConvert) +
+                                    "' AND s.schedule_date <= '" + endDate1.getValue().format(sqlDateTimeConvert) +
+                                    "' " +
+                                    " AND (t.schedule_id IS NULL OR NOT t.approved=1)";
+                            ResultSet rs = c.createStatement().executeQuery(SQL);
+                            int index = rs.getMetaData().getColumnCount();
+                            //dynamically add table columns, so they are made based off database columns
+                            //Not sure if this method will make it harder to add data later
+                            for (int i = 0; i < index; i++) {
+                                final int j = i;
+                                TableColumn<ObservableList<String>, String> col = new TableColumn<>(rs.getMetaData().getColumnName(i + 1));
+                                col.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().get(j)));
+                                reportTable.getColumns().addAll(col);
+                                //System.out.println("Column [" + i + "] ");
+                                //add to observable list
+                                while (rs.next()) {
+                                    //Iterate Row
+                                    ObservableList<String> row = FXCollections.observableArrayList();
+                                    for (int k = 1; k <= rs.getMetaData().getColumnCount(); k++) {
+                                        //Iterate Column
+                                        row.add(rs.getString(k));
+                                    }
+                                    //System.out.println("Row [1] added " + row);
+                                    tableData.add(row);
+                                }
+                                //add to tableview
+                                reportTable.setItems(tableData);
+                            }
+                            c.close();
+                        }
+                        catch(Exception e){ //catch any exceptions
+                            e.printStackTrace();
+                            System.out.println("Error on Building Reports Table Data");
+                        }
                     }
-                    c.close();
-                }
-                catch(Exception e){ //catch any exceptions
-                    e.printStackTrace();
-                    System.out.println("Error on Building Reports Table Data");
-                }
-            }
-        });
+                    else{
+                        ErrorMessages.showErrorMessage("Fields are empty",
+                                "Date or employee selections are blank",
+                                "Please select a beginning date, end date, and employee.");
+                    }
+                });
+
+        }
+
+
 
 
     }
