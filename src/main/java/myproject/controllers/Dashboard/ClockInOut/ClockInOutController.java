@@ -5,6 +5,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -88,6 +89,9 @@ public class ClockInOutController implements Initializable {
     private Button clockEditButton;
 
     @FXML
+    private Button clockAddButton;
+
+    @FXML
     private Label tableUserLabel;
 
     @FXML
@@ -122,6 +126,8 @@ public class ClockInOutController implements Initializable {
     private FilteredList<Tblclock> filteredListOfClock;
 
     private ObservableList<Tblschedule> scheduleData;
+
+    public static Button clickedButton;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -234,9 +240,9 @@ public class ClockInOutController implements Initializable {
             }
         }
         else{
-            ErrorMessages.showErrorMessage("Fields are empty",
-                    "No Schedule selected",
-                    "Please select a Schedule from the drop-down menu");
+            ErrorMessages.showErrorMessage("No Schedule Exists",
+                    "No schedules exist for today",
+                    "You cannot clock in since you do not have any schedules today.");
         }
 
     }
@@ -255,20 +261,28 @@ public class ClockInOutController implements Initializable {
                 //finds recent clock record based on selected schedule
                 Tblclock newClock2 = clockRepository.findRecentClockForSchedule(today.getScheduleId());
 
-                newClock2.setPunchOut(java.sql.Time.valueOf(LocalTime.now()));
+                if(newClock2 != null){
+                    newClock2.setPunchOut(java.sql.Time.valueOf(LocalTime.now()));
 
-                clockRepository.save(newClock2);
+                    clockRepository.save(newClock2);
 
-                //update the "Last Action" label
-                SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
-                SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
-                String day = newClock2.getSchedule().getDay().getDayDesc();
-                String date = dateFormat.format(newClock2.getSchedule().getScheduleDate());
-                lastActionLabel.setText("Last Action \"Out\" on " + day +
-                        ", " + date + " at "
-                        + timeFormat.format(newClock2.getPunchOut()));
+                    //update the "Last Action" label
+                    SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+                    String day = newClock2.getSchedule().getDay().getDayDesc();
+                    String date = dateFormat.format(newClock2.getSchedule().getScheduleDate());
+                    lastActionLabel.setText("Last Action \"Out\" on " + day +
+                            ", " + date + " at "
+                            + timeFormat.format(newClock2.getPunchOut()));
 
-                reloadClockTable();
+                    reloadClockTable();
+                }
+                else{
+                    ErrorMessages.showErrorMessage("No Schedule Found",
+                            "There is no schedule to clock out for",
+                            "You do not have a recent clock in to clock out for.");
+                }
+
             }
             else{
                 ErrorMessages.showErrorMessage("Invalid schedule selected",
@@ -277,62 +291,115 @@ public class ClockInOutController implements Initializable {
             }
         }
         else{
-            ErrorMessages.showErrorMessage("Fields are empty",
-                    "No Schedule selected",
-                    "Please select a Schedule from the drop-down menu");
+            ErrorMessages.showErrorMessage("No Schedule Exists",
+                    "No schedules exist for today",
+                    "You cannot clock out since you do not have any schedules today.");
         }
 
     }
 
     @FXML
-    private void editClock(){
+    private void editAddClock(ActionEvent event){
         //get the current user
         String currentUser = LoginController.userStore;
         Tblusers currUser = userRepository.findUsername(currentUser);
 
-        if((userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner"))
-                || ((userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
-                && !(selectedClock.getSchedule().getEmployee().getRole().getRoleName().equals("Manager"))))){
-            try {
-                //open the CRUD form
-                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/CrudClock.fxml"));
-                fxmlLoader.setControllerFactory(springContext::getBean);
-                Parent parent = fxmlLoader.load();
-                Stage stage = new Stage();
-                stage.initModality(Modality.APPLICATION_MODAL);
-                stage.initStyle(StageStyle.UNDECORATED);
-                stage.setTitle("Edit Clock In/Out Record");
+        //Grab the button that was clicked
+        clickedButton = (Button) event.getSource();
 
-                CrudClockController crudClockController = fxmlLoader.getController();
-                crudClockController.setLabel("Edit Clock Record for "
-                        + selectedClock.getSchedule().getEmployee().getName());
-                crudClockController.setClock(selectedClock);
-                crudClockController.setController(this);
+        //Grabs the text of the button that was clicked
+        switch (clickedButton.getText()){
+            case "Edit":
+                if((userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner"))
+                        || ((userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
+                        && !(selectedClock.getSchedule().getEmployee().getRole().getRoleName().equals("Manager"))))){
+                    try {
+                        //open the CRUD form
+                        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/CrudClock.fxml"));
+                        fxmlLoader.setControllerFactory(springContext::getBean);
+                        Parent parent = fxmlLoader.load();
+                        Stage stage = new Stage();
+                        stage.initModality(Modality.APPLICATION_MODAL);
+                        stage.initStyle(StageStyle.UNDECORATED);
+                        stage.setTitle("Edit Clock In/Out Record");
 
-                stage.setScene(new Scene(parent));
+                        CrudClockController crudClockController = fxmlLoader.getController();
+                        crudClockController.setLabel("Edit Clock Record for "
+                                + selectedClock.getSchedule().getEmployee().getName(), "Save");
+                        crudClockController.setClock(selectedClock);
+                        crudClockController.setController(this);
 
-                stage.showAndWait();
+                        stage.setScene(new Scene(parent));
 
-                //reload table w/ all users if the user column is visible (only visible if all users are shown)
-                if(userCol.isVisible()){
-                    reloadClockTableAllUsers();
-                    setDataForClockTableView();
-                    resetButtons();
+                        stage.showAndWait();
+
+                        //reload table w/ all users if the user column is visible (only visible if all users are shown)
+                        if(userCol.isVisible()){
+                            reloadClockTableAllUsers();
+                            setDataForClockTableView();
+                            resetButtons();
+                        }
+                        else{
+                            reloadClockTable();
+                            setDataForClockTableView();
+                            resetButtons();
+                        }
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
                 else{
-                    reloadClockTable();
-                    setDataForClockTableView();
-                    resetButtons();
+                    ErrorMessages.showErrorMessage("Insufficient privileges","Cannot edit clock record",
+                            "You do not have sufficient privileges to edit this clock record.");
                 }
+                break;
+            case "Add":
+                if((userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner"))
+                        || ((userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
+                        && !(selectedClock.getSchedule().getEmployee().getRole().getRoleName().equals("Manager"))))){
+                    try {
+                        //open the CRUD form
+                        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/CrudClock.fxml"));
+                        fxmlLoader.setControllerFactory(springContext::getBean);
+                        Parent parent = fxmlLoader.load();
+                        Stage stage = new Stage();
+                        stage.initModality(Modality.APPLICATION_MODAL);
+                        stage.initStyle(StageStyle.UNDECORATED);
+                        stage.setTitle("Add Clock In/Out Record");
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+                        CrudClockController crudClockController = fxmlLoader.getController();
+                        crudClockController.setLabel("Add Clock Record", "Add");
+                        crudClockController.setController(this);
+
+                        stage.setScene(new Scene(parent));
+
+                        stage.showAndWait();
+
+                        //reload table w/ all users if the user column is visible (only visible if all users are shown)
+                        if(userCol.isVisible()){
+                            reloadClockTableAllUsers();
+                            setDataForClockTableView();
+                            resetButtons();
+                        }
+                        else{
+                            reloadClockTable();
+                            setDataForClockTableView();
+                            resetButtons();
+                        }
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else{
+                    ErrorMessages.showErrorMessage("Insufficient privileges","Cannot edit clock record",
+                            "You do not have sufficient privileges to edit this clock record.");
+                }
+                break;
         }
-        else{
-            ErrorMessages.showErrorMessage("Insufficient privileges","Cannot edit clock record",
-                    "You do not have sufficient privileges to edit this clock record.");
-        }
+
+
 
 
     }
@@ -447,7 +514,7 @@ public class ClockInOutController implements Initializable {
         else if(currUser.getEmployee().getRole().getRoleName().equals("Manager")){
             if(currentWeekCheck.isSelected()){
                 listOfClock.addAll(clockRepository.findClockThisWeekAllUserByRole());
-                listOfClock.addAll(clockRepository.findClockForUser(currentUser));
+                listOfClock.addAll(clockRepository.findClockThisWeekForUser(currentUser));
                 tableUserLabel.setText("Clock History This Week for All Users");
             }
             else{
@@ -569,9 +636,10 @@ public class ClockInOutController implements Initializable {
 
         }
         else if(userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner")){
-            //only managers/owner can edit or delete clock history
+            //only managers/owner can add, edit, or delete clock history
             clockEditButton.setVisible(true);
             clockDeleteButton.setVisible(true);
+            clockAddButton.setVisible(true);
         }
     }
 

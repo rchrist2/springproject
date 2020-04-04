@@ -49,7 +49,8 @@ public interface ClockRepository extends CrudRepository<Tblclock, Integer> {
             "JOIN tblschedule s ON c.schedule_id=s.schedule_id " +
             "JOIN tblemployee e ON s.employee_id=e.id JOIN " +
             "tblusers u ON e.id=u.employee_id " +
-            "WHERE c.schedule_id = :schedule) " +
+            "WHERE c.schedule_id = :schedule " +
+            "AND datediff(day, date_created, s.schedule_date) = 0) " +
             "GROUP BY clock_id, punch_in, punch_out, c.schedule_id, date_created, c.day_id;", nativeQuery = true)
     Tblclock findRecentClockForSchedule(@Param("schedule") Integer schedule);
 

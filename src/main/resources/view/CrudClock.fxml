@@ -8,9 +8,10 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="274.0" prefWidth="597.0" style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.Dashboard.ClockInOut.CrudClockController">
+<AnchorPane prefHeight="274.0" prefWidth="597.0" style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.Dashboard.ClockInOut.CrudClockController">
     <padding>
         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
     </padding>
@@ -46,12 +47,22 @@
             <Label layoutX="307.0" layoutY="74.0" text="to" />
             <ComboBox fx:id="endPMList" layoutX="478.0" layoutY="70.0" prefHeight="25.0" prefWidth="92.0" promptText="AM/PM" />
             <ComboBox fx:id="beginPMList" layoutX="204.0" layoutY="70.0" prefHeight="25.0" prefWidth="92.0" promptText="AM/PM" />
-            <Label layoutX="14.0" layoutY="126.0" text="Select Schedule:" />
-            <ComboBox fx:id="scheduleList" layoutX="107.0" layoutY="122.0" prefWidth="150.0" promptText="Select Schedule" />
             <Spinner fx:id="beginHrList" layoutX="51.0" layoutY="70.0" prefHeight="25.0" prefWidth="70.0" />
             <Spinner fx:id="beginMinList" layoutX="130.0" layoutY="70.0" prefHeight="25.0" prefWidth="63.0" />
             <Spinner fx:id="endHrList" layoutX="329.0" layoutY="70.0" prefHeight="25.0" prefWidth="70.0" />
             <Spinner fx:id="endMinList" layoutX="408.0" layoutY="70.0" prefHeight="25.0" prefWidth="63.0" />
+            <Pane fx:id="schedulePane" layoutX="14.0" layoutY="168.0" visible="false">
+               <children>
+                  <Label layoutY="4.0" text="Select Schedule:" />
+                  <ComboBox fx:id="scheduleList" layoutX="93.0" prefWidth="150.0" promptText="Select Schedule" />
+               </children>
+            </Pane>
+            <Pane fx:id="employeePane" layoutX="14.0" layoutY="121.0" visible="false">
+               <children>
+                  <Label layoutY="4.0" text="Select Employee:" />
+                  <ComboBox fx:id="employeeList" layoutX="93.0" prefWidth="150.0" promptText="Select Employee" />
+               </children>
+            </Pane>
             </children>
         </AnchorPane>
     </children>
