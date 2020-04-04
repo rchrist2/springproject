@@ -12,7 +12,7 @@
 
 <AnchorPane fx:id="signupAnchor" prefHeight="450.0" prefWidth="325.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.WelcomeLoginSignup.ForgotPassController">
    <children>
-      <TextField fx:id="signupUsernameText" layoutX="60.0" layoutY="211.0" prefHeight="28.0" prefWidth="194.0" promptText="Email (e.g. johnsmith@mail.com)" AnchorPane.bottomAnchor="211.0" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="71.0" AnchorPane.topAnchor="211.0" />
+      <TextField fx:id="signupUsernameText" layoutX="60.0" layoutY="211.0" prefHeight="28.0" prefWidth="194.0" promptText="Email (e.g. johnsmith@mail.com)" stylesheets="@../css/CrudForm.css" AnchorPane.bottomAnchor="211.0" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="71.0" AnchorPane.topAnchor="211.0" />
       <Button id="forgotPasswordButton" fx:id="signupButton" layoutX="70.0" layoutY="306.0" onAction="#sendCode" prefHeight="40.0" prefWidth="150.0" stylesheets="@../css/Welcome.css" text="Submit" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="80.0">
          <font>
             <Font name="System Bold" size="15.0" />
