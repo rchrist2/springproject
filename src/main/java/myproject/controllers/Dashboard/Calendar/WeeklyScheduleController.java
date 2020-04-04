@@ -1,6 +1,5 @@
 package myproject.controllers.Dashboard.Calendar;
 
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -8,15 +7,9 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
 import myproject.controllers.WelcomeLoginSignup.LoginController;
 import myproject.models.Tblemployee;
 import myproject.models.Tblschedule;
@@ -28,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import static java.time.temporal.TemporalAdjusters.*;
 
-import java.lang.reflect.Array;
 import java.net.URL;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
@@ -81,7 +73,6 @@ public class WeeklyScheduleController implements Initializable {
     private UserRepository userRepository;
 
     private List<Tblemployee> listOfEmployees;
-    private List<Tblemployee> listOfEmployeesWithSchedule;
     private DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     private DateTimeFormatter dayFormat = DateTimeFormatter.ofPattern("MM/dd");
     private DateTimeFormatter sqlDateTimeConvert = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -104,19 +95,7 @@ public class WeeklyScheduleController implements Initializable {
         saturday = today.with(nextOrSame(DayOfWeek.SATURDAY));
 
         //everyone can see everyone's schedules
-        listOfEmployeesWithSchedule = employeeRepository.findAllEmployeesWithSchedule(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert));
-
-        //only managers and owners can see all schedules
-        if (currUser.getEmployee().getRole().getRoleName().equals("Owner")){
-            listOfEmployeesWithSchedule = employeeRepository.findAllEmployee();
-        }
-        else if(currUser.getEmployee().getRole().getRoleName().equals("Manager")){
-            //manager can see only other managers and employee schedules
-            listOfEmployeesWithSchedule = employeeRepository.findAllEmployeeByRole();
-        }
-        else{ //if user is an employee, they can only see employee schedules
-            listOfEmployeesWithSchedule = employeeRepository.findAllEmployeeByRoleEmployee();
-        }
+        listOfEmployees = employeeRepository.findAllEmployeeByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert));
 
         gridpaneScrollPane.setFitToHeight(true);
 
@@ -130,24 +109,18 @@ public class WeeklyScheduleController implements Initializable {
     }
 
     private void populateWeeklyCalendar(){
-        System.out.println("List of Employees from Populate Calendar: " + listOfEmployeesWithSchedule);
+        System.out.println("List of Employees from Populate Calendar: " + listOfEmployees);
         Instant start = Instant.now();
 
         String strDateFormat = "HH:mm a";
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(strDateFormat);
 
-        if(listOfEmployeesWithSchedule.isEmpty()){
-            System.out.println("The List is Empty");
-            listOfEmployeesWithSchedule = employeeRepository.findAllEmployee();
-        }
-
-        for (int i = 1; i <= listOfEmployeesWithSchedule.size(); i++) {
-            System.out.println("Inside");
+        for (int i = 1; i <= listOfEmployees.size(); i++) {
             //The beginning of the current week, makes sure that with each new employee
             //the week "restarts" back to the first day
             LocalDate currentDay = sunday;
 
-            Tblemployee name = listOfEmployeesWithSchedule.get(i - 1);
+            Tblemployee name = listOfEmployees.get(i - 1);
 
             //Get the name of the employee in the list and add it to the gridpane
             Label employeeName = new Label(name.getName());
@@ -168,7 +141,6 @@ public class WeeklyScheduleController implements Initializable {
             for (int j = 1; j <= 7; j++) {
                 //Delete the existing label from gridpane for the new week
                 removeLabelFromPreviousDates(i, j, weeklyCalendarGridPane);
-                System.out.println("Delete");
             }
 
             for (Tblschedule tblSchedule : employeeSchedule){
@@ -274,6 +246,7 @@ public class WeeklyScheduleController implements Initializable {
                 }
             }
         }
+
         Instant end = Instant.now();
         Duration timeElapsed = Duration.between(start, end);
 
@@ -328,8 +301,6 @@ public class WeeklyScheduleController implements Initializable {
         }
 
         weekLabel.setText(sunday.format(dateFormat) + ", " + saturday.format(dateFormat));
-
-        listOfEmployeesWithSchedule = employeeRepository.findAllEmployeesWithSchedule(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert));
         refreshDayLabels();
         populateWeeklyCalendar();
     }
@@ -349,8 +320,6 @@ public class WeeklyScheduleController implements Initializable {
         }
 
         weekLabel.setText(sunday.format(dateFormat) + ", " + saturday.format(dateFormat));
-
-        listOfEmployeesWithSchedule = employeeRepository.findAllEmployeesWithSchedule(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert));
         refreshDayLabels();
         populateWeeklyCalendar();
     }
