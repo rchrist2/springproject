@@ -82,8 +82,13 @@ public interface EmployeeRepository extends CrudRepository<Tblemployee, Integer>
             "WHERE schedule_date BETWEEN CAST(:startOfTheWeek AS DATE) AND CAST(:endOfTheWeek AS DATE)", nativeQuery = true)
     List<Tblemployee> findByRoleWithoutScheduleByWeek(@Param("startOfTheWeek") String startOfTheWeek, @Param("endOfTheWeek") String endOfTheWeek);
 
-    @Query(value = "SELECT * FROM tblemployee e JOIN tblschedule s ON e.id = s.employee_id", nativeQuery = true)
-    List<Tblemployee> findAllEmployeesWithSchedule();
+    @Query(value = "SELECT * FROM tblemployee emp " +
+            "WHERE emp.id IN (SELECT e.id FROM tblemployee e " +
+            "JOIN tblschedule s ON e.id = s.employee_id " +
+            "WHERE s.employee_id IS NOT NULL " +
+            "AND schedule_date >= :startOfTheWeek " +
+            "AND schedule_date <= :endOfTheWeek)", nativeQuery = true)
+    List<Tblemployee> findAllEmployeesWithSchedule(@Param("startOfTheWeek") String startOfTheWeek, @Param("endOfTheWeek") String endOfTheWeek);
 
     @Query(value = "SELECT * FROM tblemployee WHERE email = :email", nativeQuery = true)
     Tblemployee findEmployeeByEmail(@Param("email") String email);

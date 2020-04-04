@@ -83,6 +83,7 @@ public class WeeklyScheduleController implements Initializable {
     private List<Tblemployee> listOfEmployees;
     private DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     private DateTimeFormatter dayFormat = DateTimeFormatter.ofPattern("MM/dd");
+    private DateTimeFormatter sqlDateTimeConvert = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     private ArrayList<String> days = new ArrayList<>(
             Arrays.asList("Sun", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat")
@@ -102,7 +103,7 @@ public class WeeklyScheduleController implements Initializable {
         saturday = today.with(nextOrSame(DayOfWeek.SATURDAY));
 
         //everyone can see everyone's schedules
-        listOfEmployees = employeeRepository.findAllEmployee();
+        listOfEmployees = employeeRepository.findAllEmployeesWithSchedule(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert));
 
         /*//only managers and owners can see all schedules
         if (currUser.getEmployee().getRole().getRoleName().equals("Owner")){
@@ -131,6 +132,8 @@ public class WeeklyScheduleController implements Initializable {
     }
 
     private void populateWeeklyCalendar(){
+        //TODO fix so old rows from the previous week are removed from gridpane
+        System.out.println("List of Employees from Populate Calendar: " + listOfEmployees);
         Instant start = Instant.now();
 
         String strDateFormat = "HH:mm a";
@@ -330,6 +333,8 @@ public class WeeklyScheduleController implements Initializable {
         }
 
         weekLabel.setText(sunday.format(dateFormat) + ", " + saturday.format(dateFormat));
+
+        listOfEmployees = employeeRepository.findAllEmployeesWithSchedule(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert));
         refreshDayLabels();
         populateWeeklyCalendar();
     }
@@ -349,6 +354,8 @@ public class WeeklyScheduleController implements Initializable {
         }
 
         weekLabel.setText(sunday.format(dateFormat) + ", " + saturday.format(dateFormat));
+
+        listOfEmployees = employeeRepository.findAllEmployeesWithSchedule(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert));
         refreshDayLabels();
         populateWeeklyCalendar();
     }

@@ -289,7 +289,8 @@ public class EmployeeSchedulerController implements Initializable {
         if(!(sundayCheck.isSelected() || mondayCheck.isSelected()
         || tuesdayCheck.isSelected() || wednesdayCheck.isSelected()
         || thursdayCheck.isSelected() || fridayCheck.isSelected()
-        || saturdayCheck.isSelected())){
+        || saturdayCheck.isSelected())
+        && scheduleButton.getText().equals("Add Schedule")){
             ErrorMessages.showErrorMessage("Error!", "No days selected",
                     "Please select a day for this employee's schedule.");
         }
@@ -525,7 +526,6 @@ public class EmployeeSchedulerController implements Initializable {
                                 + schedError
                                 + " is invalid", "Please edit the time range for this schedule. Updating failed");
                         //prevents the table selection being null and permanently disabling spinners
-                        //TODO stop the spinners from disabling after closing alert
                         scheduleGridPane.setDisable(false);
                         employeeLabel.setVisible(true);
 
@@ -676,6 +676,9 @@ public class EmployeeSchedulerController implements Initializable {
                         }
                         ErrorMessages.showInformationMessage("Successful", "Saved Schedule", selectedEmployee + "'s schedule was saved successfully");
                         loadDataToTable();
+
+                        //revert to previous text to avoid bug that allows a blank schedule to be added
+                        scheduleButton.setText("Add Schedule");
 
                         scheduleGridPane.setDisable(true);
                         employeeLabel.setVisible(false);
