@@ -606,51 +606,159 @@ public class ReportController implements Initializable {
         String currentUser = LoginController.userStore;
         Tblusers currUser = userRepository.findUsername(currentUser);
 
-        tableUserLabel.setText("Days Taken Off for " + currUser.getEmployee().getName());
+        if(currUser.getEmployee().getRole().getRoleName().equals("Owner")){
+            tableUserLabel.setText("Days Taken Off for All Employees");
 
-        //Connect to Database
-        Connection c;
-        try {
-            c = connectClass.connect();
-            String SQL = "SELECT COUNT(*) AS \"No. of Approved Days Off\", " +
-                    " YEAR(t.begin_time_off_date) AS \"Year Of\" " +
-                    "FROM tblschedule s " +
-                    "JOIN tbltimeoff t ON t.schedule_id=s.schedule_id JOIN \n" +
-                    "tblemployee e ON s.employee_id=e.id JOIN \n" +
-                    "tblusers u ON e.id=u.employee_id " +
-                    "WHERE Username = '" + currentUser + "' " +
-                    "AND t.approved = 1 " +
-                    "AND YEAR(t.begin_time_off_date) = '2020' " +
-                    "GROUP BY YEAR(t.begin_time_off_date)";
-            ResultSet rs = c.createStatement().executeQuery(SQL);
-            int index = rs.getMetaData().getColumnCount();
-            //dynamically add table columns, so they are made based off database columns
-            //Not sure if this method will make it harder to add data later
-            for (int i = 0; i < index; i++) {
-                final int j = i;
-                TableColumn<ObservableList<String>, String> col = new TableColumn<>(rs.getMetaData().getColumnName(i + 1));
-                col.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().get(j)));
-                reportTable.getColumns().addAll(col);
-                //System.out.println("Column [" + i + "] ");
-                //add to observable list
-                while (rs.next()) {
-                    //Iterate Row
-                    ObservableList<String> row = FXCollections.observableArrayList();
-                    for (int k = 1; k <= rs.getMetaData().getColumnCount(); k++) {
-                        //Iterate Column
-                        row.add(rs.getString(k));
+            //Connect to Database
+            Connection c;
+            try {
+                c = connectClass.connect();
+                String SQL = "SELECT COUNT(*) AS \"No. of Approved Days Off\", " +
+                        " YEAR(t.begin_time_off_date) AS \"Year Of\", e.name AS \"Name\" " +
+                        "FROM tblschedule s " +
+                        "JOIN tbltimeoff t ON t.schedule_id=s.schedule_id JOIN \n" +
+                        "tblemployee e ON s.employee_id=e.id JOIN \n" +
+                        "tblusers u ON e.id=u.employee_id " +
+                        "WHERE t.approved = 1 " +
+                        "AND YEAR(t.begin_time_off_date) = '2020' " +
+                        "GROUP BY YEAR(t.begin_time_off_date), e.name";
+                ResultSet rs = c.createStatement().executeQuery(SQL);
+                int index = rs.getMetaData().getColumnCount();
+                //dynamically add table columns, so they are made based off database columns
+                //Not sure if this method will make it harder to add data later
+                for (int i = 0; i < index; i++) {
+                    final int j = i;
+                    TableColumn<ObservableList<String>, String> col = new TableColumn<>(rs.getMetaData().getColumnName(i + 1));
+                    col.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().get(j)));
+                    reportTable.getColumns().addAll(col);
+                    //System.out.println("Column [" + i + "] ");
+                    //add to observable list
+                    while (rs.next()) {
+                        //Iterate Row
+                        ObservableList<String> row = FXCollections.observableArrayList();
+                        for (int k = 1; k <= rs.getMetaData().getColumnCount(); k++) {
+                            //Iterate Column
+                            row.add(rs.getString(k));
+                        }
+                        //System.out.println("Row [1] added " + row);
+                        tableData.add(row);
                     }
-                    //System.out.println("Row [1] added " + row);
-                    tableData.add(row);
+                    //add to tableview
+                    reportTable.setItems(tableData);
                 }
-                //add to tableview
-                reportTable.setItems(tableData);
+                c.close();
             }
-            c.close();
+            catch(Exception e){ //catch any exceptions
+                e.printStackTrace();
+                System.out.println("Error on Building Reports Table Data");
+            }
         }
-        catch(Exception e){ //catch any exceptions
-            e.printStackTrace();
-            System.out.println("Error on Building Reports Table Data");
+        else if(currUser.getEmployee().getRole().getRoleName().equals("Manager")){
+            tableUserLabel.setText("Days Taken Off for All Employees");
+
+            //Connect to Database
+            Connection c;
+            try {
+                c = connectClass.connect();
+                String SQL = "SELECT COUNT(*) AS \"No. of Approved Days Off\",\n" +
+                        "YEAR(t.begin_time_off_date) AS \"Year Of\", e.name AS \"Name\"\n" +
+                        "FROM tblschedule s JOIN tbltimeoff t ON t.schedule_id=s.schedule_id JOIN \n" +
+                        "tblemployee e ON s.employee_id=e.id JOIN \n" +
+                        "tblusers u ON e.id=u.employee_id \n" +
+                        "JOIN tblroles r ON e.roles_id=r.role_id\n" +
+                        "WHERE t.approved = 1\n" +
+                        "AND role_name NOT IN ('Owner','Manager')\n" +
+                        "AND YEAR(t.begin_time_off_date) = '2020'\n" +
+                        "GROUP BY YEAR(t.begin_time_off_date), e.name\n" +
+                        "UNION\n" +
+                        "SELECT COUNT(*) AS \"No. of Approved Days Off\",\n" +
+                        "YEAR(t.begin_time_off_date) AS \"Year Of\", e.name AS \"Name\"\n" +
+                        "FROM tblschedule s JOIN tbltimeoff t ON t.schedule_id=s.schedule_id JOIN \n" +
+                        "tblemployee e ON s.employee_id=e.id JOIN \n" +
+                        "tblusers u ON e.id=u.employee_id \n" +
+                        "JOIN tblroles r ON e.roles_id=r.role_id\n" +
+                        "WHERE t.approved = 1\n" +
+                        "AND Username = '" + currentUser + "' " +
+                        "AND YEAR(t.begin_time_off_date) = '2020'\n" +
+                        "GROUP BY YEAR(t.begin_time_off_date), e.name;";
+                ResultSet rs = c.createStatement().executeQuery(SQL);
+                int index = rs.getMetaData().getColumnCount();
+                //dynamically add table columns, so they are made based off database columns
+                //Not sure if this method will make it harder to add data later
+                for (int i = 0; i < index; i++) {
+                    final int j = i;
+                    TableColumn<ObservableList<String>, String> col = new TableColumn<>(rs.getMetaData().getColumnName(i + 1));
+                    col.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().get(j)));
+                    reportTable.getColumns().addAll(col);
+                    //System.out.println("Column [" + i + "] ");
+                    //add to observable list
+                    while (rs.next()) {
+                        //Iterate Row
+                        ObservableList<String> row = FXCollections.observableArrayList();
+                        for (int k = 1; k <= rs.getMetaData().getColumnCount(); k++) {
+                            //Iterate Column
+                            row.add(rs.getString(k));
+                        }
+                        //System.out.println("Row [1] added " + row);
+                        tableData.add(row);
+                    }
+                    //add to tableview
+                    reportTable.setItems(tableData);
+                }
+                c.close();
+            }
+            catch(Exception e){ //catch any exceptions
+                e.printStackTrace();
+                System.out.println("Error on Building Reports Table Data");
+            }
+        }
+        else{
+            tableUserLabel.setText("Days Taken Off for " + currUser.getEmployee().getName());
+
+            //Connect to Database
+            Connection c;
+            try {
+                c = connectClass.connect();
+                String SQL = "SELECT COUNT(*) AS \"No. of Approved Days Off\", " +
+                        " YEAR(t.begin_time_off_date) AS \"Year Of\" " +
+                        "FROM tblschedule s " +
+                        "JOIN tbltimeoff t ON t.schedule_id=s.schedule_id JOIN \n" +
+                        "tblemployee e ON s.employee_id=e.id JOIN \n" +
+                        "tblusers u ON e.id=u.employee_id " +
+                        "WHERE Username = '" + currentUser + "' " +
+                        "AND t.approved = 1 " +
+                        "AND YEAR(t.begin_time_off_date) = '2020' " +
+                        "GROUP BY YEAR(t.begin_time_off_date)";
+                ResultSet rs = c.createStatement().executeQuery(SQL);
+                int index = rs.getMetaData().getColumnCount();
+                //dynamically add table columns, so they are made based off database columns
+                //Not sure if this method will make it harder to add data later
+                for (int i = 0; i < index; i++) {
+                    final int j = i;
+                    TableColumn<ObservableList<String>, String> col = new TableColumn<>(rs.getMetaData().getColumnName(i + 1));
+                    col.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().get(j)));
+                    reportTable.getColumns().addAll(col);
+                    //System.out.println("Column [" + i + "] ");
+                    //add to observable list
+                    while (rs.next()) {
+                        //Iterate Row
+                        ObservableList<String> row = FXCollections.observableArrayList();
+                        for (int k = 1; k <= rs.getMetaData().getColumnCount(); k++) {
+                            //Iterate Column
+                            row.add(rs.getString(k));
+                        }
+                        //System.out.println("Row [1] added " + row);
+                        tableData.add(row);
+                    }
+                    //add to tableview
+                    reportTable.setItems(tableData);
+                }
+                c.close();
+            }
+            catch(Exception e){ //catch any exceptions
+                e.printStackTrace();
+                System.out.println("Error on Building Reports Table Data");
+            }
         }
 
     }
