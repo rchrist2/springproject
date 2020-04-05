@@ -676,12 +676,19 @@ public class EmployeeSchedulerController implements Initializable {
 
                                                 cls.get(h).setSchedule(newSchedList.get(g));
                                                 clockRepository.save(cls.get(h));
+
+                                                //this clock has already been matched to its schedule, so remove it from the list
                                                 cls.remove(cls.get(h));
+
+                                                //print the clock records still needing to be matched back to their schedules
                                                 System.out.println(cls);
-                                                g=0; //added this since it won't update clocks that have the same day desc
+
+                                                //added this so once a clock is matched to a schedule,
+                                                //restart the schedule loop to check remaining clocks against all schedules again
+                                                g=0;
                                             }
                                             else{ //else if that day is being removed from the schedule, delete related clock records
-                                                System.out.println("The schedule at " + newSchedList.get(g) + " had clock for " + cls.get(h));
+                                                System.out.println("The schedule at " + newSchedList.get(g) + " did not have clock for " + cls.get(h));
 
                                                 clockService.deleteClock(cls.get(h).getClockId());
                                             }
