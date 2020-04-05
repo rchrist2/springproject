@@ -75,7 +75,7 @@
                                 <TextField fx:id="nameText" prefHeight="25.0" prefWidth="180.0" stylesheets="@../css/CrudForm.css" GridPane.columnSpan="2" GridPane.rowIndex="1" />
                                 <TextField fx:id="emailText" prefHeight="25.0" prefWidth="180.0" stylesheets="@../css/CrudForm.css" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                 <TextField fx:id="addressText" prefHeight="25.0" prefWidth="180.0" stylesheets="@../css/CrudForm.css" GridPane.columnSpan="2" GridPane.rowIndex="3" />
-                                <TextField fx:id="phoneText" prefHeight="25.0" prefWidth="180.0" stylesheets="@../css/CrudForm.css" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                <TextField fx:id="phoneText" prefHeight="25.0" prefWidth="180.0" promptText="Ex. xxx-xxx-xxxx" stylesheets="@../css/CrudForm.css" GridPane.columnIndex="1" GridPane.rowIndex="3">
                            <tooltip>
                               <Tooltip fx:id="phoneTip" />
                            </tooltip></TextField>
