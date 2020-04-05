@@ -415,7 +415,7 @@ public class TimeOffController implements Initializable {
 
         //show the users for each time off request using SimpleObjectProperty
         userCol.setCellValueFactory(tf ->
-                new SimpleObjectProperty<>(tf.getValue().getEmployee().getUser().getUsername()));
+                new SimpleObjectProperty<>(tf.getValue().getEmployee().getName()));
     }
 
     private void reloadTimeOffTableViewAllUsers(){
