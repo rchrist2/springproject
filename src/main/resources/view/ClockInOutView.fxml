@@ -58,7 +58,7 @@
                         <TableColumn fx:id="punchInCol" prefWidth="99.0" text="Punch In" />
                         <TableColumn fx:id="punchOutCol" prefWidth="99.0" text="Punch Out" />
                         <TableColumn fx:id="scheduleCol" prefWidth="99.0" text="Schedule Date" />
-                        <TableColumn fx:id="userCol" prefWidth="99.0" text="User" visible="false" />
+                        <TableColumn fx:id="userCol" prefWidth="99.0" text="Name" visible="false" />
                      </columns>
                   </TableView>
                   <Pane fx:id="optionsPane2" layoutX="607.0" layoutY="31.0" prefHeight="25.0" prefWidth="70.0">

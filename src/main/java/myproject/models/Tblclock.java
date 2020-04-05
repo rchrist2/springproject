@@ -16,6 +16,7 @@ public class Tblclock {
     //private String dayDesc;
     Tblschedule schedule;
     TblDay day;
+    Tblemployee employee;
 
     /*@Basic
     @Column(name = "day_desc")
@@ -26,6 +27,16 @@ public class Tblclock {
     public void setDayDesc(String dayDesc) {
         this.dayDesc = dayDesc;
     }*/
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "employee_id", referencedColumnName = "id")
+    public Tblemployee getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Tblemployee employee) {
+        this.employee = employee;
+    }
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "day_id", referencedColumnName = "day_id")

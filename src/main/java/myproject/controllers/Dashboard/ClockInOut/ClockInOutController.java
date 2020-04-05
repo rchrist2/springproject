@@ -200,6 +200,10 @@ public class ClockInOutController implements Initializable {
 
     @FXML
     public void clockIn(){
+        //get the current user
+        String currentUser = LoginController.userStore;
+        Tblusers currUser = userRepository.findUsername(currentUser);
+
         //get the current date
         Date dateNow = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
@@ -216,6 +220,7 @@ public class ClockInOutController implements Initializable {
 
                 newClock.setPunchOut(java.sql.Time.valueOf("00:00:00"));
                 newClock.setSchedule(today);
+                newClock.setEmployee(currUser.getEmployee());
                 newClock.setDateCreated(new java.sql.Timestamp(new java.util.Date().getTime()));
                 newClock.setDay(today.getDay());
 
@@ -418,7 +423,7 @@ public class ClockInOutController implements Initializable {
             SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
 
             //get the selected entry's user and other info
-            String selectedUser = cl.getSchedule().getEmployee().getUser().getUsername();
+            String selectedUser = cl.getEmployee().getUser().getUsername();
             String selectedDay = cl.getSchedule().getDay().getDayDesc();
             String selectedDate = dateFormat.format(cl.getSchedule().getScheduleDate());
 
@@ -486,8 +491,8 @@ public class ClockInOutController implements Initializable {
         });
 
         //show the users for each clock record using SimpleObjectProperty
-        userCol.setCellValueFactory(tf ->
-                new SimpleObjectProperty<>(tf.getValue().getSchedule().getEmployee().getUser().getUsername()));
+        userCol.setCellValueFactory(cl ->
+                new SimpleObjectProperty<>(cl.getValue().getEmployee().getName()));
     }
 
     private void reloadClockTableAllUsers(){

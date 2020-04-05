@@ -61,13 +61,11 @@ public class TimeOffController implements Initializable {
     private TimeOffService timeOffService;
 
     @FXML
-    private Pane optionsPane;
+    private Pane optionsPane, optionsPane2,
+            datePane, movePane, tablePane, fullFormPane;
 
     @FXML
-    private Pane optionsPane2;
-
-    @FXML
-    private Pane datePane;
+    private AnchorPane timeAnchor;
 
     @FXML
     private Label tableUserLabel;
@@ -140,19 +138,43 @@ public class TimeOffController implements Initializable {
         //get the current user (String) from LoginController
         String currentUser = LoginController.userStore;
         Tblusers currUser = userRepository.findUsername(currentUser);
-        tableUserLabel.setText("Time Off Requests for " + currUser.getEmployee().getName());
 
         //Initialize the observable lists
         listOfTimeOffs = FXCollections.observableArrayList();
         scheduleData = FXCollections.observableArrayList();
 
-        //reload table, set data, and add listeners to buttons
-        reloadTimeOffTableView();
-        setDataForTimeOffTableView();
-        reloadScheduleList();
-        addActionListenersForCrudButtons(timeOffDeleteButton);
-        addActionListenersForCrudButtons(timeOffEditButton);
-        addToggleGroupForRadioButtons();
+        if(currUser.getEmployee().getRole().getRoleName().equals("Owner")){
+            listOfTimeOffs.addAll(timeOffRepository.findAllTimeOff());
+
+            tableUserLabel.setText("Time Off Requests for All Users");
+
+            timeAnchor.getChildren().remove(fullFormPane);
+            timeAnchor.getChildren().remove(tablePane);
+            movePane.getChildren().add(tablePane);
+            tablePane.setLayoutX(68);
+            tablePane.setLayoutY(30);
+            timeOffTable.setPrefHeight(537);
+            movePane.setVisible(true);
+
+            //reload table, set data, and add listeners to buttons
+            reloadTimeOffTableViewAllUsers();
+            setDataForTimeOffTableView();
+            addActionListenersForCrudButtons(timeOffDeleteButton);
+            addActionListenersForCrudButtons(timeOffEditButton);
+        }
+        else{
+            listOfTimeOffs.addAll(timeOffRepository.findAllTimeOffByUser(currentUser));
+
+            tableUserLabel.setText("Time Off Requests for " + currUser.getEmployee().getName());
+
+            //reload table, set data, and add listeners to buttons
+            reloadTimeOffTableView();
+            setDataForTimeOffTableView();
+            reloadScheduleList();
+            addActionListenersForCrudButtons(timeOffDeleteButton);
+            addActionListenersForCrudButtons(timeOffEditButton);
+            addToggleGroupForRadioButtons();
+        }
 
         timeOffTable.getSelectionModel().selectedItemProperty().addListener((obs, old, newv) -> {
             selectedTimeOff = newv;
@@ -498,9 +520,7 @@ public class TimeOffController implements Initializable {
         String currentUser = LoginController.userStore;
 
         //if the user is the owner or manager, they can see buttons to approve requests or show all users
-        if(userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
-                || userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner")){
-
+        if(userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")){
             //declare variables
             Button showAllUser = new Button();
             Button showThisUser = new Button();
@@ -527,7 +547,7 @@ public class TimeOffController implements Initializable {
         }
         else{
             //user does not have privileges to approve requests
-            System.out.println("User is not owner or manager");
+            System.out.println("User is not manager");
         }
     }
 

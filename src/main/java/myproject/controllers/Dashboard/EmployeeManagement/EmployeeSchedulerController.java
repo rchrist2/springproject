@@ -548,8 +548,8 @@ public class EmployeeSchedulerController implements Initializable {
                                 }
 
                             }
-                            if(clockRepository.findScheduleClock(id) != null){
-                                cls.addAll(clockRepository.findScheduleClock(id));
+                            if(clockRepository.findScheduleClock(id, selectedEmployee.getId()) != null){
+                                cls.addAll(clockRepository.findScheduleClock(id, selectedEmployee.getId()));
                                 cls.forEach((c) -> c.setSchedule(null));
                                 for(Tblclock c : cls){
                                     clockRepository.save(c);
@@ -657,23 +657,45 @@ public class EmployeeSchedulerController implements Initializable {
                                     }
                                 }
                             }
+                        }
 
-                            if(!(cls.isEmpty())){
-                                //do the same for clock ins/outs
-                                for(Tblschedule k : newSchedList){
-                                    //Tblschedule newSched2 = scheduleRepository.findByScheduleId(k.getScheduleId());
-                                    for(Tblclock c : cls){
-                                        if(k.getDay().getDayDesc().equals(c.getDay().getDayDesc())){
-                                            c.setSchedule(k);
-                                            clockRepository.save(c);
+                        //TODO fix index out of bounds error here instead of ignoring it through the try/catch
+                        try{
+                            if(!(schedList.isEmpty())){
+                                if(!(cls.isEmpty())){
+                                    //do the same for clock ins/outs
+
+                                    //print out the related clock day descriptions
+                                    System.out.println(cls);
+
+                                    //loop through the list of related clocks, and for each iteration loop through the schedule list
+                                    for(int h = 0; h < cls.size(); h++){
+                                        for(int g = 0; g < newSchedList.size(); g++){
+                                            if(newSchedList.get(g).getDay().getDayDesc().equals(cls.get(h).getDay().getDayDesc())){
+                                                System.out.println("The schedule at " + newSchedList.get(g) + " had clock for " + cls.get(h));
+
+                                                cls.get(h).setSchedule(newSchedList.get(g));
+                                                clockRepository.save(cls.get(h));
+                                                cls.remove(cls.get(h));
+                                                System.out.println(cls);
+                                                g=0; //added this since it won't update clocks that have the same day desc
+                                            }
+                                            else{ //else if that day is being removed from the schedule, delete related clock records
+                                                System.out.println("The schedule at " + newSchedList.get(g) + " had clock for " + cls.get(h));
+
+                                                clockService.deleteClock(cls.get(h).getClockId());
+                                            }
                                         }
-                                        else{ //else if the day was actually removed from the schedule
-                                            clockService.deleteClock(c.getClockId());
-                                        }
+
                                     }
                                 }
                             }
                         }
+                        catch(Exception e){
+                            System.out.println("Ignoring index out of bounds error");
+                        }
+
+
                         ErrorMessages.showInformationMessage("Successful", "Saved Schedule", selectedEmployee + "'s schedule was saved successfully");
                         loadDataToTable();
 
@@ -872,7 +894,7 @@ public class EmployeeSchedulerController implements Initializable {
 
                     schedList.clear();
                     schedList = scheduleRepository.findScheduleForEmployeeSchedList(selectedEmployee.getId(), sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert));
-                    System.out.println("Schedlist: " + schedList);
+                    //System.out.println("Schedlist: " + schedList);
 
                     SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm:ss a");
                     scheduleGridPane.setDisable(false);
@@ -971,14 +993,14 @@ public class EmployeeSchedulerController implements Initializable {
         listOfSchedules.clear();
         listOfEmployees.clear();
 
-        System.out.println("Sunday Date: " + sunday);
-        System.out.println("Saturday Date: " + saturday);
+        //System.out.println("Sunday Date: " + sunday);
+        //System.out.println("Saturday Date: " + saturday);
 
         //if user is not an owner or manager, only show their specific schedule
         if (userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner")){
-            for (Tblemployee emp : employeeRepository.findAllEmployeeByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert))) {
+            /*for (Tblemployee emp : employeeRepository.findAllEmployeeByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert))) {
                 System.out.println("Schedule: " + emp.getSchedules());
-            }
+            }*/
 
             listOfSchedules.addAll(employeeRepository.findAllEmployeeByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert)));
             listOfEmployees.addAll(employeeRepository.findAllEmployeesWithoutScheduleByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert)));
@@ -988,9 +1010,9 @@ public class EmployeeSchedulerController implements Initializable {
             scheduleTableView.setItems(filteredEmployeeList);
         }
         else if (userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")){
-            for (Tblemployee emp : employeeRepository.findByRoleByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert))) {
+            /*for (Tblemployee emp : employeeRepository.findByRoleByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert))) {
                 System.out.println("Schedule: " + emp.getSchedules());
-            }
+            }*/
 
             listOfSchedules.addAll(employeeRepository.findByRoleByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert)));
             listOfEmployees.addAll(employeeRepository.findByRoleWithoutScheduleByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert)));
@@ -1000,9 +1022,9 @@ public class EmployeeSchedulerController implements Initializable {
             scheduleTableView.setItems(filteredEmployeeList);
         }
         else{
-            for (Tblemployee emp : employeeRepository.findCurrentEmployeeByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert), currentUser)) {
+            /*for (Tblemployee emp : employeeRepository.findCurrentEmployeeByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert), currentUser)) {
                 System.out.println("Schedule: " + emp.getSchedules());
-            }
+            }*/
 
             listOfSchedules.addAll(employeeRepository.findCurrentEmployeeByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert), currentUser));
             listOfEmployees.addAll(employeeRepository.findCurrentEmployeeWithoutScheduleByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert), currentUser));
