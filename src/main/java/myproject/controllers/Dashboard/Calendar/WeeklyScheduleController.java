@@ -95,7 +95,7 @@ public class WeeklyScheduleController implements Initializable {
         saturday = today.with(nextOrSame(DayOfWeek.SATURDAY));
 
         //everyone can see everyone's schedules
-        listOfEmployees = employeeRepository.findAllEmployeeByWeek(sunday.format(sqlDateTimeConvert), saturday.format(sqlDateTimeConvert));
+        listOfEmployees = employeeRepository.findAllEmployee();
 
         gridpaneScrollPane.setFitToHeight(true);
 

@@ -666,11 +666,13 @@ public class EmployeeSchedulerController implements Initializable {
                                     //do the same for clock ins/outs
 
                                     //print out the related clock day descriptions
-                                    System.out.println(cls);
+                                    System.out.println("cls: " + cls);
+                                    System.out.println("newSchedList: " + newSchedList);
 
+                                    int g = 0;
                                     //loop through the list of related clocks, and for each iteration loop through the schedule list
                                     for(int h = 0; h < cls.size(); h++){
-                                        for(int g = 0; g < newSchedList.size(); g++){
+                                        while(g < newSchedList.size()){
                                             if(newSchedList.get(g).getDay().getDayDesc().equals(cls.get(h).getDay().getDayDesc())){
                                                 System.out.println("The schedule at " + newSchedList.get(g) + " had clock for " + cls.get(h));
 
@@ -681,7 +683,7 @@ public class EmployeeSchedulerController implements Initializable {
                                                 cls.remove(cls.get(h));
 
                                                 //print the clock records still needing to be matched back to their schedules
-                                                System.out.println(cls);
+                                                System.out.println("cls: " + cls);
 
                                                 //added this so once a clock is matched to a schedule,
                                                 //restart the schedule loop to check remaining clocks against all schedules again
@@ -691,6 +693,9 @@ public class EmployeeSchedulerController implements Initializable {
                                                 System.out.println("The schedule at " + newSchedList.get(g) + " did not have clock for " + cls.get(h));
 
                                                 clockService.deleteClock(cls.get(h).getClockId());
+
+                                                //update g from here instead of using for loop
+                                                g++;
                                             }
                                         }
 
