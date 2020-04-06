@@ -56,7 +56,7 @@
                   <Font size="15.0" />
                </font>
             </Label>
-            <Button fx:id="saveReportButton" layoutX="784.0" layoutY="230.0" mnemonicParsing="false" onAction="#saveReport" style="-fx-background-color: #39a7c3;" text="Save Report" textFill="WHITE">
+            <Button fx:id="saveReportButton" disable="true" layoutX="784.0" layoutY="230.0" mnemonicParsing="false" onAction="#saveReport" style="-fx-background-color: #39a7c3;" text="Save Report" textFill="WHITE">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
