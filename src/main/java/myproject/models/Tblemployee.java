@@ -20,8 +20,8 @@ public class Tblemployee {
     private TblRoles role;
 
     private Set<Tblschedule> schedules;
-    private Set<Tbltimeoff> timeOffs;
-    private Set<Tblclock> clocks;
+    //private Set<Tbltimeoff> timeOffs;
+    //private Set<Tblclock> clocks;
     private Tblusers user;
 
     public Tblemployee() {
@@ -36,14 +36,14 @@ public class Tblemployee {
         this.schedules = null;
     }
 
-    @OneToMany(fetch = FetchType.EAGER,mappedBy = "employee",cascade = CascadeType.ALL)
+    /*@OneToMany(fetch = FetchType.EAGER,mappedBy = "employee",cascade = CascadeType.ALL)
     public Set<Tblclock> getClocks() {
         return clocks;
     }
 
     public void setClocks(Set<Tblclock> clocks) {
         this.clocks = clocks;
-    }
+    }*/
 
     //one employee can only have one user account
     @OneToOne(fetch = FetchType.EAGER,mappedBy = "employee",cascade = CascadeType.ALL)
@@ -56,14 +56,14 @@ public class Tblemployee {
     }
 
     //one employee can have many time off requests
-    @OneToMany(fetch = FetchType.EAGER,mappedBy = "employee",cascade = CascadeType.ALL)
+    /*@OneToMany(fetch = FetchType.EAGER,mappedBy = "employee",cascade = CascadeType.ALL)
     public Set<Tbltimeoff> getTimeOffs() {
         return timeOffs;
     }
 
     public void setTimeOffs(Set<Tbltimeoff> timeOffs) {
         this.timeOffs = timeOffs;
-    }
+    }*/
 
     //many employees can belong to a role
     @ManyToOne(fetch = FetchType.EAGER)

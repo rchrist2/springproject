@@ -312,7 +312,7 @@ public class CrudClockController implements Initializable {
                     cl1.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
                     cl1.setDay(scheduleList.getSelectionModel().getSelectedItem().getDay());
                     cl1.setDateCreated(new java.sql.Timestamp(new java.util.Date().getTime()));
-                    cl1.setEmployee(employeeList.getSelectionModel().getSelectedItem());
+                    //cl1.setEmployee(employeeList.getSelectionModel().getSelectedItem());
 
                     //check if any fields were empty or using default selection of "Hour"
                     //check that the selected time range is valid

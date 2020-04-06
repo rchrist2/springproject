@@ -134,10 +134,10 @@ public class CrudTimeOffController implements Initializable {
             //either show schedules greater than/equal to current date or all time schedules
             if(tf1.getSchedule().getScheduleDate().toLocalDate().isAfter(LocalDate.now())
             || tf1.getSchedule().getScheduleDate().toLocalDate().isEqual(LocalDate.now())){
-                scheduleData.addAll(scheduleRepository.findScheduleForUser(selectedTimeOff.getEmployee().getUser().getUsername()));
+                scheduleData.addAll(scheduleRepository.findScheduleForUser(selectedTimeOff.getSchedule().getEmployee().getUser().getUsername()));
             }
             else{
-                scheduleData.addAll(scheduleRepository.findAllScheduleForUser(selectedTimeOff.getEmployee().getUser().getUsername()));
+                scheduleData.addAll(scheduleRepository.findAllScheduleForUser(selectedTimeOff.getSchedule().getEmployee().getUser().getUsername()));
             }
             scheduleList.setItems(scheduleData);
 
@@ -293,8 +293,8 @@ public class CrudTimeOffController implements Initializable {
 
         if (!(userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner"))
         || !((userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
-                && !(selectedTimeOff.getEmployee().getRole().getRoleName().equals("Manager")
-                || selectedTimeOff.getEmployee().getRole().getRoleName().equals("Owner"))))) {
+                && !(selectedTimeOff.getSchedule().getEmployee().getRole().getRoleName().equals("Manager")
+                || selectedTimeOff.getSchedule().getEmployee().getRole().getRoleName().equals("Owner"))))) {
             ErrorMessages.showErrorMessage("Insufficient privileges","Cannot approve/deny request",
                     "You do not have sufficient privileges to approve or deny this request.");
         }
@@ -329,7 +329,7 @@ public class CrudTimeOffController implements Initializable {
         //give only managers and owner ability to approve/disapprove
         if ((userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner"))
                 || ((userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
-                && !(t.getEmployee().getRole().getRoleName().equals("Manager"))))) {
+                && !(t.getSchedule().getEmployee().getRole().getRoleName().equals("Manager"))))) {
 
             approveList.setDisable(false);
             errorMsgPane.setVisible(false);

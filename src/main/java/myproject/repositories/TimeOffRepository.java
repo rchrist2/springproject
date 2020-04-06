@@ -16,10 +16,11 @@ import java.util.List;
 public interface TimeOffRepository extends CrudRepository<Tbltimeoff, Integer> {
 
     @Query(value = "SELECT * FROM tbltimeoff t " +
-            "JOIN tblemployee e ON t.employee_id = e.id " +
+            "JOIN tblschedule s ON s.schedule_id=t.schedule_id " +
+            "JOIN tblemployee e ON s.employee_id = e.id " +
             "WHERE begin_time_off_date=:date AND end_time_off_date=:date " +
             "AND approved=1 " +
-            "AND t.employee_id = :empId", nativeQuery = true)
+            "AND s.employee_id = :empId", nativeQuery = true)
     Tbltimeoff findByDateAndEmployee(@Param("date") Date date, @Param("empId") int empId);
 
     @Query(value = "SELECT * FROM tblschedule s RIGHT JOIN tbltimeoff t " +
@@ -48,12 +49,12 @@ public interface TimeOffRepository extends CrudRepository<Tbltimeoff, Integer> {
     List<Tbltimeoff> findTimeOffThisWeekAllUser();
 
     @Query(value = "SELECT * FROM tbltimeoff t LEFT JOIN tblschedule s ON t.schedule_id=s.schedule_id " +
-            "JOIN tblemployee e ON e.id=t.employee_id JOIN tblusers u ON e.id=u.employee_id " +
+            "JOIN tblemployee e ON e.id=s.employee_id JOIN tblusers u ON e.id=u.employee_id " +
             "WHERE Username = :username", nativeQuery = true)
     List<Tbltimeoff> findAllTimeOffByUser(@Param("username") String user);
 
     @Query(value = "SELECT * FROM tbltimeoff t LEFT JOIN tblschedule s ON t.schedule_id=s.schedule_id " +
-            "JOIN tblemployee e ON e.id=t.employee_id JOIN tblusers u ON e.id=u.employee_id " +
+            "JOIN tblemployee e ON e.id=s.employee_id JOIN tblusers u ON e.id=u.employee_id " +
             "WHERE Username = :username", nativeQuery = true)
     Tbltimeoff findTimeOffByUser(@Param("username") String user);
 

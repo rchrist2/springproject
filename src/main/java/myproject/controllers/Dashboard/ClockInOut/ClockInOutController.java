@@ -210,7 +210,49 @@ public class ClockInOutController implements Initializable {
 
         //if a schedule was selected
         if(!(today == null)) {
-            if(!(clockRepository.findRecentClockForUser(currentUser).getPunchOut().equals(Time.valueOf("00:00:00")))){
+            if(!(clockRepository.findRecentClockForUser(currentUser) == null)){
+                if(!(clockRepository.findRecentClockForUser(currentUser).getPunchOut().equals(Time.valueOf("00:00:00")))){
+                    //check if the schedule date is equal to today's date
+                    if(sdf.format(today.getScheduleDate()).equals(sdf.format(dateNow))) {
+
+                        Tblclock newClock = new Tblclock();
+
+                        newClock.setPunchIn(java.sql.Time.valueOf(LocalTime.now()));
+
+                        newClock.setPunchOut(java.sql.Time.valueOf("00:00:00"));
+                        newClock.setSchedule(today);
+                        //newClock.setEmployee(currUser.getEmployee());
+                        newClock.setDateCreated(new java.sql.Timestamp(new java.util.Date().getTime()));
+                        newClock.setDay(today.getDay());
+
+                        //save the new clock-in
+                        clockRepository.save(newClock);
+
+                        //update the "Last Action" label
+                        SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+                        String day = newClock.getSchedule().getDay().getDayDesc();
+                        String date = dateFormat.format(newClock.getSchedule().getScheduleDate());
+                        lastActionLabel.setText("Last Action \"In\" on " + day +
+                                ", " + date + " at "
+                                + timeFormat.format(newClock.getPunchIn()));
+
+                        reloadClockTable();
+                    }
+                    else{
+                        ErrorMessages.showErrorMessage("Invalid schedule selected",
+                                "Schedule must be equal to today's date",
+                                "You cannot clock in for a date earlier than or later than today's date");
+                    }
+                }
+                else{
+                    ErrorMessages.showErrorMessage("Error!",
+                            "Cannot clock-in without clocking out",
+                            "You have already clocked in recently. You must clock out before clocking in again.");
+                }
+
+            }
+            else if (clockRepository.findRecentClockForUser(currentUser) == null){
                 //check if the schedule date is equal to today's date
                 if(sdf.format(today.getScheduleDate()).equals(sdf.format(dateNow))) {
 
@@ -220,7 +262,7 @@ public class ClockInOutController implements Initializable {
 
                     newClock.setPunchOut(java.sql.Time.valueOf("00:00:00"));
                     newClock.setSchedule(today);
-                    newClock.setEmployee(currUser.getEmployee());
+                    //newClock.setEmployee(currUser.getEmployee());
                     newClock.setDateCreated(new java.sql.Timestamp(new java.util.Date().getTime()));
                     newClock.setDay(today.getDay());
 
@@ -243,11 +285,6 @@ public class ClockInOutController implements Initializable {
                             "Schedule must be equal to today's date",
                             "You cannot clock in for a date earlier than or later than today's date");
                 }
-            }
-            else{
-                ErrorMessages.showErrorMessage("Error!",
-                        "Cannot clock-in without clocking out",
-                        "You have already clocked in recently. You must clock out before clocking in again.");
             }
 
 
@@ -431,7 +468,7 @@ public class ClockInOutController implements Initializable {
             SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
 
             //get the selected entry's user and other info
-            String selectedUser = cl.getEmployee().getUser().getUsername();
+            String selectedUser = cl.getSchedule().getEmployee().getUser().getUsername();
             String selectedDay = cl.getDay().getDayDesc();
             String selectedDate = dateFormat.format(cl.getSchedule().getScheduleDate());
 
@@ -500,7 +537,7 @@ public class ClockInOutController implements Initializable {
 
         //show the users for each clock record using SimpleObjectProperty
         userCol.setCellValueFactory(cl ->
-                new SimpleObjectProperty<>(cl.getValue().getEmployee().getName()));
+                new SimpleObjectProperty<>(cl.getValue().getSchedule().getEmployee().getName()));
     }
 
     private void reloadClockTableAllUsers(){

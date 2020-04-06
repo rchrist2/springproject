@@ -931,7 +931,7 @@ public class EmployeeSchedulerController implements Initializable {
                                 t.setReasonDesc(storeReasonDesc);
                                 t.setDay(s.getDay());
                                 t.setSchedule(s);
-                                t.setEmployee(s.getEmployee());
+                                //t.setEmployee(s.getEmployee());
 
                                 timeOffRepository.save(t);
                             }

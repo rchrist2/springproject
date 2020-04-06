@@ -20,9 +20,9 @@ public interface ClockRepository extends CrudRepository<Tblclock, Integer> {
     List<Tblclock> findAllByRole();
 
     @Query(value = "SELECT * FROM tblclock c JOIN tblschedule s ON c.schedule_id=s.schedule_id " +
-            "JOIN tblemployee e ON c.employee_id=e.id " +
+            "JOIN tblemployee e ON s.employee_id=e.id " +
             "WHERE c.schedule_id = :id" +
-            " AND c.employee_id=:empId", nativeQuery = true)
+            " AND s.employee_id=:empId", nativeQuery = true)
     List<Tblclock> findScheduleClock(@Param("id") Integer id, @Param("empId") Integer empId);
 
     @Query(value = "SELECT * FROM tblclock c JOIN tblschedule s ON c.schedule_id=s.schedule_id " +
@@ -43,7 +43,7 @@ public interface ClockRepository extends CrudRepository<Tblclock, Integer> {
     List<Tblclock> findClockThisWeekAllUserByRole();
 
     @Query(value = "SELECT clock_id, punch_in, " +
-            "punch_out, c.schedule_id, date_created, c.day_id, c.employee_id FROM tblclock c " +
+            "punch_out, c.schedule_id, date_created, c.day_id FROM tblclock c " +
             "JOIN tblschedule s ON c.schedule_id=s.schedule_id " +
             "JOIN tblemployee e ON s.employee_id=e.id JOIN " +
             "tblusers u ON e.id=u.employee_id " +
@@ -53,11 +53,11 @@ public interface ClockRepository extends CrudRepository<Tblclock, Integer> {
             "tblusers u ON e.id=u.employee_id " +
             "WHERE c.schedule_id = :schedule " +
             "AND datediff(day, date_created, s.schedule_date) = 0) " +
-            "GROUP BY clock_id, punch_in, punch_out, c.schedule_id, date_created, c.day_id, c.employee_id;", nativeQuery = true)
+            "GROUP BY clock_id, punch_in, punch_out, c.schedule_id, date_created, c.day_id;", nativeQuery = true)
     Tblclock findRecentClockForSchedule(@Param("schedule") Integer schedule);
 
     @Query(value = "SELECT clock_id, punch_in, " +
-            "punch_out, c.schedule_id, date_created, c.day_id, c.employee_id FROM tblclock c " +
+            "punch_out, c.schedule_id, date_created, c.day_id FROM tblclock c " +
             "JOIN tblschedule s ON c.schedule_id=s.schedule_id " +
             "JOIN tblemployee e ON s.employee_id=e.id JOIN " +
             "tblusers u ON e.id=u.employee_id " +
@@ -66,7 +66,7 @@ public interface ClockRepository extends CrudRepository<Tblclock, Integer> {
             "JOIN tblemployee e ON s.employee_id=e.id JOIN " +
             "tblusers u ON e.id=u.employee_id " +
             "WHERE username = :username) " +
-            "GROUP BY clock_id, punch_in, punch_out, c.schedule_id, date_created, c.day_id, c.employee_id;", nativeQuery = true)
+            "GROUP BY clock_id, punch_in, punch_out, c.schedule_id, date_created, c.day_id;", nativeQuery = true)
     Tblclock findRecentClockForUser(@Param("username") String username);
 
     @Query(value = "SELECT * FROM tblclock c JOIN tblschedule s ON c.schedule_id=s.schedule_id " +
