@@ -25,8 +25,9 @@ public interface RoleRepository extends CrudRepository<TblRoles, Integer> {
     @Query(value = "SELECT * FROM tblRoles WHERE role_id = :role_id", nativeQuery = true)
     TblRoles findRole(@Param("role_id") int role_id);
 
-    @Query(value = "SELECT role_name FROM tblRoles", nativeQuery = true)
-    List<String> findAllRoleName();
+    @Query(value = "SELECT role_name FROM tblRoles" +
+            " WHERE role_name <> :role_name", nativeQuery = true)
+    List<String> findAllRoleNameExcept(@Param("role_name") String role_name);
 
     @Query(value = "SELECT role_desc FROM tblRoles WHERE role_id = :id", nativeQuery = true)
     String findRoleDescFromRoleId(@Param("id") int id);

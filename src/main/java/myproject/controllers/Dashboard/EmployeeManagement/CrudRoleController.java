@@ -76,8 +76,6 @@ public class CrudRoleController implements Initializable {
             roleObservableList = FXCollections.observableArrayList(Arrays.asList("Employee"));
         }
 
-        listOfRoles = roleRepository.findAllRoleName();
-
         roleComboBox.setItems(roleObservableList);
 
         roleComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldV, newV) -> {
@@ -131,6 +129,9 @@ public class CrudRoleController implements Initializable {
     private void handleSaveRole(ActionEvent event){
         Button button = (Button) event.getSource();
         Stage stage = (Stage)saveRoleButton.getScene().getWindow();
+
+        //compare currently selected role name against all other role names in database
+        listOfRoles = roleRepository.findAllRoleNameExcept(selectedRole.getRoleName());
 
         if(!(roleText.getText().isEmpty()
                 || roleDescTextA.getText().isEmpty()
