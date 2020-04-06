@@ -689,17 +689,24 @@ public class EmployeeSchedulerController implements Initializable {
                                                 //restart the schedule loop to check remaining clocks against all schedules again
                                                 g=0;
                                             }
-                                            else{ //else if that day is being removed from the schedule, delete related clock records
+                                            else{
                                                 System.out.println("The schedule at " + newSchedList.get(g) + " did not have clock for " + cls.get(h));
 
-                                                clockService.deleteClock(cls.get(h).getClockId());
-
-                                                //update g from here instead of using for loop
                                                 g++;
                                             }
                                         }
-
                                     }
+
+                                    for(Tblschedule s : newSchedList){
+                                        for(Tblclock c : cls){
+                                            if(!(s.getDay().getDayDesc().equals(c.getDay().getDayDesc()))){
+                                                System.out.println("The schedule at " + s + " did not have clock for " + c);
+
+                                                clockService.deleteClock(c.getClockId());
+                                            }
+                                        }
+                                    }
+
                                 }
                             }
                         }
