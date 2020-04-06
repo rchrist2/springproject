@@ -13,8 +13,8 @@ import java.util.List;
 public interface RoleRepository extends CrudRepository<TblRoles, Integer> {
 
     //Return the description of role id
-    @Query(value = "SELECT Role_Desc FROM tblRoles WHERE Role_ID = :id", nativeQuery = true)
-    String findRoleDesc(@Param("id") int roleId);
+    @Query(value = "SELECT * FROM tblRoles WHERE role_name = :name", nativeQuery = true)
+    String findRoleName(@Param("name") String name);
 
     @Query(value = "SELECT * FROM tblroles", nativeQuery = true)
     List<TblRoles> findAll();

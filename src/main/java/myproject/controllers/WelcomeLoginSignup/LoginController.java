@@ -30,6 +30,8 @@ import java.net.URL;
 import java.time.YearMonth;
 import java.util.ResourceBundle;
 
+import static myproject.Validation.isAlpha;
+
 @Component
 public class LoginController implements Initializable {
 
@@ -75,6 +77,8 @@ public class LoginController implements Initializable {
     private void signinUser(ActionEvent event){
         //find user and pass in db to login
         Tblusers currentUser = userRepository.findUsername(usernameText.getText());
+
+        System.out.println("Boolean: " + isAlpha("das2"));
 
         if(currentUser != null && SecurePassword.checkPassword(userRepository.findHashFromUserId(currentUser.getEmployee().getId()), passwordText.getText(),
                 userRepository.findSaltFromUserId(currentUser.getEmployee().getId()))){

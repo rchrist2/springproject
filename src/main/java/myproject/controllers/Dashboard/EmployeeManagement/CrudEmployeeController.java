@@ -88,6 +88,8 @@ public class CrudEmployeeController implements Initializable {
     private ObservableList<String> listOfDaysObs, listOfAMandPM, possibleTimes;
     private ObservableList<TblRoles> listOfRoleObs;
 
+    private List<String> listOfEmails;
+
     //The employee returned from the EmployeeManagementController
     private Tblemployee selectedEmployee;
     public boolean changePasswordChecked;
@@ -120,6 +122,8 @@ public class CrudEmployeeController implements Initializable {
 
         listOfDaysObs = FXCollections.observableArrayList();
         listOfRoleObs = FXCollections.observableArrayList();
+
+        listOfEmails = employeeRepository.findAllEmails();
 
         listOfDaysObs.setAll(dayRepository.findAllDays());
 
@@ -194,7 +198,7 @@ public class CrudEmployeeController implements Initializable {
             Tblemployee updateEmp = selectedEmployee;
 
             Pair[] error = Validation.validateCrudAccount(nameText.getText(), emailText.getText(), addressText.getText(),
-                    phoneText.getText(), usernameText.getText(), roleComboBox.getSelectionModel().getSelectedItem());
+                    phoneText.getText(), usernameText.getText(), roleComboBox.getSelectionModel().getSelectedItem(), listOfEmails);
 
             if(!(Boolean)error[0].getKey()){
                 switch (selectedButton.getText()) {

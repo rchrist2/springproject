@@ -27,9 +27,6 @@ public interface UserRepository extends CrudRepository<Tblusers, Integer> {
     @Query(value = "SELECT e.email FROM tblemployee e JOIN tblusers u ON e.id = u.employee_id WHERE u.user_id = :name", nativeQuery = true)
     String findEmailFromUser(@Param("name") int name);
 
-/*    @Query(value = "SELECT password FROM tblusers WHERE employee_id = :empId", nativeQuery = true)
-    String findPasswordFromUserId(@Param("empId") int employeeId);*/
-
     @Query(value = "SELECT salt_password FROM tblusers WHERE employee_id = :empId", nativeQuery = true)
     byte[] findSaltFromUserId(@Param("empId") int empId);
 

@@ -7,7 +7,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 import myproject.ErrorMessages;
+import myproject.Validation;
 import myproject.controllers.WelcomeLoginSignup.LoginController;
 import myproject.models.TblRoles;
 import myproject.models.Tblemployee;
@@ -20,8 +22,12 @@ import org.springframework.stereotype.Component;
 
 import java.net.URL;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+
+import static myproject.Validation.checkRoleDuplicates;
+import static myproject.Validation.isAlpha;
 
 @Component
 public class CrudRoleController implements Initializable {
@@ -53,6 +59,7 @@ public class CrudRoleController implements Initializable {
     private RoleService roleService;
 
     private ObservableList<String> roleObservableList;
+    private List<String> listOfRoles;
     private EmployeeRoleUserManagementController employeeRoleManagementController;
     private TblRoles selectedRole;
 
@@ -69,6 +76,8 @@ public class CrudRoleController implements Initializable {
             roleObservableList = FXCollections.observableArrayList(Arrays.asList("Employee"));
         }
 
+        listOfRoles = roleRepository.findAllRoleName();
+
         roleComboBox.setItems(roleObservableList);
 
         roleComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldV, newV) -> {
@@ -82,9 +91,6 @@ public class CrudRoleController implements Initializable {
                 roleText.setText(newV);
             }
         });
-
-        
-
     }
 
     public void setController(EmployeeRoleUserManagementController employeeRoleManagementController) {
@@ -129,6 +135,9 @@ public class CrudRoleController implements Initializable {
         if(!(roleText.getText().isEmpty()
                 || roleDescTextA.getText().isEmpty()
                 || roleComboBox.getSelectionModel().getSelectedItem().isEmpty())){
+
+            Pair[] error = checkRoleDuplicates(roleText.getText(), listOfRoles);
+
             switch (button.getText()) {
                 case "Add":
                     TblRoles newRole = new TblRoles();
@@ -141,27 +150,35 @@ public class CrudRoleController implements Initializable {
                         else
                             newRole.setRoleName(roleComboBox.getSelectionModel().getSelectedItem());
 
-                        newRole.setRoleDesc(roleDescTextA.getText());
-                        roleRepository.save(newRole);
+                        if(!(Boolean)error[0].getKey()) {
+                            newRole.setRoleDesc(roleDescTextA.getText());
+                            roleRepository.save(newRole);
+
+                            stage.close();
+                        } else {
+                            ErrorMessages.showErrorMessage("Error", "Invalid values provided", error[0].getValue().toString());
+                        }
 
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-
-                    stage.close();
                     break;
                 case "Update":
                     try{
                         System.out.println("Update a role");
 
-                        roleService.updateRole(roleText.getText(), roleDescTextA.getText(),
-                                selectedRole.getRoleId());
+                        if(!(Boolean)error[0].getKey()) {
+                            roleService.updateRole(roleText.getText(), roleDescTextA.getText(),
+                                    selectedRole.getRoleId());
+
+                            stage.close();
+                        } else {
+                            ErrorMessages.showErrorMessage("Error", "Invalid values provided", error[0].getValue().toString());
+                        }
 
                     } catch (Exception e){
                         e.printStackTrace();
                     }
-
-                    stage.close();
                     break;
             }
         }
