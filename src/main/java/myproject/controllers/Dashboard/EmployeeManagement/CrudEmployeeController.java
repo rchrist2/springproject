@@ -123,8 +123,6 @@ public class CrudEmployeeController implements Initializable {
         listOfDaysObs = FXCollections.observableArrayList();
         listOfRoleObs = FXCollections.observableArrayList();
 
-        listOfEmails = employeeRepository.findAllEmails();
-
         listOfDaysObs.setAll(dayRepository.findAllDays());
 
         //if they are not an owner, they are a manager and cannot create owner accounts
@@ -187,6 +185,8 @@ public class CrudEmployeeController implements Initializable {
     }
 
     public void handleSaveEmployee(ActionEvent event){
+        //get all emails except the current user's email to check if someone else has that email
+        listOfEmails = employeeRepository.findAllEmailsExcept(selectedEmployee.getEmail());
 
         Button selectedButton = (Button)event.getSource();
 
