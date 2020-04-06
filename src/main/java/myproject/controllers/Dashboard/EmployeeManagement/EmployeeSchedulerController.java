@@ -140,12 +140,18 @@ public class EmployeeSchedulerController implements Initializable {
     private Tblemployee selectedEmployee;
 
     private ObservableList<String> times = FXCollections.observableArrayList(
-            "12:00:00 AM", "01:00:00 AM", "02:00:00 AM", "03:00:00 AM",
-            "04:00:00 AM", "05:00:00 AM", "06:00:00 AM", "07:00:00 AM",
-            "08:00:00 AM", "09:00:00 AM", "10:00:00 AM", "11:00:00 AM",
-            "12:00:00 PM","01:00:00 PM", "02:00:00 PM", "03:00:00 PM",
-            "04:00:00 PM", "05:00:00 PM", "06:00:00 PM", "07:00:00 PM",
-            "08:00:00 PM", "09:00:00 PM", "10:00:00 PM", "11:00:00 PM"
+            "12:00:00 AM", "12:30:00 AM", "01:00:00 AM", "01:30:00 AM",
+            "02:00:00 AM", "02:30:00 AM", "03:00:00 AM", "03:30:00 AM",
+            "04:00:00 AM", "04:30:00 AM", "05:00:00 AM", "05:30:00 AM",
+            "06:00:00 AM", "06:30:00 AM", "07:00:00 AM", "07:30:00 AM",
+            "08:00:00 AM", "08:30:00 AM", "09:00:00 AM", "09:30:00 AM",
+            "10:00:00 AM", "10:30:00 AM", "11:00:00 AM", "11:30:00 AM",
+            "12:00:00 PM","12:30:00 PM", "01:00:00 PM", "01:30:00 PM",
+            "02:00:00 PM", "02:30:00 PM", "03:00:00 PM", "03:30:00 PM",
+            "04:00:00 PM", "04:30:00 PM", "05:00:00 PM", "05:30:00 PM",
+            "06:00:00 PM", "06:30:00 PM", "07:00:00 PM", "07:30:00 PM",
+            "08:00:00 PM", "08:30:00 PM", "09:00:00 PM", "09:30:00 PM",
+            "10:00:00 PM", "10:30:00 PM", "11:00:00 PM", "11:30:00 PM"
     );
 
     List<Tblschedule> schedList = new ArrayList<>();
@@ -460,7 +466,12 @@ public class EmployeeSchedulerController implements Initializable {
                             if (currBegTime.equals("12:00:00 AM")) {
                                 s.setScheduleTimeBegin(Time.valueOf("00"
                                         + ":00:00"));
-                            } else {
+                            }
+                            else if(currBegTime.equals("12:30:00 AM")){
+                                s.setScheduleTimeBegin(Time.valueOf("00"
+                                        + ":30:00"));
+                            }
+                            else {
                                 String begAMTime = currBegTime.replace(" AM","");
                                 s.setScheduleTimeBegin(Time.valueOf(begAMTime));
                             }
@@ -470,7 +481,12 @@ public class EmployeeSchedulerController implements Initializable {
                             if (currBegTime.equals("12:00:00 PM")) {
                                 s.setScheduleTimeBegin(Time.valueOf("12"
                                         + ":00:00"));
-                            } else {
+                            }
+                            else if(currBegTime.equals("12:30:00 PM")){
+                                s.setScheduleTimeBegin(Time.valueOf("12"
+                                        + ":30:00"));
+                            }
+                            else {
                                 String begPMTime = currBegTime.replace(" PM","");
                                 s.setScheduleTimeBegin(Time.valueOf(begPMTime));
                                 s.setScheduleTimeBegin(Time.valueOf(s.getScheduleTimeBegin().toLocalTime().plusHours(12)));
@@ -484,7 +500,12 @@ public class EmployeeSchedulerController implements Initializable {
                             if (currEndTime.equals("12:00:00 AM")) {
                                 s.setScheduleTimeEnd(Time.valueOf("00"
                                         + ":00:00"));
-                            } else {
+                            }
+                            else if (currEndTime.equals("12:30:00 AM")) {
+                                s.setScheduleTimeEnd(Time.valueOf("00"
+                                        + ":30:00"));
+                            }
+                            else {
                                 String endAMTime = currEndTime.replace(" AM","");
                                 s.setScheduleTimeEnd(Time.valueOf(endAMTime));
                             }
@@ -494,7 +515,12 @@ public class EmployeeSchedulerController implements Initializable {
                             if (currEndTime.equals("12:00:00 PM")) {
                                 s.setScheduleTimeEnd(Time.valueOf("12"
                                         + ":00:00"));
-                            } else {
+                            }
+                            else if (currEndTime.equals("12:30:00 PM")) {
+                                s.setScheduleTimeEnd(Time.valueOf("12"
+                                        + ":30:00"));
+                            }
+                            else {
                                 String endPMTime = currEndTime.replace(" PM","");
                                 s.setScheduleTimeEnd(Time.valueOf(endPMTime));
                                 s.setScheduleTimeEnd(Time.valueOf(s.getScheduleTimeEnd().toLocalTime().plusHours(12)));
@@ -582,7 +608,12 @@ public class EmployeeSchedulerController implements Initializable {
                                 if (currBegTime.equals("12:00:00 AM")) {
                                     s.setScheduleTimeBegin(Time.valueOf("00"
                                             + ":00:00"));
-                                } else {
+                                }
+                                else if (currBegTime.equals("12:30:00 AM")) {
+                                    s.setScheduleTimeBegin(Time.valueOf("00"
+                                            + ":30:00"));
+                                }
+                                else {
                                     String begAMTime = currBegTime.replace(" AM","");
                                     s.setScheduleTimeBegin(Time.valueOf(begAMTime));
                                 }
@@ -592,7 +623,12 @@ public class EmployeeSchedulerController implements Initializable {
                                 if (currBegTime.equals("12:00:00 PM")) {
                                     s.setScheduleTimeBegin(Time.valueOf("12"
                                             + ":00:00"));
-                                } else {
+                                }
+                                else if (currBegTime.equals("12:30:00 PM")) {
+                                    s.setScheduleTimeBegin(Time.valueOf("12"
+                                            + ":30:00"));
+                                }
+                                else {
                                     String begPMTime = currBegTime.replace(" PM","");
                                     s.setScheduleTimeBegin(Time.valueOf(begPMTime));
                                     s.setScheduleTimeBegin(Time.valueOf(s.getScheduleTimeBegin().toLocalTime().plusHours(12)));
@@ -606,7 +642,12 @@ public class EmployeeSchedulerController implements Initializable {
                                 if (currEndTime.equals("12:00:00 AM")) {
                                     s.setScheduleTimeEnd(Time.valueOf("00"
                                             + ":00:00"));
-                                } else {
+                                }
+                                else if (currEndTime.equals("12:30:00 AM")) {
+                                    s.setScheduleTimeEnd(Time.valueOf("00"
+                                            + ":30:00"));
+                                }
+                                else {
                                     String endAMTime = currEndTime.replace(" AM","");
                                     s.setScheduleTimeEnd(Time.valueOf(endAMTime));
                                 }
@@ -616,7 +657,12 @@ public class EmployeeSchedulerController implements Initializable {
                                 if (currEndTime.equals("12:00:00 PM")) {
                                     s.setScheduleTimeEnd(Time.valueOf("12"
                                             + ":00:00"));
-                                } else {
+                                }
+                                else if (currEndTime.equals("12:30:00 PM")) {
+                                    s.setScheduleTimeEnd(Time.valueOf("12"
+                                            + ":30:00"));
+                                }
+                                else {
                                     String endPMTime = currEndTime.replace(" PM","");
                                     s.setScheduleTimeEnd(Time.valueOf(endPMTime));
                                     s.setScheduleTimeEnd(Time.valueOf(s.getScheduleTimeEnd().toLocalTime().plusHours(12)));
@@ -762,7 +808,12 @@ public class EmployeeSchedulerController implements Initializable {
                             if (currBegTime.equals("12:00:00 AM")) {
                                 s.setScheduleTimeBegin(Time.valueOf("00"
                                         + ":00:00"));
-                            } else {
+                            }
+                            else if (currBegTime.equals("12:30:00 AM")) {
+                                s.setScheduleTimeBegin(Time.valueOf("00"
+                                        + ":30:00"));
+                            }
+                            else {
                                 String begAMTime = currBegTime.replace(" AM","");
                                 s.setScheduleTimeBegin(Time.valueOf(begAMTime));
                             }
@@ -772,7 +823,12 @@ public class EmployeeSchedulerController implements Initializable {
                             if (currBegTime.equals("12:00:00 PM")) {
                                 s.setScheduleTimeBegin(Time.valueOf("12"
                                         + ":00:00"));
-                            } else {
+                            }
+                            else if (currBegTime.equals("12:30:00 PM")) {
+                                s.setScheduleTimeBegin(Time.valueOf("12"
+                                        + ":30:00"));
+                            }
+                            else {
                                 String begPMTime = currBegTime.replace(" PM","");
                                 s.setScheduleTimeBegin(Time.valueOf(begPMTime));
                                 s.setScheduleTimeBegin(Time.valueOf(s.getScheduleTimeBegin().toLocalTime().plusHours(12)));
@@ -786,7 +842,12 @@ public class EmployeeSchedulerController implements Initializable {
                             if (currEndTime.equals("12:00:00 AM")) {
                                 s.setScheduleTimeEnd(Time.valueOf("00"
                                         + ":00:00"));
-                            } else {
+                            }
+                            else if (currEndTime.equals("12:30:00 AM")) {
+                                s.setScheduleTimeEnd(Time.valueOf("00"
+                                        + ":30:00"));
+                            }
+                            else {
                                 String endAMTime = currEndTime.replace(" AM","");
                                 s.setScheduleTimeEnd(Time.valueOf(endAMTime));
                             }
@@ -796,7 +857,12 @@ public class EmployeeSchedulerController implements Initializable {
                             if (currEndTime.equals("12:00:00 PM")) {
                                 s.setScheduleTimeEnd(Time.valueOf("12"
                                         + ":00:00"));
-                            } else {
+                            }
+                            else if (currEndTime.equals("12:30:00 PM")) {
+                                s.setScheduleTimeEnd(Time.valueOf("12"
+                                        + ":30:00"));
+                            }
+                            else {
                                 String endPMTime = currEndTime.replace(" PM","");
                                 s.setScheduleTimeEnd(Time.valueOf(endPMTime));
                                 s.setScheduleTimeEnd(Time.valueOf(s.getScheduleTimeEnd().toLocalTime().plusHours(12)));
