@@ -1,7 +1,6 @@
 package myproject.controllers.Dashboard.EmployeeManagement;
 
 import javafx.beans.property.ReadOnlyStringWrapper;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -19,7 +18,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import myproject.ErrorMessages;
-import myproject.controllers.Dashboard.DashboardController;
 import myproject.controllers.WelcomeLoginSignup.LoginController;
 import myproject.models.TblRoles;
 import myproject.models.Tblemployee;
@@ -39,7 +37,6 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Date;
-import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.Instant;
@@ -464,7 +461,7 @@ public class EmployeeRoleUserManagementController implements Initializable {
             listOfRoles.addAll(roleRepository.findAll());
         }
         else if(currUser.getEmployee().getRole().getRoleName().equals("Manager")){
-            listOfRoles.addAll(roleRepository.findNotOwnerManagerRoles());
+            listOfRoles.addAll(roleRepository.findNotOwnerRoles());
         }
 
         filteredListOfRoles = new FilteredList<>(listOfRoles);

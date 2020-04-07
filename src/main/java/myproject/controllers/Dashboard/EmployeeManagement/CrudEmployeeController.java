@@ -26,7 +26,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
-import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -129,7 +128,7 @@ public class CrudEmployeeController implements Initializable {
         listOfDaysObs.setAll(dayRepository.findAllDays());
 
         //if they are not an owner, they are a manager and cannot create owner accounts
-        listOfRoleObs.setAll(roleRepository.findNotOwnerManagerRoles());
+        listOfRoleObs.setAll(roleRepository.findNotOwnerRoles());
 
         roleComboBox.setItems(listOfRoleObs);
 

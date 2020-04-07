@@ -20,7 +20,7 @@ public interface RoleRepository extends CrudRepository<TblRoles, Integer> {
     List<TblRoles> findAll();
 
     @Query(value = "SELECT * FROM tblroles WHERE role_name NOT IN ('Owner')", nativeQuery = true)
-    List<TblRoles> findNotOwnerManagerRoles();
+    List<TblRoles> findNotOwnerRoles();
 
     @Query(value = "SELECT * FROM tblRoles WHERE role_id = :role_id", nativeQuery = true)
     TblRoles findRole(@Param("role_id") int role_id);
