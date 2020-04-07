@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import myproject.ErrorMessages;
@@ -72,7 +73,9 @@ public class CrudEmployeeController implements Initializable {
     private Label crudEmployeeLabel,
                 descriptionLabel,
                 currentPasswordLabel,
-                changePasswordLabel;
+                changePasswordLabel,
+                passwordRequirementText,
+                passwordRequirementTitleText;
 
     private ConfigurableApplicationContext springContext;
     private EmployeeRepository employeeRepository;
@@ -126,11 +129,7 @@ public class CrudEmployeeController implements Initializable {
         listOfDaysObs.setAll(dayRepository.findAllDays());
 
         //if they are not an owner, they are a manager and cannot create owner accounts
-        if(!(currUser.getEmployee().getRole().getRoleName().equals("Owner")))
-            listOfRoleObs.setAll(roleRepository.findNotOwnerManagerRoles());
-        else
-            listOfRoleObs.setAll(roleRepository.findAll());
-
+        listOfRoleObs.setAll(roleRepository.findNotOwnerManagerRoles());
 
         roleComboBox.setItems(listOfRoleObs);
 
@@ -144,6 +143,14 @@ public class CrudEmployeeController implements Initializable {
 
         //Whatever you type in email it copies to username
         emailText.textProperty().bindBidirectional(usernameText.textProperty());
+
+        passwordRequirementText.setFont(Font.font("System", 10));
+        passwordRequirementText.setText("- Password must be 8 to 30 characters long\n" +
+                                        "- Password must contain the following characters\n" +
+                                        "\t- Uppercase characters [A-Z]\n" +
+                                        "\t- Lowercase characters [a-z]\n" +
+                                        "\t- Contains digit [0-9]\n" +
+                                        "\t- Contains special characters (!, $, #, etc)");
     }
 
     public void setLabel(String string, String buttonLabel){
@@ -168,9 +175,11 @@ public class CrudEmployeeController implements Initializable {
 
     public void setEmployeeForEdit(){
         changePasswordButton.setVisible(true);
-
         currentPasswordLabel.setVisible(false);
         passwordText.setVisible(false);
+
+        passwordRequirementText.setVisible(false);
+        passwordRequirementTitleText.setVisible(false);
     }
 
     @FXML
@@ -185,6 +194,9 @@ public class CrudEmployeeController implements Initializable {
         newPasswordText.setVisible(true);
 
         changePasswordChecked = true;
+
+        passwordRequirementText.setVisible(true);
+        passwordRequirementTitleText.setVisible(true);
     }
 
     public void handleSaveEmployee(ActionEvent event){
@@ -203,6 +215,8 @@ public class CrudEmployeeController implements Initializable {
                         Pair[] error = Validation.validateCrudAccount(nameText.getText(), emailText.getText(), addressText.getText(),
                                 phoneText.getText(), usernameText.getText(), roleComboBox.getSelectionModel().getSelectedItem(), listOfEmails);
 
+                        Pair[] passwordError = Validation.validatePasswordRequirement(passwordText.getText());
+
                         try {
                             if (!passwordText.getText().isEmpty()) {
                                 if(newEmp.getRole().getRoleName().equals("Owner")
@@ -213,27 +227,29 @@ public class CrudEmployeeController implements Initializable {
                                             "There is already an employee with the Owner role. Only one Owner can exist at a time.");
                                 }
                                 else{
-                                    if(!(Boolean)error[0].getKey()){
-                                        employeeRepository.save(newEmp);
+                                    if(!(Boolean)error[0].getKey()) {
+                                        if (!(Boolean) passwordError[0].getKey()) {
+                                            employeeRepository.save(newEmp);
 
-                                        //Creates the hash for the password and the salt
-                                        byte[] salt = SecurePassword.getSalt();
-                                        String hashedPassword = SecurePassword.getSecurePassword(passwordText.getText(), salt);
-                                        Tblusers newUser = new Tblusers(usernameText.getText(), passwordText.getText(), salt, hashedPassword, newEmp);
+                                            //Creates the hash for the password and the salt
+                                            byte[] salt = SecurePassword.getSalt();
+                                            String hashedPassword = SecurePassword.getSecurePassword(passwordText.getText(), salt);
+                                            Tblusers newUser = new Tblusers(usernameText.getText(), passwordText.getText(), salt, hashedPassword, newEmp);
 
-                                        userRepository.save(newUser);
+                                            userRepository.save(newUser);
 
-                                        Stage stage = (Stage) saveButton.getScene().getWindow();
-                                        ErrorMessages.showInformationMessage("Successful", "Employee Success", "Added " + nameText.getText() + " successfully");
+                                            Stage stage = (Stage) saveButton.getScene().getWindow();
+                                            ErrorMessages.showInformationMessage("Successful", "Employee Success", "Added " + nameText.getText() + " successfully");
 
-                                        stage.close();
+                                            stage.close();
+                                        } else {
+                                            ErrorMessages.showErrorMessage("Password Error", "Password validation error", passwordError[0].getValue().toString());
+                                        }
                                     }
                                     else{
                                         ErrorMessages.showErrorMessage("Error", "Invalid values provided", error[0].getValue().toString());
                                     }
-
                                 }
-
                             } else {
                                 ErrorMessages.showErrorMessage("Error", "Invalid values", "Please provides values for each field");
                             }

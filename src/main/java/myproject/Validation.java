@@ -10,6 +10,7 @@ import myproject.repositories.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Validation {
@@ -17,6 +18,7 @@ public class Validation {
     public static String PHONE_NUMBER_PATTERN = "((\\(\\d{3}\\) ?)|(\\d{3}-))?\\d{3}-\\d{4}";
     public static String ALPHA = "^[a-zA-Z\\s]*$";
     public static String STREET_ADDRESS = "^\\d+?[A-Za-z]*\\s\\w*\\s?\\w+?\\s\\w{2}\\w*\\s*\\w*$";
+    public static String PASSWORD_REQUIREMENT = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{4,8}$";
 
    /* private static ConfigurableApplicationContext springContext;
 
@@ -38,6 +40,64 @@ public class Validation {
 
     public static boolean validateStreetAddress(String address){
         return address.matches(STREET_ADDRESS);
+    }
+
+    public static Pair[] validatePasswordRequirement(String password){
+        char[] passwordCharArray = password.toCharArray();
+
+        String errorMessage = "Please fix the following errors:\n";
+        boolean error = false, upper = true, lower = true, digit = true, special = true;
+
+        int size = passwordCharArray.length;
+        List<String> listOfErrors = new ArrayList<>();
+
+        if(size < 8){
+            errorMessage += "\t- Contains less than 8 characters\n";
+            error = true;
+        }
+
+        if(size > 30){
+            errorMessage += "\t- Contains greater than 30 characters\n";
+            error = true;
+        }
+
+        for (char character : passwordCharArray) {
+            System.out.println("Char: " + character);
+            if(Character.isUpperCase(character) && upper)
+                upper = false;
+
+            if(Character.isLowerCase(character) && lower)
+                lower = false;
+
+            if(Character.isDigit(character) && digit)
+                digit = false;
+
+            if(!Character.isDigit(character) && !Character.isLetter(character) && !Character.isSpaceChar(character) && special)
+                special = false;
+
+        }
+
+        if(upper){
+            errorMessage += "\t- Contains no Uppercase Letters\n";
+            error = true;
+        }
+
+        if(lower){
+            errorMessage += "\t- Contains no Lowercase Letters\n";
+            error = true;
+        }
+
+        if(digit){
+            errorMessage += "\t- Contains no numbers\n";
+            error = true;
+        }
+
+        if(special){
+            errorMessage += "\t- Contains no Special Characters\n";
+            error = true;
+        }
+
+        return new Pair[] { new Pair<>(error, errorMessage) };
     }
 
     public static Pair[] validateCrudAccount(String name, String email, String address, String phone, String username,

@@ -124,8 +124,10 @@
                         <TextField fx:id="usernameText" disable="true" prefHeight="25.0" prefWidth="180.0" stylesheets="@../css/CrudForm.css" GridPane.rowIndex="1" />
                         <TextField fx:id="passwordText" prefHeight="25.0" prefWidth="180.0" stylesheets="@../css/CrudForm.css" GridPane.rowIndex="3" />
                         <Button fx:id="changePasswordButton" mnemonicParsing="false" onAction="#handleChangePassword" prefHeight="25.0" prefWidth="115.0" text="Change Password" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                        <TextField fx:id="newPasswordText" layoutX="10.0" layoutY="78.0" prefHeight="25.0" prefWidth="180.0" visible="false" GridPane.rowIndex="5" />
+                        <TextField fx:id="newPasswordText" layoutX="10.0" layoutY="78.0" prefHeight="25.0" prefWidth="180.0" stylesheets="@../css/CrudForm.css" visible="false" GridPane.rowIndex="5" />
                         <Label fx:id="changePasswordLabel" text="New Password:" visible="false" GridPane.rowIndex="4" />
+                        <Label fx:id="passwordRequirementTitleText" text="Vishala Accounts:" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <Label fx:id="passwordRequirementText" alignment="TOP_LEFT" prefHeight="99.0" prefWidth="229.0" text="[password validation text]" GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.rowSpan="3" />
                      </children>
                      <VBox.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

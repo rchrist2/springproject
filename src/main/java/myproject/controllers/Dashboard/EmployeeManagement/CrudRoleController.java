@@ -33,8 +33,8 @@ import static myproject.Validation.isAlpha;
 public class CrudRoleController implements Initializable {
 
     @FXML
-    private Label titleLabel,
-                otherRoleLabel;
+    private Label titleLabel/*,
+                otherRoleLabel*/;
 
     @FXML
     private TextField roleText;
@@ -46,8 +46,8 @@ public class CrudRoleController implements Initializable {
     private Button saveRoleButton,
                 resetButton;
 
-    @FXML
-    private ComboBox<String> roleComboBox;
+/*    @FXML
+    private ComboBox<String> roleComboBox;*/
 
     @Autowired
     private RoleRepository roleRepository;
@@ -69,7 +69,7 @@ public class CrudRoleController implements Initializable {
         String currentUser = LoginController.userStore;
         Tblusers currUser = userRepository.findUsername(currentUser);
 
-        if(currUser.getEmployee().getRole().getRoleName().equals("Owner")){
+        /*if(currUser.getEmployee().getRole().getRoleName().equals("Owner")){
             roleObservableList = FXCollections.observableArrayList(Arrays.asList("Manager","Employee"));
         }
         else{
@@ -88,7 +88,7 @@ public class CrudRoleController implements Initializable {
                 roleText.setDisable(true);
                 roleText.setText(newV);
             }
-        });
+        });*/
     }
 
     public void setController(EmployeeRoleUserManagementController employeeRoleManagementController) {
@@ -102,21 +102,21 @@ public class CrudRoleController implements Initializable {
 
     public void setRole(TblRoles selectedRole){
         this.selectedRole = selectedRole;
-        roleComboBox.setDisable(true);
+        //roleComboBox.setDisable(true);
         roleText.setDisable(false);
         setTextFieldsForEdit(this.selectedRole);
     }
 
     private void setTextFieldsForEdit(TblRoles roles){
         if(roles.getRoleName().equals("Manager") || roles.getRoleName().equals("Owner")){
-            roleComboBox.setValue(roles.getRoleName());
-            otherRoleLabel.setDisable(true);
+            //roleComboBox.setValue(roles.getRoleName());
+            //otherRoleLabel.setDisable(true);
             roleText.setDisable(true);
             roleText.setText(roles.getRoleName());
-            roleComboBox.setDisable(true);
+            //roleComboBox.setDisable(true);
         } else {
-            roleComboBox.setValue("Employee");
-            otherRoleLabel.setDisable(false);
+            //roleComboBox.setValue("Employee");
+            //otherRoleLabel.setDisable(false);
             roleText.setDisable(false);
             roleText.setText(roles.getRoleName());
         }
@@ -131,8 +131,7 @@ public class CrudRoleController implements Initializable {
         Stage stage = (Stage)saveRoleButton.getScene().getWindow();
 
         if(!(roleText.getText().isEmpty()
-                || roleDescTextA.getText().isEmpty()
-                || roleComboBox.getSelectionModel().getSelectedItem().isEmpty())){
+                || roleDescTextA.getText().isEmpty())){
 
             switch (button.getText()) {
                 case "Add":
@@ -143,12 +142,13 @@ public class CrudRoleController implements Initializable {
                     try {
                         System.out.println("Add a role");
 
-                        if(roleComboBox.getSelectionModel().getSelectedItem().equals("Employee"))
+/*                        if(roleComboBox.getSelectionModel().getSelectedItem().equals("Employee"))
                             newRole.setRoleName(roleText.getText());
                         else
-                            newRole.setRoleName(roleComboBox.getSelectionModel().getSelectedItem());
+                            newRole.setRoleName(roleComboBox.getSelectionModel().getSelectedItem());*/
 
                         if(!(Boolean)error[0].getKey()) {
+                            newRole.setRoleName(roleText.getText());
                             newRole.setRoleDesc(roleDescTextA.getText());
                             roleRepository.save(newRole);
 

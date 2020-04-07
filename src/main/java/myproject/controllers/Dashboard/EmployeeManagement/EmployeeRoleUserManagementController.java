@@ -406,7 +406,6 @@ public class EmployeeRoleUserManagementController implements Initializable {
                           ON DELETE CASCADE works in a way we can't apply, so we have to delete
                           each row in order
                         */
-
                             if(!emp.getUser().getUsername().equals(LoginController.userStore)) {
                                 //added due to issues with cascade delete in tbltimeoff
                                 timeOffService.deleteTimeOffByEmp(emp.getId());
@@ -576,7 +575,11 @@ public class EmployeeRoleUserManagementController implements Initializable {
         roleTableView.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue != null) {
                 editRoleButton.setDisable(false);
-                deleteRoleButton.setDisable(false);
+
+                if(newValue.getRoleName().toLowerCase().equals("owner") || newValue.getRoleName().toLowerCase().equals("manager"))
+                    deleteRoleButton.setDisable(true);
+                else
+                    deleteRoleButton.setDisable(false);
             }
             else{
                 editRoleButton.setDisable(true);
