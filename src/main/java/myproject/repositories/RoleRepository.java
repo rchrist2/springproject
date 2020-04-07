@@ -32,6 +32,10 @@ public interface RoleRepository extends CrudRepository<TblRoles, Integer> {
     @Query(value = "SELECT role_name FROM tblRoles", nativeQuery = true)
     List<String> findAllRoleName();
 
+    @Query(value = "SELECT role_name FROM tblRoles" +
+            " WHERE role_name = :role_name", nativeQuery = true)
+    TblRoles findByRoleName(@Param("role_name") String role_name);
+
     @Query(value = "SELECT role_desc FROM tblRoles WHERE role_id = :id", nativeQuery = true)
     String findRoleDescFromRoleId(@Param("id") int id);
 
