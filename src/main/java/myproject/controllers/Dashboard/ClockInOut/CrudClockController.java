@@ -128,7 +128,7 @@ public class CrudClockController implements Initializable {
                         scheduleList.getItems().clear();
                         schedulePane.setVisible(true);
 
-                        scheduleData.addAll(scheduleRepository.findAllScheduleForUser(newValue.getUser().getUsername()));
+                        scheduleData.addAll(scheduleRepository.findAllScheduleForUserLessThanEqualToToday(newValue.getUser().getUsername()));
                         scheduleList.setItems(scheduleData);
                     }
 

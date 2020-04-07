@@ -104,6 +104,25 @@ public class CrudTimeOffController implements Initializable {
 
         hrList = FXCollections.observableArrayList();
 
+        //disable past dates for datepickers
+        beginDate.setDayCellFactory(picker -> new DateCell() {
+            public void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+                LocalDate today = LocalDate.now();
+
+                setDisable(empty || date.compareTo(today) < 0 );
+            }
+        });
+
+        endDate.setDayCellFactory(picker -> new DateCell() {
+            public void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+                LocalDate today = LocalDate.now();
+
+                setDisable(empty || date.compareTo(today) < 0 );
+            }
+        });
+
         setDataForHourPMLists();
         addToggleGroupForRadioButtons();
     }

@@ -102,3 +102,4 @@ https://stackoverflow.com/questions/46017483/javafx-export-tableview-to-excel-wi
 https://stackoverflow.com/questions/5175728/how-to-get-the-current-date-time-in-java
 https://stackoverflow.com/questions/10828492/convert-time-datatype-into-am-pm-format
 https://stackoverflow.com/questions/30180180/how-would-i-completely-restart-a-for-loop-or-an-if-statement
+https://stackoverflow.com/questions/48238855/how-to-disable-past-dates-in-datepicker-of-javafx-scene-builder

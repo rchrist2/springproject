@@ -38,6 +38,7 @@ import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -143,6 +144,7 @@ public class TimeOffController implements Initializable {
         listOfTimeOffs = FXCollections.observableArrayList();
         scheduleData = FXCollections.observableArrayList();
 
+        //if user is owner, don't show request time off forms
         if(currUser.getEmployee().getRole().getRoleName().equals("Owner")){
             listOfTimeOffs.addAll(timeOffRepository.findAllTimeOff());
 
@@ -182,6 +184,25 @@ public class TimeOffController implements Initializable {
 
         //set "Request Day Off" to selected by default
         dayOffCheck.setSelected(true);
+
+        //disable past dates for datepickers
+        beginDate.setDayCellFactory(picker -> new DateCell() {
+            public void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+                LocalDate today = LocalDate.now();
+
+                setDisable(empty || date.compareTo(today) < 0 );
+            }
+        });
+
+        endDate.setDayCellFactory(picker -> new DateCell() {
+            public void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+                LocalDate today = LocalDate.now();
+
+                setDisable(empty || date.compareTo(today) < 0 );
+            }
+        });
 
         setButtonsForManagerOwner();
 
@@ -291,7 +312,7 @@ public class TimeOffController implements Initializable {
 
                     CrudTimeOffController crudTimeOffController = fxmlLoader.getController();
                     crudTimeOffController.setLabel("Edit Time Off for "
-                            + selectedTimeOff.getSchedule().getEmployee().getName());
+                            + selectedTimeOff.getEmployee().getName());
                     crudTimeOffController.setTimeOff(selectedTimeOff);
                     crudTimeOffController.setController(this);
 
