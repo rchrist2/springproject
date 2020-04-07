@@ -130,18 +130,15 @@ public class CrudRoleController implements Initializable {
         Button button = (Button) event.getSource();
         Stage stage = (Stage)saveRoleButton.getScene().getWindow();
 
-        //compare currently selected role name against all other role names in database
-        listOfRoles = roleRepository.findAllRoleNameExcept(selectedRole.getRoleName());
-
         if(!(roleText.getText().isEmpty()
                 || roleDescTextA.getText().isEmpty()
                 || roleComboBox.getSelectionModel().getSelectedItem().isEmpty())){
 
-            Pair[] error = checkRoleDuplicates(roleText.getText(), listOfRoles);
-
             switch (button.getText()) {
                 case "Add":
                     TblRoles newRole = new TblRoles();
+                    listOfRoles = roleRepository.findAllRoleName();
+                    Pair[] error = checkRoleDuplicates(roleText.getText(), listOfRoles);
 
                     try {
                         System.out.println("Add a role");
@@ -167,14 +164,17 @@ public class CrudRoleController implements Initializable {
                 case "Update":
                     try{
                         System.out.println("Update a role");
+                        //compare currently selected role name against all other role names in database
+                        listOfRoles = roleRepository.findAllRoleNameExcept(selectedRole.getRoleName());
+                        Pair[] error1 = checkRoleDuplicates(roleText.getText(), listOfRoles);
 
-                        if(!(Boolean)error[0].getKey()) {
+                        if(!(Boolean)error1[0].getKey()) {
                             roleService.updateRole(roleText.getText(), roleDescTextA.getText(),
                                     selectedRole.getRoleId());
 
                             stage.close();
                         } else {
-                            ErrorMessages.showErrorMessage("Error", "Invalid values provided", error[0].getValue().toString());
+                            ErrorMessages.showErrorMessage("Error", "Invalid values provided", error1[0].getValue().toString());
                         }
 
                     } catch (Exception e){

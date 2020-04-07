@@ -97,6 +97,9 @@ public interface EmployeeRepository extends CrudRepository<Tblemployee, Integer>
             " WHERE email <> :email", nativeQuery = true)
     List<String> findAllEmailsExcept(@Param("email") String email);
 
+    @Query(value = "SELECT email FROM tblemployee", nativeQuery = true)
+    List<String> findAllEmails();
+
     @Query(value = "SELECT name FROM tblemployee", nativeQuery = true)
     List<Tblemployee> findAllEmployeeByName();
 
