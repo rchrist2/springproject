@@ -20,7 +20,7 @@ public class Tblemployee {
     private TblRoles role;
 
     private Set<Tblschedule> schedules;
-    //private Set<Tbltimeoff> timeOffs;
+    private Set<Tbltimeoff> timeOffs;
     //private Set<Tblclock> clocks;
     private Tblusers user;
 
@@ -56,14 +56,14 @@ public class Tblemployee {
     }
 
     //one employee can have many time off requests
-    /*@OneToMany(fetch = FetchType.EAGER,mappedBy = "employee",cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "employee",cascade = CascadeType.ALL)
     public Set<Tbltimeoff> getTimeOffs() {
         return timeOffs;
     }
 
     public void setTimeOffs(Set<Tbltimeoff> timeOffs) {
         this.timeOffs = timeOffs;
-    }*/
+    }
 
     //many employees can belong to a role
     @ManyToOne(fetch = FetchType.EAGER)

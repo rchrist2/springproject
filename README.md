@@ -59,7 +59,8 @@ CREATE TABLE tbltimeoff(
 	approved bit NOT NULL,
 	reason_desc varchar(128) not null,
 	day_id int null FOREIGN KEY REFERENCES tblday(day_id),
-	schedule_id int null FOREIGN KEY REFERENCES tblschedule(schedule_id) ON DELETE CASCADE
+	schedule_id int null FOREIGN KEY REFERENCES tblschedule(schedule_id),
+	employee_id int not null FOREIGN KEY REFERENCES tblemployee(id) ON DELETE CASCADE
 );
 
 INSERT INTO tblroles VALUES('Owner','Is the owner');

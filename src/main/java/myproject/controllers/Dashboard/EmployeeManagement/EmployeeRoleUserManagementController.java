@@ -30,6 +30,7 @@ import myproject.repositories.ScheduleRepository;
 import myproject.repositories.UserRepository;
 import myproject.services.EmployeeService;
 import myproject.services.ScheduleService;
+import myproject.services.TimeOffService;
 import myproject.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -165,6 +166,9 @@ public class EmployeeRoleUserManagementController implements Initializable {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private TimeOffService timeOffService;
 
     @Autowired
     private RoleRepository roleRepository;
@@ -404,6 +408,9 @@ public class EmployeeRoleUserManagementController implements Initializable {
                         */
 
                             if(!emp.getUser().getUsername().equals(LoginController.userStore)) {
+                                //added due to issues with cascade delete in tbltimeoff
+                                timeOffService.deleteTimeOffByEmp(emp.getId());
+
                                 scheduleService.deleteSchedule(emp.getId());
 
                                 employeeService.deleteEmployee(emp.getId());

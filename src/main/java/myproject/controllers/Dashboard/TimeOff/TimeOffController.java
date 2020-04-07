@@ -205,7 +205,7 @@ public class TimeOffController implements Initializable {
             newTimeOff.setReasonDesc(reasonInput.getText());
             //newTimeOff.setDayOff(true);
             newTimeOff.setDay(null);
-            //newTimeOff.setEmployee(currUser.getEmployee());
+            newTimeOff.setEmployee(currUser.getEmployee());
 
             if (newTimeOff.getBeginTimeOffDate().before(newTimeOff.getEndTimeOffDate())
                     && newTimeOff.getEndTimeOffDate().after(newTimeOff.getBeginTimeOffDate())
@@ -245,7 +245,7 @@ public class TimeOffController implements Initializable {
             newTimeOff.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
             //newTimeOff.setDayOff(true);
             newTimeOff.setDay(scheduleList.getSelectionModel().getSelectedItem().getDay());
-            //newTimeOff.setEmployee(currUser.getEmployee());
+            newTimeOff.setEmployee(currUser.getEmployee());
 
             //check if the time range is valid
             if(scheduleList.getSelectionModel().getSelectedItem().getTimeOffs() == null){
@@ -277,7 +277,7 @@ public class TimeOffController implements Initializable {
                 && selectedTimeOff.isApproved()  || !(selectedTimeOff.isApproved()))
                 || ((userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
                 && (selectedTimeOff.isApproved()  || !(selectedTimeOff.isApproved()))
-                && !(selectedTimeOff.getSchedule().getEmployee().getRole().getRoleName().equals("Manager"))))) {
+                && !(selectedTimeOff.getEmployee().getRole().getRoleName().equals("Manager"))))) {
 
                 try {
                     //open the CRUD form
@@ -337,12 +337,12 @@ public class TimeOffController implements Initializable {
                 && selectedTimeOff.isApproved()  || !(selectedTimeOff.isApproved()))
                 || ((userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
                 && (selectedTimeOff.isApproved()  || !(selectedTimeOff.isApproved()))
-                && !(selectedTimeOff.getSchedule().getEmployee().getRole().getRoleName().equals("Manager"))))) {
+                && !(selectedTimeOff.getEmployee().getRole().getRoleName().equals("Manager"))))) {
 
                 SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
 
                 //get the selected entry's user
-                String selectedUser = tf.getSchedule().getEmployee().getUser().getUsername();
+                String selectedUser = tf.getEmployee().getUser().getUsername();
 
                 //ask the user if they are sure about the deletion
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -437,7 +437,7 @@ public class TimeOffController implements Initializable {
 
         //show the users for each time off request using SimpleObjectProperty
         userCol.setCellValueFactory(tf ->
-                new SimpleObjectProperty<>(tf.getValue().getSchedule().getEmployee().getName()));
+                new SimpleObjectProperty<>(tf.getValue().getEmployee().getName()));
     }
 
     private void reloadTimeOffTableViewAllUsers(){

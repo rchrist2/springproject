@@ -18,7 +18,7 @@ public class Tbltimeoff {
     //private String dayDesc;
     private String reasonDesc;
     private Tblschedule schedule;
-    //Tblemployee employee;
+    Tblemployee employee;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "day_id", referencedColumnName = "day_id")
@@ -30,7 +30,7 @@ public class Tbltimeoff {
         this.day = day;
     }
 
-    /*@ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "employee_id", referencedColumnName = "id")
     public Tblemployee getEmployee() {
         return employee;
@@ -38,7 +38,7 @@ public class Tbltimeoff {
 
     public void setEmployee(Tblemployee employee) {
         this.employee = employee;
-    }*/
+    }
 
     /*@Basic
     @Column(name = "day_desc")

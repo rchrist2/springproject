@@ -15,4 +15,9 @@ public class TimeOffService {
     public void deleteTimeOff(int timeOffId){
         timeOffRepository.deleteTimeOff(timeOffId);
     }
+
+    @Transactional
+    public void deleteTimeOffByEmp(int employeeId){
+        timeOffRepository.deleteEmployeeTimeOff(employeeId);
+    }
 }
