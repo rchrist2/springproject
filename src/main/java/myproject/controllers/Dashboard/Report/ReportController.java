@@ -639,15 +639,49 @@ public class ReportController implements Initializable {
             Connection c;
             try {
                 c = connectClass.connect();
-                String SQL = "SELECT COUNT(*) AS \"No. of Approved Days Off\", " +
-                        " YEAR(t.begin_time_off_date) AS \"Year Of\", e.name AS \"Name\" " +
-                        "FROM tblschedule s " +
-                        "JOIN tbltimeoff t ON t.schedule_id=s.schedule_id JOIN \n" +
+                String SQL = "SELECT SUM(tot) AS \"No. of Approved Days Off\", year_of AS \"Year Of\", \n" +
+                        "the_name AS \"Name\" FROM\n" +
+                        "(SELECT SUM(DATEDIFF(dd, t.begin_time_off_date, t.end_time_off_date)) AS tot,\n" +
+                        "YEAR(t.begin_time_off_date) year_of, e.name AS the_name " +
+                        "FROM tbltimeoff t JOIN \n" +
+                        "tblemployee e ON t.employee_id=e.id JOIN \n" +
+                        "tblusers u ON e.id=u.employee_id \n" +
+                        "JOIN tblroles r ON e.roles_id=r.role_id\n" +
+                        "WHERE t.approved = 1\n" +
+                        "AND YEAR(t.begin_time_off_date) = YEAR(GETDATE())\n" +
+                        "OR\n" +
+                        "t.approved = 1\n" +
+                        "AND YEAR(t.begin_time_off_date) = YEAR(GETDATE())\n" +
+                        "AND t.schedule_id IS NULL\n" +
+                        "GROUP BY YEAR(t.begin_time_off_date), e.name " +
+                        "\n" +
+                        "UNION ALL\n" +
+                        "\n" +
+                        "SELECT COUNT(DATEDIFF(dd, t.begin_time_off_date, t.end_time_off_date)) AS tot,\n" +
+                        "YEAR(t.begin_time_off_date) year_of, e.name AS the_name\n" +
+                        "FROM tbltimeoff t JOIN \n" +
+                        "tblemployee e ON t.employee_id=e.id JOIN \n" +
+                        "tblusers u ON e.id=u.employee_id \n" +
+                        "JOIN tblroles r ON e.roles_id=r.role_id\n" +
+                        "WHERE " +
+                        "DATEDIFF(dd, t.begin_time_off_date, t.end_time_off_date) = 0\n" +
+                        "AND t.approved = 1\n" +
+                        "AND YEAR(t.begin_time_off_date) = YEAR(GETDATE())\n" +
+                        "AND t.schedule_id IS NULL\n" +
+                        "GROUP BY YEAR(t.begin_time_off_date), e.name\n" +
+                        "\n" +
+                        "UNION ALL\n" +
+                        "\n" +
+                        "SELECT COUNT(*) AS tot,\n" +
+                        "YEAR(t.begin_time_off_date) AS year_of, e.name AS the_name\n" +
+                        "FROM tblschedule s JOIN tbltimeoff t ON t.schedule_id=s.schedule_id JOIN \n" +
                         "tblemployee e ON s.employee_id=e.id JOIN \n" +
-                        "tblusers u ON e.id=u.employee_id " +
-                        "WHERE t.approved = 1 " +
-                        "AND YEAR(t.begin_time_off_date) = '2020' " +
-                        "GROUP BY YEAR(t.begin_time_off_date), e.name";
+                        "tblusers u ON e.id=u.employee_id \n" +
+                        "JOIN tblroles r ON e.roles_id=r.role_id\n" +
+                        "WHERE t.approved = 1\n" +
+                        "AND YEAR(t.begin_time_off_date) = YEAR(GETDATE())\n" +
+                        "GROUP BY YEAR(t.begin_time_off_date), e.name) AS dt\n" +
+                        "GROUP BY year_of, the_name";
                 ResultSet rs = c.createStatement().executeQuery(SQL);
                 int index = rs.getMetaData().getColumnCount();
                 //dynamically add table columns, so they are made based off database columns
@@ -686,27 +720,100 @@ public class ReportController implements Initializable {
             Connection c;
             try {
                 c = connectClass.connect();
-                String SQL = "SELECT COUNT(*) AS \"No. of Approved Days Off\",\n" +
-                        "YEAR(t.begin_time_off_date) AS \"Year Of\", e.name AS \"Name\"\n" +
+                String SQL = "SELECT SUM(tot) AS \"No. of Approved Days Off\", year_of AS \"Year Of\", \n" +
+                        "the_name AS \"Name\" FROM\n" +
+                        "(SELECT SUM(DATEDIFF(dd, t.begin_time_off_date, t.end_time_off_date)) AS tot,\n" +
+                        "YEAR(t.begin_time_off_date) year_of, e.name AS the_name\n" +
+                        "FROM tbltimeoff t JOIN \n" +
+                        "tblemployee e ON t.employee_id=e.id JOIN \n" +
+                        "tblusers u ON e.id=u.employee_id \n" +
+                        "JOIN tblroles r ON e.roles_id=r.role_id\n" +
+                        "WHERE t.approved = 1 " +
+                        "AND role_name NOT IN ('Owner','Manager')\n" +
+                        "AND YEAR(t.begin_time_off_date) = YEAR(GETDATE())\n" +
+                        "OR\n" +
+                        "t.approved = 1\n" +
+                        "AND role_name NOT IN ('Owner','Manager')\n" +
+                        "AND YEAR(t.begin_time_off_date) = YEAR(GETDATE())\n" +
+                        "AND t.schedule_id IS NULL\n" +
+                        "GROUP BY YEAR(t.begin_time_off_date), e.name\n" +
+
+                        "UNION ALL\n" +
+
+                        "SELECT COUNT(DATEDIFF(dd, t.begin_time_off_date, t.end_time_off_date)) AS tot,\n" +
+                        "YEAR(t.begin_time_off_date) year_of, e.name AS the_name\n" +
+                        "FROM tbltimeoff t JOIN \n" +
+                        "tblemployee e ON t.employee_id=e.id JOIN \n" +
+                        "tblusers u ON e.id=u.employee_id \n" +
+                        "JOIN tblroles r ON e.roles_id=r.role_id\n" +
+                        "WHERE \n" +
+                        "DATEDIFF(dd, t.begin_time_off_date, t.end_time_off_date) = 0\n" +
+                        "AND role_name NOT IN ('Owner','Manager')\n" +
+                        "AND t.approved = 1\n" +
+                        "AND YEAR(t.begin_time_off_date) = YEAR(GETDATE())\n" +
+                        "AND t.schedule_id IS NULL\n" +
+                        "GROUP BY YEAR(t.begin_time_off_date), e.name\n" +
+
+                        "UNION ALL\n" +
+
+                        "SELECT COUNT(*) AS tot,\n" +
+                        "YEAR(t.begin_time_off_date) AS year_of, e.name AS the_name\n" +
                         "FROM tblschedule s JOIN tbltimeoff t ON t.schedule_id=s.schedule_id JOIN \n" +
                         "tblemployee e ON s.employee_id=e.id JOIN \n" +
                         "tblusers u ON e.id=u.employee_id \n" +
                         "JOIN tblroles r ON e.roles_id=r.role_id\n" +
                         "WHERE t.approved = 1\n" +
                         "AND role_name NOT IN ('Owner','Manager')\n" +
-                        "AND YEAR(t.begin_time_off_date) = '2020'\n" +
+                        "AND YEAR(t.begin_time_off_date) = YEAR(GETDATE())\n" +
                         "GROUP BY YEAR(t.begin_time_off_date), e.name\n" +
-                        "UNION\n" +
-                        "SELECT COUNT(*) AS \"No. of Approved Days Off\",\n" +
-                        "YEAR(t.begin_time_off_date) AS \"Year Of\", e.name AS \"Name\"\n" +
+
+                        "UNION ALL\n" +
+
+                        "SELECT SUM(DATEDIFF(dd, t.begin_time_off_date, t.end_time_off_date)) AS tot,\n" +
+                        "YEAR(t.begin_time_off_date) year_of, e.name AS the_name\n" +
+                        "FROM tbltimeoff t JOIN \n" +
+                        "tblemployee e ON t.employee_id=e.id JOIN \n" +
+                        "tblusers u ON e.id=u.employee_id \n" +
+                        "JOIN tblroles r ON e.roles_id=r.role_id\n" +
+                        "WHERE t.approved = 1\n" +
+                        "AND Username = '" + currentUser + "' " +
+                        "AND YEAR(t.begin_time_off_date) = YEAR(GETDATE())\n" +
+                        "OR\n" +
+                        "t.approved = 1\n" +
+                        "AND Username = '" + currentUser + "' " +
+                        "AND YEAR(t.begin_time_off_date) = YEAR(GETDATE())\n" +
+                        "AND t.schedule_id IS NULL\n" +
+                        "GROUP BY YEAR(t.begin_time_off_date), e.name\n" +
+                        "\n" +
+                        "UNION ALL\n" +
+                        "\n" +
+                        "SELECT COUNT(DATEDIFF(dd, t.begin_time_off_date, t.end_time_off_date)) AS tot,\n" +
+                        "YEAR(t.begin_time_off_date) year_of, e.name AS the_name\n" +
+                        "FROM tbltimeoff t JOIN \n" +
+                        "tblemployee e ON t.employee_id=e.id JOIN \n" +
+                        "tblusers u ON e.id=u.employee_id \n" +
+                        "JOIN tblroles r ON e.roles_id=r.role_id\n" +
+                        "WHERE \n" +
+                        "DATEDIFF(dd, t.begin_time_off_date, t.end_time_off_date) = 0\n" +
+                        "AND Username = '" + currentUser + "' " +
+                        "AND t.approved = 1\n" +
+                        "AND YEAR(t.begin_time_off_date) = YEAR(GETDATE())\n" +
+                        "AND t.schedule_id IS NULL\n" +
+                        "GROUP BY YEAR(t.begin_time_off_date), e.name\n" +
+                        "\n" +
+                        "UNION ALL\n" +
+                        "\n" +
+                        "SELECT COUNT(*) AS tot,\n" +
+                        "YEAR(t.begin_time_off_date) AS year_of, e.name AS the_name\n" +
                         "FROM tblschedule s JOIN tbltimeoff t ON t.schedule_id=s.schedule_id JOIN \n" +
                         "tblemployee e ON s.employee_id=e.id JOIN \n" +
                         "tblusers u ON e.id=u.employee_id \n" +
                         "JOIN tblroles r ON e.roles_id=r.role_id\n" +
                         "WHERE t.approved = 1\n" +
                         "AND Username = '" + currentUser + "' " +
-                        "AND YEAR(t.begin_time_off_date) = '2020'\n" +
-                        "GROUP BY YEAR(t.begin_time_off_date), e.name;";
+                        "AND YEAR(t.begin_time_off_date) = YEAR(GETDATE())\n" +
+                        "GROUP BY YEAR(t.begin_time_off_date), e.name) AS dt\n" +
+                        "GROUP BY year_of, the_name";
                 ResultSet rs = c.createStatement().executeQuery(SQL);
                 int index = rs.getMetaData().getColumnCount();
                 //dynamically add table columns, so they are made based off database columns
@@ -745,16 +852,53 @@ public class ReportController implements Initializable {
             Connection c;
             try {
                 c = connectClass.connect();
-                String SQL = "SELECT COUNT(*) AS \"No. of Approved Days Off\", " +
-                        " YEAR(t.begin_time_off_date) AS \"Year Of\" " +
-                        "FROM tblschedule s " +
-                        "JOIN tbltimeoff t ON t.schedule_id=s.schedule_id JOIN \n" +
+                String SQL = "SELECT SUM(tot) AS \"No. of Approved Days Off\", year_of AS \"Year Of\", \n" +
+                        "the_name AS \"Name\" FROM\n" +
+                        "(SELECT SUM(DATEDIFF(dd, t.begin_time_off_date, t.end_time_off_date)) AS tot,\n" +
+                        "YEAR(t.begin_time_off_date) year_of, e.name AS the_name\n" +
+                        "FROM tbltimeoff t JOIN \n" +
+                        "tblemployee e ON t.employee_id=e.id JOIN \n" +
+                        "tblusers u ON e.id=u.employee_id \n" +
+                        "JOIN tblroles r ON e.roles_id=r.role_id\n" +
+                        "WHERE t.approved = 1\n" +
+                        "AND Username = '" + currentUser + "' " +
+                        "AND YEAR(t.begin_time_off_date) = YEAR(GETDATE())\n" +
+                        "OR\n" +
+                        "t.approved = 1\n" +
+                        "AND Username = '" + currentUser + "' " +
+                        "AND YEAR(t.begin_time_off_date) = YEAR(GETDATE())\n" +
+                        "AND t.schedule_id IS NULL\n" +
+                        "GROUP BY YEAR(t.begin_time_off_date), e.name\n" +
+
+                        "UNION ALL " +
+
+                        "SELECT COUNT(DATEDIFF(dd, t.begin_time_off_date, t.end_time_off_date)) AS tot,\n" +
+                        "YEAR(t.begin_time_off_date) year_of, e.name AS the_name\n" +
+                        "FROM tbltimeoff t JOIN \n" +
+                        "tblemployee e ON t.employee_id=e.id JOIN \n" +
+                        "tblusers u ON e.id=u.employee_id \n" +
+                        "JOIN tblroles r ON e.roles_id=r.role_id\n" +
+                        "WHERE \n" +
+                        "DATEDIFF(dd, t.begin_time_off_date, t.end_time_off_date) = 0\n" +
+                        "AND Username = '" + currentUser + "' " +
+                        "AND t.approved = 1\n" +
+                        "AND YEAR(t.begin_time_off_date) = YEAR(GETDATE())\n" +
+                        "AND t.schedule_id IS NULL\n" +
+                        "GROUP BY YEAR(t.begin_time_off_date), e.name " +
+
+                        "UNION ALL " +
+
+                        "SELECT COUNT(*) AS tot,\n" +
+                        "YEAR(t.begin_time_off_date) AS year_of, e.name AS the_name " +
+                        "FROM tblschedule s JOIN tbltimeoff t ON t.schedule_id=s.schedule_id JOIN \n" +
                         "tblemployee e ON s.employee_id=e.id JOIN \n" +
-                        "tblusers u ON e.id=u.employee_id " +
-                        "WHERE Username = '" + currentUser + "' " +
-                        "AND t.approved = 1 " +
-                        "AND YEAR(t.begin_time_off_date) = '2020' " +
-                        "GROUP BY YEAR(t.begin_time_off_date)";
+                        "tblusers u ON e.id=u.employee_id \n" +
+                        "JOIN tblroles r ON e.roles_id=r.role_id\n" +
+                        "WHERE t.approved = 1\n" +
+                        "AND Username = '" + currentUser + "' " +
+                        "AND YEAR(t.begin_time_off_date) = YEAR(GETDATE())\n" +
+                        "GROUP BY YEAR(t.begin_time_off_date), e.name) AS dt\n" +
+                        "GROUP BY year_of, the_name";
                 ResultSet rs = c.createStatement().executeQuery(SQL);
                 int index = rs.getMetaData().getColumnCount();
                 //dynamically add table columns, so they are made based off database columns

@@ -468,7 +468,7 @@ public class ClockInOutController implements Initializable {
             SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
 
             //get the selected entry's user and other info
-            String selectedUser = cl.getSchedule().getEmployee().getUser().getUsername();
+            String selectedUser = cl.getSchedule().getEmployee().getName();
             String selectedDay = cl.getDay().getDayDesc();
             String selectedDate = dateFormat.format(cl.getSchedule().getScheduleDate());
 

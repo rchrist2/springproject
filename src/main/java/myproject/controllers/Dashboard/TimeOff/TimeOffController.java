@@ -363,7 +363,7 @@ public class TimeOffController implements Initializable {
                 SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
 
                 //get the selected entry's user
-                String selectedUser = tf.getEmployee().getUser().getUsername();
+                String selectedUser = tf.getEmployee().getName();
 
                 //ask the user if they are sure about the deletion
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
