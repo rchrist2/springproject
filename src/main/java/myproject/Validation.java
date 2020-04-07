@@ -103,7 +103,7 @@ public class Validation {
         }
 
         for (String role: listOfRoles) {
-            if(role.equals(roleName)){
+            if(role.toLowerCase().equals(roleName.toLowerCase())){
                 errorMessage += "\t- " + roleName + " already exists\n";
                 error = true;
                 break;

@@ -141,6 +141,9 @@ public class CrudEmployeeController implements Initializable {
 
         phoneTip.setText("ex.\t 281-545-2213\n" +
                 "\t(832) 939-9182");
+
+        //Whatever you type in email it copies to username
+        emailText.textProperty().bindBidirectional(usernameText.textProperty());
     }
 
     public void setLabel(String string, String buttonLabel){

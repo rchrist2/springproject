@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="573.0" prefWidth="465.0" style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.Dashboard.EmployeeManagement.CrudEmployeeController">
+<AnchorPane prefHeight="573.0" prefWidth="465.0" style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.Dashboard.EmployeeManagement.CrudEmployeeController">
     <children>
         <AnchorPane layoutX="40.0" layoutY="40.0" style="-fx-background-radius: 20 20 20 20; -fx-border-radius: 20 20 20 20;" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
             <children>
@@ -121,7 +121,7 @@
                      <children>
                         <Label text="Username:" />
                         <Label fx:id="currentPasswordLabel" text="Password:" GridPane.rowIndex="2" />
-                        <TextField fx:id="usernameText" prefHeight="25.0" prefWidth="180.0" stylesheets="@../css/CrudForm.css" GridPane.rowIndex="1" />
+                        <TextField fx:id="usernameText" disable="true" prefHeight="25.0" prefWidth="180.0" stylesheets="@../css/CrudForm.css" GridPane.rowIndex="1" />
                         <TextField fx:id="passwordText" prefHeight="25.0" prefWidth="180.0" stylesheets="@../css/CrudForm.css" GridPane.rowIndex="3" />
                         <Button fx:id="changePasswordButton" mnemonicParsing="false" onAction="#handleChangePassword" prefHeight="25.0" prefWidth="115.0" text="Change Password" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <TextField fx:id="newPasswordText" layoutX="10.0" layoutY="78.0" prefHeight="25.0" prefWidth="180.0" visible="false" GridPane.rowIndex="5" />
