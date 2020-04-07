@@ -155,7 +155,7 @@ public class CrudTimeOffController implements Initializable {
             || tf1.getSchedule().getScheduleDate().toLocalDate().isEqual(LocalDate.now())){
                 scheduleData.addAll(scheduleRepository.findScheduleForUser(selectedTimeOff.getEmployee().getUser().getUsername()));
             }
-            else{
+            else{ //if time off was made in the past
                 scheduleData.addAll(scheduleRepository.findAllScheduleForUser(selectedTimeOff.getEmployee().getUser().getUsername()));
             }
             scheduleList.setItems(scheduleData);
@@ -168,6 +168,19 @@ public class CrudTimeOffController implements Initializable {
             endDate.setDisable(true);
         }
         else{
+            scheduleData = FXCollections.observableArrayList();
+
+            //either show schedules greater than/equal to current date or all time schedules
+            if(tf1.getBeginTimeOffDate().toLocalDate().isAfter(LocalDate.now())
+                    || tf1.getBeginTimeOffDate().toLocalDate().isEqual(LocalDate.now())){
+                scheduleData.addAll(scheduleRepository.findScheduleForUser(selectedTimeOff.getEmployee().getUser().getUsername()));
+            }
+            else{ //if time off was made in the past
+                scheduleData.addAll(scheduleRepository.findAllScheduleForUser(selectedTimeOff.getEmployee().getUser().getUsername()));
+            }
+
+            scheduleList.setItems(scheduleData);
+
             noSchedCheck.setSelected(true);
             scheduleList.setDisable(true);
 
@@ -370,9 +383,11 @@ public class CrudTimeOffController implements Initializable {
         Tblusers currUser = userRepository.findUsername(currentUser);
 
         //initialize the schedule dates for the current user (not done in initialize() method due to nullpointerexception)
-        scheduleData = FXCollections.observableArrayList();
-        scheduleData.addAll(scheduleRepository.findScheduleThisWeekForUser(currUser.getUsername()));
-        scheduleList.setItems(scheduleData);
+        //removed since this ends up clearing the schedule list permanently
+        /*scheduleData = FXCollections.observableArrayList();
+        scheduleData.addAll(scheduleRepository.findScheduleForUser(currUser.getUsername()));
+        System.out.println(scheduleData);
+        scheduleList.setItems(scheduleData);*/
 
         if(selectedTimeOff.getSchedule() != null){
             //get the schedule for this time off request and select it in drop-down
@@ -386,8 +401,9 @@ public class CrudTimeOffController implements Initializable {
 
     @FXML
     private void enableDatePicker(){
-        scheduleData.clear();
-        scheduleList.setItems(scheduleData);
+        //removed since this ends up clearing the schedule list permanently
+        /*scheduleData.clear();
+        scheduleList.setItems(scheduleData);*/
 
         beginDate.setDisable(false);
         endDate.setDisable(false);
