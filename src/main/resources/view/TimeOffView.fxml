@@ -55,14 +55,14 @@
             <Pane fx:id="movePane" prefHeight="638.0" prefWidth="985.0" visible="false" />
             <Pane fx:id="tablePane" layoutX="66.0" layoutY="229.0">
                <children>
-                  <TableView fx:id="timeOffTable" layoutY="34.0" prefHeight="339.0" prefWidth="808.0">
+                  <TableView fx:id="timeOffTable" layoutY="34.0" prefHeight="339.0" prefWidth="808.0" stylesheets="@../css/TimeOff.css">
                     <columns>
-                      <TableColumn fx:id="scheduleDateCol" prefWidth="99.0" text="Schedule Date" />
-                        <TableColumn fx:id="beginTimeCol" prefWidth="99.0" text="Begin Date" />
-                        <TableColumn fx:id="endTimeCol" prefWidth="99.0" text="End Date" />
-                      <TableColumn fx:id="approveTimeOffCol" prefWidth="82.99998474121094" text="Approved" />
-                        <TableColumn fx:id="reasonTimeOffCol" prefWidth="82.99998474121094" text="Reason" />
-                        <TableColumn fx:id="userCol" prefWidth="82.99998474121094" text="Name" visible="false" />
+                      <TableColumn fx:id="scheduleDateCol" prefWidth="171.0" text="Schedule Date" />
+                        <TableColumn fx:id="beginTimeCol" prefWidth="121.0" text="Begin Date" />
+                        <TableColumn fx:id="endTimeCol" minWidth="0.0" prefWidth="121.0" text="End Date" />
+                      <TableColumn fx:id="approveTimeOffCol" minWidth="0.0" prefWidth="79.0" text="Approved" />
+                        <TableColumn fx:id="reasonTimeOffCol" minWidth="0.0" prefWidth="133.0" text="Reason" />
+                        <TableColumn fx:id="userCol" minWidth="0.0" prefWidth="179.0" text="Name" visible="false" />
                     </columns>
                   </TableView>
                   <Label fx:id="tableUserLabel" layoutY="2.0" text="Time Off Requests for User">
