@@ -28,12 +28,13 @@ public interface ScheduleRepository extends CrudRepository<Tblschedule, Integer>
     @Query(value = "SELECT * FROM tblschedule s LEFT JOIN tbltimeoff t " +
             "ON s.schedule_date >= t.begin_time_off_date " +
             "AND s.schedule_date <= t.end_time_off_date " +
+            " AND t.employee_id = :empId " +
             "JOIN tblemployee e ON e.id=s.employee_id " +
             "JOIN tblusers u ON u.employee_id=e.id " +
             "WHERE t.schedule_id IS NULL " +
             "AND (t.approved=1 OR t.approved=0) " +
             "AND Username = :username", nativeQuery = true)
-    List<Tblschedule> findScheduleForUserWithUnlinkedTimeOff(@Param("username") String user);
+    List<Tblschedule> findScheduleForUserWithUnlinkedTimeOff(@Param("username") String user, @Param("empId") int empId);
 
 
     @Query(value = "SELECT * FROM tblschedule WHERE schedule_id = :id", nativeQuery = true)
