@@ -484,11 +484,11 @@ public class TimeOffController implements Initializable {
         listOfTimeOffs.clear();
         timeOffTable.setItems(listOfTimeOffs);
         userCol.setVisible(true);
-        scheduleDateCol.setPrefWidth(171);
+        /*scheduleDateCol.setPrefWidth(171);
         beginTimeCol.setPrefWidth(121);
         endTimeCol.setPrefWidth(121);
         approveTimeOffCol.setPrefWidth(79);
-        reasonTimeOffCol.setPrefWidth(133);
+        reasonTimeOffCol.setPrefWidth(133);*/
 
         //get the current user
         String currentUser = LoginController.userStore;
@@ -519,11 +519,11 @@ public class TimeOffController implements Initializable {
 
         //will remove the user column if it was visible
         userCol.setVisible(false);
-        scheduleDateCol.setPrefWidth(171);
+        /*scheduleDateCol.setPrefWidth(171);
         beginTimeCol.setPrefWidth(121);
         endTimeCol.setPrefWidth(121);
         approveTimeOffCol.setPrefWidth(79);
-        reasonTimeOffCol.setPrefWidth(312);
+        reasonTimeOffCol.setPrefWidth(312);*/
 
         listOfTimeOffs.addAll(timeOffRepository.findAllTimeOffByUser(currentUser));
         //filteredListOfTimeOff = new FilteredList<>(listOfTimeOffs);

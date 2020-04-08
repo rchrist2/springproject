@@ -545,9 +545,9 @@ public class ClockInOutController implements Initializable {
         listOfClock.clear();
         clockTable.setItems(listOfClock);
         userCol.setVisible(true);
-        punchInCol.setPrefWidth(99);
+        /*punchInCol.setPrefWidth(99);
         punchOutCol.setPrefWidth(99);
-        scheduleCol.setPrefWidth(400);
+        scheduleCol.setPrefWidth(400);*/
 
         //get the current user
         String currentUser = LoginController.userStore;
@@ -589,9 +589,9 @@ public class ClockInOutController implements Initializable {
         listOfClock.clear();
         clockTable.setItems(listOfClock);
         userCol.setVisible(false);
-        punchInCol.setPrefWidth(99);
+        /*punchInCol.setPrefWidth(99);
         punchOutCol.setPrefWidth(99);
-        scheduleCol.setPrefWidth(606);
+        scheduleCol.setPrefWidth(606);*/
 
         if(allTimeCheck.isSelected()){
             listOfClock.addAll(clockRepository.findClockForUser(currentUser));
