@@ -912,8 +912,14 @@ public class EmployeeSchedulerController implements Initializable {
                             scheduleRepository.save(sc);
                         }
 
-                        hasFutureTimeOff.addAll(scheduleRepository.findScheduleForUserWithUnlinkedTimeOff(currentUser));
-                        theFutureTimeOffs.addAll(timeOffRepository.findUnlinkedTimeOffForUserSchedule(currentUser));
+                        System.out.println(selectedEmployee.getName() + " is selected");
+                        hasFutureTimeOff = scheduleRepository.findScheduleForUserWithUnlinkedTimeOff(selectedEmployee.getUser().getUsername(), selectedEmployee.getId());
+                        theFutureTimeOffs = timeOffRepository.findUnlinkedTimeOffForUserSchedule(selectedEmployee.getUser().getUsername(), selectedEmployee.getId());
+                        System.out.println("hasFutureTimeOff: " + hasFutureTimeOff);
+                        for(Tbltimeoff t : theFutureTimeOffs){
+                            System.out.println("theFutureTimeOffs: " + t.getEmployee().getName());
+                        }
+
                         String storeReasonDesc = "";
                         boolean wasApproved = false;
 
