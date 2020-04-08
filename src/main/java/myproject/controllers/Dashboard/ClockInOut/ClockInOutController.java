@@ -152,12 +152,18 @@ public class ClockInOutController implements Initializable {
         //only show schedule equal to the current day
         if(!(today == null)){
             //if today is an approved day off, they cannot clock-in or out for it
-            if(today.getTimeOffs().isApproved()){
-                scheduleList.setText("No Schedules Today");
+            if(!(today.getTimeOffs() == null)){
+                if(today.getTimeOffs().isApproved()){
+                    scheduleList.setText("No Schedules Today");
+                }
+                else{
+                    scheduleList.setText(today.getDay().getDayDesc() + ", " + dateFormat.format(today.getScheduleDate()));
+                }
             }
             else{
                 scheduleList.setText(today.getDay().getDayDesc() + ", " + dateFormat.format(today.getScheduleDate()));
             }
+
 
         }
         else{ //if no schedules were found for today

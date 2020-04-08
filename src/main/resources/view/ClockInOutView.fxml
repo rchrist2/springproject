@@ -99,7 +99,7 @@
                         <Font size="13.0" />
                      </font>
                   </Label>
-                  <Label fx:id="scheduleList" layoutX="61.0" prefHeight="21.0" prefWidth="190.0">
+                  <Label fx:id="scheduleList" layoutX="61.0" prefHeight="25.0" prefWidth="204.0">
                      <font>
                         <Font name="System Bold" size="16.0" />
                      </font>
