@@ -145,6 +145,8 @@ public class ForgotPassController implements Initializable {
                                 tf1.setPrefHeight(signupUsernameText.getPrefHeight());
                                 tf1.setPromptText("Enter code sent to email");
 
+                                tf1.getStylesheets().add("css/CrudForm.css");
+
                                 button.setPrefSize(paneLoadButton.getPrefWidth(), paneLoadButton.getPrefHeight());
                                 button.setText("Submit Code");
                                 button.setStyle("-fx-background-color: #44b1cc; " +
