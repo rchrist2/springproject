@@ -17,7 +17,7 @@ public class Validation {
     public static String EMAIL_PATTERN = "^\\w+@[a-zA-Z_]+?\\.[a-zA-Z]{2,3}$";
     public static String PHONE_NUMBER_PATTERN = "((\\(\\d{3}\\) ?)|(\\d{3}-))?\\d{3}-\\d{4}";
     public static String ALPHA = "^[a-zA-Z\\s]*$";
-    public static String STREET_ADDRESS = "^(\\d{3,})\\s?(\\w{0,5})\\s([a-zA-Z]{2,30})\\s([a-zA-Z]{2,15})[.]?\\s([a-zA-Z]{2,30})[,][\\s]?([a-zA-Z]{2,3})\\s([0-9]{5})[-]?([0-9]{4})?$";
+    public static String STREET_ADDRESS = "^(\\d{3,})\\s?(\\w{0,5})\\s([a-zA-Z]{2,30})\\s([a-zA-Z]{2,15})[.]?(\\s([a-zA-Z]{2,30})[,][\\s]?([a-zA-Z]{2,3})\\s([0-9]{5})[-]?([0-9]{4})?)?$";
     public static String PASSWORD_REQUIREMENT = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{4,8}$";
 
    /* private static ConfigurableApplicationContext springContext;
