@@ -27,9 +27,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -96,6 +94,8 @@ public class CrudTimeOffController implements Initializable {
     //The time off returned from the TimeOffController
     private Tbltimeoff selectedTimeOff;
 
+    private List<Tblschedule> userSchedules = new ArrayList<>();
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         //initialize drop down menus and their observable lists
@@ -104,13 +104,21 @@ public class CrudTimeOffController implements Initializable {
 
         hrList = FXCollections.observableArrayList();
 
-        //disable past dates for datepickers
+        //disable past dates and dates already in the user's schedule for datepickers
         beginDate.setDayCellFactory(picker -> new DateCell() {
             public void updateItem(LocalDate date, boolean empty) {
                 super.updateItem(date, empty);
                 LocalDate today = LocalDate.now();
+                if(date.compareTo(today) < 0)
+                    setDisable(true);
 
-                setDisable(empty || date.compareTo(today) < 0 );
+                if(userSchedules != null){
+                    for(Tblschedule day : userSchedules){
+                        if(date.isEqual(day.getScheduleDate().toLocalDate()))
+                            setDisable(true);
+                    }
+                }
+
             }
         });
 
@@ -118,8 +126,16 @@ public class CrudTimeOffController implements Initializable {
             public void updateItem(LocalDate date, boolean empty) {
                 super.updateItem(date, empty);
                 LocalDate today = LocalDate.now();
+                if(date.compareTo(today) < 0)
+                    setDisable(true);
 
-                setDisable(empty || date.compareTo(today) < 0 );
+                if(userSchedules != null){
+                    for(Tblschedule day : userSchedules){
+                        if(date.isEqual(day.getScheduleDate().toLocalDate()))
+                            setDisable(true);
+                    }
+                }
+
             }
         });
 
@@ -188,6 +204,7 @@ public class CrudTimeOffController implements Initializable {
             endDate.setValue(selectedTimeOff.getEndTimeOffDate().toLocalDate());
         }
 
+        userSchedules = scheduleRepository.findAllScheduleForUser(selectedTimeOff.getEmployee().getUser().getUsername());
 
         //find whether request is approved or not, and set appropriate drop-down value
         String approveSelect = "null";

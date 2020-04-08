@@ -185,13 +185,23 @@ public class TimeOffController implements Initializable {
         //set "Request Day Off" to selected by default
         dayOffCheck.setSelected(true);
 
-        //disable past dates for datepickers
+        List<Tblschedule> userSchedules = scheduleRepository.findAllScheduleForUser(currentUser);
+
+        //disable past dates and dates already in the user's schedule for datepickers
         beginDate.setDayCellFactory(picker -> new DateCell() {
             public void updateItem(LocalDate date, boolean empty) {
                 super.updateItem(date, empty);
                 LocalDate today = LocalDate.now();
+                if(date.compareTo(today) < 0)
+                    setDisable(true);
 
-                setDisable(empty || date.compareTo(today) < 0 );
+                if(userSchedules != null){
+                    for(Tblschedule day : userSchedules){
+                        if(date.isEqual(day.getScheduleDate().toLocalDate()))
+                            setDisable(true);
+                    }
+                }
+
             }
         });
 
@@ -199,8 +209,16 @@ public class TimeOffController implements Initializable {
             public void updateItem(LocalDate date, boolean empty) {
                 super.updateItem(date, empty);
                 LocalDate today = LocalDate.now();
+                if(date.compareTo(today) < 0)
+                    setDisable(true);
 
-                setDisable(empty || date.compareTo(today) < 0 );
+                if(userSchedules != null){
+                    for(Tblschedule day : userSchedules){
+                        if(date.isEqual(day.getScheduleDate().toLocalDate()))
+                            setDisable(true);
+                    }
+                }
+
             }
         });
 
