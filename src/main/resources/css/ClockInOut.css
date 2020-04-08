@@ -7,8 +7,16 @@
     -fx-background-color: lightblue;
 }
 
-.table-view .filler{
+.table-view .filler {
     -fx-background-color: lightblue;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: lightblue;
+}
+
+.table-view {
+    -fx-table-header-border-color: lightblue;
 }
 
 .table-view .column-header-background .filler {

@@ -3,15 +3,23 @@
     -fx-text-fill: black;
 }
 
-.table-view .filler{
+.table-view .column-header {
     -fx-background-color: lightblue;
+}
+
+.table-view .filler {
+    -fx-background-color: lightblue;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: lightblue;
+}
+
+.table-view {
+    -fx-table-header-border-color: lightblue;
 }
 
 .table-view .column-header-background .filler {
-    -fx-background-color: lightblue;
-}
-
-.table-view .column-header {
     -fx-background-color: lightblue;
 }
 
