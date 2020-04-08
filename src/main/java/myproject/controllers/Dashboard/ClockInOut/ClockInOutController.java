@@ -573,8 +573,8 @@ public class ClockInOutController implements Initializable {
             }
         }
 
-        filteredListOfClock = new FilteredList<>(listOfClock);
-        clockTable.setItems(filteredListOfClock);
+        //filteredListOfClock = new FilteredList<>(listOfClock);
+        clockTable.setItems(listOfClock);
         setDataForClockTableView();
     }
 
@@ -596,8 +596,8 @@ public class ClockInOutController implements Initializable {
             tableUserLabel.setText("Clock History This Week for " + currUser.getEmployee().getName());
         }
 
-        filteredListOfClock = new FilteredList<>(listOfClock);
-        clockTable.setItems(filteredListOfClock);
+        //filteredListOfClock = new FilteredList<>(listOfClock);
+        clockTable.setItems(listOfClock);
         setDataForClockTableView();
     }
 
