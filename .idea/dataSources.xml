@@ -13,5 +13,11 @@
       <jdbc-driver>com.microsoft.sqlserver.jdbc.SQLServerDriver</jdbc-driver>
       <jdbc-url>jdbc:sqlserver://34.66.249.60:1433;database=4375db</jdbc-url>
     </data-source>
+    <data-source source="LOCAL" name="4375db@127.0.0.1" uuid="cbd5a2d3-3745-4d18-9f95-c723c26d1b9b">
+      <driver-ref>sqlserver.ms</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.microsoft.sqlserver.jdbc.SQLServerDriver</jdbc-driver>
+      <jdbc-url>jdbc:sqlserver://127.0.0.1\SQLEXPRESS;database=4375db</jdbc-url>
+    </data-source>
   </component>
 </project>

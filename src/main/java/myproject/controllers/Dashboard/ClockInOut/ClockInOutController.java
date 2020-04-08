@@ -226,7 +226,93 @@ public class ClockInOutController implements Initializable {
 
         //if a schedule was selected
         if(!(today == null)) {
-            if(!(today.getTimeOffs().isApproved())){
+            if(!(today.getTimeOffs() == null)){
+                if(!(today.getTimeOffs().isApproved())){
+                    if(!(clockRepository.findRecentClockForUser(currentUser) == null)){
+                        if(!(clockRepository.findRecentClockForUser(currentUser).getSchedule().getScheduleDate().equals(today.getScheduleDate())
+                                && clockRepository.findRecentClockForUser(currentUser).getPunchOut().equals(Time.valueOf("00:00:00")))){
+                            //check if the schedule date is equal to today's date
+                            if(sdf.format(today.getScheduleDate()).equals(sdf.format(dateNow))) {
+
+                                Tblclock newClock = new Tblclock();
+
+                                newClock.setPunchIn(java.sql.Time.valueOf(LocalTime.now()));
+
+                                newClock.setPunchOut(java.sql.Time.valueOf("00:00:00"));
+                                newClock.setSchedule(today);
+                                //newClock.setEmployee(currUser.getEmployee());
+                                newClock.setDateCreated(new java.sql.Timestamp(new java.util.Date().getTime()));
+                                newClock.setDay(today.getDay());
+
+                                //save the new clock-in
+                                clockRepository.save(newClock);
+
+                                //update the "Last Action" label
+                                SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
+                                SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+                                String day = newClock.getSchedule().getDay().getDayDesc();
+                                String date = dateFormat.format(newClock.getSchedule().getScheduleDate());
+                                lastActionLabel.setText("Last Action \"In\" on " + day +
+                                        ", " + date + " at "
+                                        + timeFormat.format(newClock.getPunchIn()));
+
+                                reloadClockTable();
+                            }
+                            else{
+                                ErrorMessages.showErrorMessage("Invalid schedule selected",
+                                        "Schedule must be equal to today's date",
+                                        "You cannot clock in for a date earlier than or later than today's date");
+                            }
+                        }
+                        else{
+                            ErrorMessages.showErrorMessage("Error!",
+                                    "Cannot clock-in without clocking out",
+                                    "You have already clocked in recently. You must clock out before clocking in again.");
+                        }
+
+                    }
+                    else if (clockRepository.findRecentClockForUser(currentUser) == null){
+                        //check if the schedule date is equal to today's date
+                        if(sdf.format(today.getScheduleDate()).equals(sdf.format(dateNow))) {
+
+                            Tblclock newClock = new Tblclock();
+
+                            newClock.setPunchIn(java.sql.Time.valueOf(LocalTime.now()));
+
+                            newClock.setPunchOut(java.sql.Time.valueOf("00:00:00"));
+                            newClock.setSchedule(today);
+                            //newClock.setEmployee(currUser.getEmployee());
+                            newClock.setDateCreated(new java.sql.Timestamp(new java.util.Date().getTime()));
+                            newClock.setDay(today.getDay());
+
+                            //save the new clock-in
+                            clockRepository.save(newClock);
+
+                            //update the "Last Action" label
+                            SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+                            String day = newClock.getSchedule().getDay().getDayDesc();
+                            String date = dateFormat.format(newClock.getSchedule().getScheduleDate());
+                            lastActionLabel.setText("Last Action \"In\" on " + day +
+                                    ", " + date + " at "
+                                    + timeFormat.format(newClock.getPunchIn()));
+
+                            reloadClockTable();
+                        }
+                        else{
+                            ErrorMessages.showErrorMessage("Invalid schedule selected",
+                                    "Schedule must be equal to today's date",
+                                    "You cannot clock in for a date earlier than or later than today's date");
+                        }
+                    }
+                }
+                else{
+                    ErrorMessages.showErrorMessage("No Schedule Exists",
+                            "No schedules exist for today",
+                            "You cannot clock in since you do not have any schedules today.");
+                }
+            }
+            else{
                 if(!(clockRepository.findRecentClockForUser(currentUser) == null)){
                     if(!(clockRepository.findRecentClockForUser(currentUser).getSchedule().getScheduleDate().equals(today.getScheduleDate())
                             && clockRepository.findRecentClockForUser(currentUser).getPunchOut().equals(Time.valueOf("00:00:00")))){
@@ -305,11 +391,7 @@ public class ClockInOutController implements Initializable {
                     }
                 }
             }
-            else{
-                ErrorMessages.showErrorMessage("No Schedule Exists",
-                        "No schedules exist for today",
-                        "You cannot clock in since you do not have any schedules today.");
-            }
+
         }
         else{
             ErrorMessages.showErrorMessage("No Schedule Exists",
@@ -326,40 +408,84 @@ public class ClockInOutController implements Initializable {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 
         if(!(today == null)) {
+            if(!(today.getTimeOffs() == null)){
+                if(!(today.getTimeOffs().isApproved())){
+                    //check if the schedule date is equal to today's date
+                    if(sdf.format(today.getScheduleDate()).equals(sdf.format(dateNow))) {
 
-            //check if the schedule date is equal to today's date
-            if(sdf.format(today.getScheduleDate()).equals(sdf.format(dateNow))) {
+                        //finds recent clock record based on selected schedule
+                        Tblclock newClock2 = clockRepository.findRecentClockForSchedule(today.getScheduleId());
 
-                //finds recent clock record based on selected schedule
-                Tblclock newClock2 = clockRepository.findRecentClockForSchedule(today.getScheduleId());
+                        if(newClock2 != null){
+                            newClock2.setPunchOut(java.sql.Time.valueOf(LocalTime.now()));
 
-                if(newClock2 != null){
-                    newClock2.setPunchOut(java.sql.Time.valueOf(LocalTime.now()));
+                            clockRepository.save(newClock2);
 
-                    clockRepository.save(newClock2);
+                            //update the "Last Action" label
+                            SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+                            String day = newClock2.getSchedule().getDay().getDayDesc();
+                            String date = dateFormat.format(newClock2.getSchedule().getScheduleDate());
+                            lastActionLabel.setText("Last Action \"Out\" on " + day +
+                                    ", " + date + " at "
+                                    + timeFormat.format(newClock2.getPunchOut()));
 
-                    //update the "Last Action" label
-                    SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
-                    String day = newClock2.getSchedule().getDay().getDayDesc();
-                    String date = dateFormat.format(newClock2.getSchedule().getScheduleDate());
-                    lastActionLabel.setText("Last Action \"Out\" on " + day +
-                            ", " + date + " at "
-                            + timeFormat.format(newClock2.getPunchOut()));
+                            reloadClockTable();
+                        }
+                        else{
+                            ErrorMessages.showErrorMessage("No Schedule Found",
+                                    "There is no schedule to clock out for",
+                                    "You do not have a recent clock in to clock out for.");
+                        }
 
-                    reloadClockTable();
+                    }
+                    else{
+                        ErrorMessages.showErrorMessage("Invalid schedule selected",
+                                "Schedule must be equal to today's date",
+                                "You cannot clock out for a date earlier than or later than today's date");
+                    }
                 }
                 else{
-                    ErrorMessages.showErrorMessage("No Schedule Found",
-                            "There is no schedule to clock out for",
-                            "You do not have a recent clock in to clock out for.");
+                    ErrorMessages.showErrorMessage("No Schedule Exists",
+                            "No schedules exist for today",
+                            "You cannot clock in since you do not have any schedules today.");
                 }
-
             }
             else{
-                ErrorMessages.showErrorMessage("Invalid schedule selected",
-                        "Schedule must be equal to today's date",
-                        "You cannot clock out for a date earlier than or later than today's date");
+                //check if the schedule date is equal to today's date
+                if(sdf.format(today.getScheduleDate()).equals(sdf.format(dateNow))) {
+
+                    //finds recent clock record based on selected schedule
+                    Tblclock newClock2 = clockRepository.findRecentClockForSchedule(today.getScheduleId());
+
+                    if(newClock2 != null){
+                        newClock2.setPunchOut(java.sql.Time.valueOf(LocalTime.now()));
+
+                        clockRepository.save(newClock2);
+
+                        //update the "Last Action" label
+                        SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+                        String day = newClock2.getSchedule().getDay().getDayDesc();
+                        String date = dateFormat.format(newClock2.getSchedule().getScheduleDate());
+                        lastActionLabel.setText("Last Action \"Out\" on " + day +
+                                ", " + date + " at "
+                                + timeFormat.format(newClock2.getPunchOut()));
+
+                        reloadClockTable();
+                    }
+                    else{
+                        ErrorMessages.showErrorMessage("No Schedule Found",
+                                "There is no schedule to clock out for",
+                                "You do not have a recent clock in to clock out for.");
+                    }
+
+                }
+                else{
+                    ErrorMessages.showErrorMessage("Invalid schedule selected",
+                            "Schedule must be equal to today's date",
+                            "You cannot clock out for a date earlier than or later than today's date");
+                }
             }
         }
         else{
