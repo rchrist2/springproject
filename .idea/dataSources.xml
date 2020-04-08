@@ -1,47 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="4375db@127.0.0.1" uuid="78043d76-2483-4807-bf54-72bfb8690fd2">
-      <driver-ref>sqlserver.ms</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>com.microsoft.sqlserver.jdbc.SQLServerDriver</jdbc-driver>
-      <jdbc-url>jdbc:sqlserver://127.0.0.1\SQLEXPRESS;database=4375db</jdbc-url>
-    </data-source>
     <data-source source="LOCAL" name="4375db@98.197.147.149" uuid="677bcdc2-6138-4c45-b146-2a3b621e889f">
       <driver-ref>sqlserver.ms</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.microsoft.sqlserver.jdbc.SQLServerDriver</jdbc-driver>
       <jdbc-url>jdbc:sqlserver://98.197.147.149:1433;database=4375db</jdbc-url>
     </data-source>
-    <data-source source="LOCAL" name="Database (Local)" uuid="f0163a0b-0f59-48b5-b625-df9176ab3567">
+    <data-source source="LOCAL" name="Google Cloud" uuid="97d2360c-b2d3-4700-a498-0d94502d709f">
       <driver-ref>sqlserver.ms</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.microsoft.sqlserver.jdbc.SQLServerDriver</jdbc-driver>
-      <jdbc-url>jdbc:sqlserver://LAPTOP-AQ2F2FCE:1433;database=4375db</jdbc-url>
-      <driver-properties>
-        <property name="applicationName" value="DataGrip" />
-      </driver-properties>
-    </data-source>
-    <data-source source="LOCAL" name="local w/ login" uuid="a25b3e90-124c-410b-9226-85d7c9eb23a3">
-      <driver-ref>sqlserver.ms</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>com.microsoft.sqlserver.jdbc.SQLServerDriver</jdbc-driver>
-      <jdbc-url>jdbc:sqlserver://LAPTOP-AQ2F2FCE:1433;database=4375db</jdbc-url>
-      <driver-properties>
-        <property name="applicationName" value="DataGrip" />
-      </driver-properties>
-    </data-source>
-    <data-source source="LOCAL" name="Server from Neuralog" uuid="65b1d5d7-7123-4f36-9c0b-1dc8bb6c52a2">
-      <driver-ref>sqlserver.ms</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>com.microsoft.sqlserver.jdbc.SQLServerDriver</jdbc-driver>
-      <jdbc-url>jdbc:sqlserver://10.209.12.218:1433;database=4375db</jdbc-url>
-    </data-source>
-    <data-source source="LOCAL" name="4375db@35.225.13.15" uuid="7d9bce58-6291-454e-ad91-d9bdbfa9a480">
-      <driver-ref>sqlserver.ms</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>com.microsoft.sqlserver.jdbc.SQLServerDriver</jdbc-driver>
-      <jdbc-url>jdbc:sqlserver://35.225.13.15;database=4375db</jdbc-url>
+      <jdbc-url>jdbc:sqlserver://34.66.249.60:1433;database=4375db</jdbc-url>
     </data-source>
   </component>
 </project>

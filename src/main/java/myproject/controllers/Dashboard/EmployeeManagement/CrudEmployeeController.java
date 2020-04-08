@@ -214,9 +214,9 @@ public class CrudEmployeeController implements Initializable {
                         Pair[] error = Validation.validateCrudAccount(nameText.getText(), emailText.getText(), addressText.getText(),
                                 phoneText.getText(), usernameText.getText(), roleComboBox.getSelectionModel().getSelectedItem(), listOfEmails);
 
-                        Pair[] passwordError = Validation.validatePasswordRequirement(passwordText.getText());
-
                         try {
+                            Pair[] passwordError = Validation.validatePasswordRequirement(passwordText.getText());
+
                             if (!passwordText.getText().isEmpty()) {
                                 if(newEmp.getRole().getRoleName().equals("Owner")
                                 && employeeRepository.numberOfOwner() > 0){
@@ -227,6 +227,7 @@ public class CrudEmployeeController implements Initializable {
                                 }
                                 else{
                                     if(!(Boolean)error[0].getKey()) {
+                                        System.out.println("Adding Password.....");
                                         if (!(Boolean) passwordError[0].getKey()) {
                                             employeeRepository.save(newEmp);
 
@@ -311,18 +312,25 @@ public class CrudEmployeeController implements Initializable {
 
                                                     Tblusers changePasswordUser = userRepository.findUsername(usernameText.getText());
 
-                                                    byte[] salt = SecurePassword.getSalt();
-                                                    String newPassword = SecurePassword.getSecurePassword(newPasswordText.getText(), salt);
+                                                    Pair[] changePasswordError = Validation.validatePasswordRequirement(newPasswordText.getText());
 
-                                                    changePasswordUser.setHashedPassword(newPassword);
-                                                    changePasswordUser.setSaltPassword(salt);
+                                                    System.out.println("Saving Password.....");
+                                                    if (!(Boolean)changePasswordError[0].getKey()) {
+                                                        byte[] salt = SecurePassword.getSalt();
+                                                        String newPassword = SecurePassword.getSecurePassword(newPasswordText.getText(), salt);
 
-                                                    userRepository.save(changePasswordUser);
+                                                        changePasswordUser.setHashedPassword(newPassword);
+                                                        changePasswordUser.setSaltPassword(salt);
 
-                                                    ErrorMessages.showInformationMessage("Success", "Password Changed Successfully",
-                                                            "The password was changed successfully");
-                                                    stage.close();
-                                                    System.out.println("Saved");
+                                                        userRepository.save(changePasswordUser);
+
+                                                        ErrorMessages.showInformationMessage("Success", "Password Changed Successfully",
+                                                                "The password was changed successfully");
+                                                        stage.close();
+                                                        System.out.println("Saved");
+                                                    } else {
+                                                        ErrorMessages.showErrorMessage("Change Password Error", "Password validation error", changePasswordError[0].getValue().toString());
+                                                    }
                                                 } else {
                                                     ErrorMessages.showWarningMessage("Password Mismatch", "Passwords do not equal",
                                                             "Passwords do not match, please re-check your password");

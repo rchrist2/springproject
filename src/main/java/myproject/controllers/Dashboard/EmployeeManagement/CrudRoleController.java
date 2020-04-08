@@ -184,9 +184,9 @@ public class CrudRoleController implements Initializable {
             }
         }
         else{
-            ErrorMessages.showErrorMessage("Fields are empty",
+            ErrorMessages.showErrorMessage("Error",
                     "There are empty fields",
-                    "Please select items from drop-down menus or enter text for fields");
+                    "Please enter values for all fields");
         }
 
     }
