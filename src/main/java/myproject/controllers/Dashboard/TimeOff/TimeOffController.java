@@ -108,6 +108,9 @@ public class TimeOffController implements Initializable {
     private TableColumn<Tbltimeoff, String> dayOffCol;
 
     @FXML
+    private TableColumn<String, String> placeHolderCol;
+
+    @FXML
     private TableColumn<Tbltimeoff, String> reasonTimeOffCol;
 
     @FXML
@@ -483,6 +486,7 @@ public class TimeOffController implements Initializable {
         //reload the table to show all users (only for managers/owner)
         listOfTimeOffs.clear();
         timeOffTable.setItems(listOfTimeOffs);
+        placeHolderCol.setVisible(false);
         userCol.setVisible(true);
         /*scheduleDateCol.setPrefWidth(171);
         beginTimeCol.setPrefWidth(121);
@@ -518,6 +522,7 @@ public class TimeOffController implements Initializable {
         timeOffTable.setItems(listOfTimeOffs);
 
         //will remove the user column if it was visible
+        placeHolderCol.setVisible(true);
         userCol.setVisible(false);
         /*scheduleDateCol.setPrefWidth(171);
         beginTimeCol.setPrefWidth(121);

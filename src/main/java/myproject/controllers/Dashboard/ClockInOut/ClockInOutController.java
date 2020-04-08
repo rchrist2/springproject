@@ -116,6 +116,9 @@ public class ClockInOutController implements Initializable {
     private TableColumn<Tblclock, java.sql.Date> scheduleCol;
 
     @FXML
+    private TableColumn<String, String> placeHolderCol;
+
+    @FXML
     private TableColumn<Tblclock, String> userCol;
 
     private Tblclock selectedClock;
@@ -544,6 +547,7 @@ public class ClockInOutController implements Initializable {
         //reload the table to show all users (only for managers/owner)
         listOfClock.clear();
         clockTable.setItems(listOfClock);
+        placeHolderCol.setVisible(false);
         userCol.setVisible(true);
         /*punchInCol.setPrefWidth(99);
         punchOutCol.setPrefWidth(99);
@@ -588,6 +592,7 @@ public class ClockInOutController implements Initializable {
 
         listOfClock.clear();
         clockTable.setItems(listOfClock);
+        placeHolderCol.setVisible(true);
         userCol.setVisible(false);
         /*punchInCol.setPrefWidth(99);
         punchOutCol.setPrefWidth(99);

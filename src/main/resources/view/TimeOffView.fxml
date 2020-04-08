@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
@@ -23,7 +17,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="754.0" prefWidth="985.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.Dashboard.TimeOff.TimeOffController">
+<AnchorPane prefHeight="754.0" prefWidth="985.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myproject.controllers.Dashboard.TimeOff.TimeOffController">
    <children>
       <Pane prefHeight="115.0" prefWidth="985.0" style="-fx-background-color: linear-gradient(to right, #39a7c3 , white); -fx-border-color: transparent transparent derive(black, 10%) transparent;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -62,6 +56,7 @@
                         <TableColumn fx:id="endTimeCol" minWidth="0.0" prefWidth="121.0" text="End Date" />
                       <TableColumn fx:id="approveTimeOffCol" minWidth="0.0" prefWidth="79.0" text="Approved" />
                         <TableColumn fx:id="reasonTimeOffCol" minWidth="0.0" prefWidth="133.0" text="Reason" />
+                        <TableColumn fx:id="placeHolderCol" minWidth="0.0" prefWidth="179.0" />
                         <TableColumn fx:id="userCol" minWidth="0.0" prefWidth="179.0" text="Name" visible="false" />
                     </columns>
                   </TableView>
