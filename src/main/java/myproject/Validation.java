@@ -172,4 +172,14 @@ public class Validation {
 
         return new Pair[] { new Pair<>(error, errorMessage)};
     }
+
+    public static boolean checkForOwnerOrManager(String roleName){
+        boolean noOwnerOrManager = true;
+
+        if(roleName.toLowerCase().contains("owner") || roleName.toLowerCase().contains("manager")){
+            noOwnerOrManager = false;
+        }
+
+        return noOwnerOrManager;
+    }
 }

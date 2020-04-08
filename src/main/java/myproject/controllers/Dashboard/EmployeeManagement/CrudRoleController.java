@@ -26,8 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-import static myproject.Validation.checkRoleDuplicates;
-import static myproject.Validation.isAlpha;
+import static myproject.Validation.*;
 
 @Component
 public class CrudRoleController implements Initializable {
@@ -133,28 +132,30 @@ public class CrudRoleController implements Initializable {
         if(!(roleText.getText().isEmpty()
                 || roleDescTextA.getText().isEmpty())){
 
+            boolean managerOwnerError = Validation.checkForOwnerOrManager(roleText.getText());
+
             switch (button.getText()) {
                 case "Add":
                     TblRoles newRole = new TblRoles();
                     listOfRoles = roleRepository.findAllRoleName();
-                    Pair[] error = checkRoleDuplicates(roleText.getText(), listOfRoles);
+
+                    Pair[] roleError = checkRoleDuplicates(roleText.getText(), listOfRoles);
 
                     try {
                         System.out.println("Add a role");
 
-/*                        if(roleComboBox.getSelectionModel().getSelectedItem().equals("Employee"))
-                            newRole.setRoleName(roleText.getText());
-                        else
-                            newRole.setRoleName(roleComboBox.getSelectionModel().getSelectedItem());*/
+                        if(!(Boolean)roleError[0].getKey()) {
+                            if(managerOwnerError) {
+                                newRole.setRoleName(roleText.getText());
+                                newRole.setRoleDesc(roleDescTextA.getText());
+                                roleRepository.save(newRole);
 
-                        if(!(Boolean)error[0].getKey()) {
-                            newRole.setRoleName(roleText.getText());
-                            newRole.setRoleDesc(roleDescTextA.getText());
-                            roleRepository.save(newRole);
-
-                            stage.close();
+                                stage.close();
+                            } else {
+                                ErrorMessages.showErrorMessage("Error", "Invalid values provided", "Please make sure role name doesn't contain Owner or Manager");
+                            }
                         } else {
-                            ErrorMessages.showErrorMessage("Error", "Invalid values provided", error[0].getValue().toString());
+                            ErrorMessages.showErrorMessage("Error", "Invalid values provided", roleError[0].getValue().toString());
                         }
 
                     } catch (Exception e) {
@@ -169,10 +170,14 @@ public class CrudRoleController implements Initializable {
                         Pair[] error1 = checkRoleDuplicates(roleText.getText(), listOfRoles);
 
                         if(!(Boolean)error1[0].getKey()) {
+                            if(managerOwnerError) {
                             roleService.updateRole(roleText.getText(), roleDescTextA.getText(),
                                     selectedRole.getRoleId());
 
                             stage.close();
+                            } else {
+                                ErrorMessages.showErrorMessage("Error", "Invalid values provided", "Please make sure role name doesn't contain Owner or Manager");
+                            }
                         } else {
                             ErrorMessages.showErrorMessage("Error", "Invalid values provided", error1[0].getValue().toString());
                         }

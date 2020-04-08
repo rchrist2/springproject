@@ -92,6 +92,8 @@ public class CrudEmployeeController implements Initializable {
 
     private List<String> listOfEmails;
 
+    private Tblusers currUser;
+
     //The employee returned from the EmployeeManagementController
     private Tblemployee selectedEmployee;
     public boolean changePasswordChecked;
@@ -118,7 +120,7 @@ public class CrudEmployeeController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         //get the current user
         String currentUser = LoginController.userStore;
-        Tblusers currUser = userRepository.findUsername(currentUser);
+        currUser = userRepository.findUsername(currentUser);
 
         changePasswordChecked = false;
 
@@ -150,6 +152,8 @@ public class CrudEmployeeController implements Initializable {
                                         "\t- Lowercase characters [a-z]\n" +
                                         "\t- Contains digit [0-9]\n" +
                                         "\t- Contains special characters (!, $, #, etc)");
+
+
     }
 
     public void setLabel(String string, String buttonLabel){
@@ -185,12 +189,20 @@ public class CrudEmployeeController implements Initializable {
     private void handleChangePassword(){
         changePasswordButton.setDisable(true);
 
-        currentPasswordLabel.setText("Current Password: ");
+        if(currUser.getEmployee().getRole().getRoleName().equals("Owner")){
+            currentPasswordLabel.setText("New Password: ");
+
+            changePasswordLabel.setVisible(false);
+            newPasswordText.setVisible(false);
+        } else {
+            currentPasswordLabel.setText("Current Password: ");
+
+            changePasswordLabel.setVisible(true);
+            newPasswordText.setVisible(true);
+        }
+
         currentPasswordLabel.setVisible(true);
         passwordText.setVisible(true);
-
-        changePasswordLabel.setVisible(true);
-        newPasswordText.setVisible(true);
 
         changePasswordChecked = true;
 
@@ -307,33 +319,57 @@ public class CrudEmployeeController implements Initializable {
                                             employeeRepository.save(updateEmp);
 
                                             if (changePasswordChecked) {
-                                                if (SecurePassword.checkPassword(userRepository.findHashFromUserId(updateEmp.getId()),
-                                                        passwordText.getText(), userRepository.findSaltFromUserId(updateEmp.getId()))) {
+                                                //Changing passwords as a owner
+                                                if(currUser.getEmployee().getRole().getRoleName().equals("Owner")){
+                                                    System.out.println("Save as Owner");
+                                                    Pair[] ownerChangePassword = Validation.validatePasswordRequirement(passwordText.getText());
 
-                                                    Tblusers changePasswordUser = userRepository.findUsername(usernameText.getText());
+                                                    if(!(Boolean)ownerChangePassword[0].getKey()) {
+                                                        System.out.println("Onwer Saved password");
+                                                        Tblusers changePasswordUser = userRepository.findUsername(usernameText.getText());
 
-                                                    Pair[] changePasswordError = Validation.validatePasswordRequirement(newPasswordText.getText());
-
-                                                    System.out.println("Saving Password.....");
-                                                    if (!(Boolean)changePasswordError[0].getKey()) {
                                                         byte[] salt = SecurePassword.getSalt();
-                                                        String newPassword = SecurePassword.getSecurePassword(newPasswordText.getText(), salt);
+                                                        String newPassword = SecurePassword.getSecurePassword(passwordText.getText(), salt);
 
                                                         changePasswordUser.setHashedPassword(newPassword);
                                                         changePasswordUser.setSaltPassword(salt);
 
                                                         userRepository.save(changePasswordUser);
-
+                                                        System.out.println("New Password: " + passwordText.getText());
                                                         ErrorMessages.showInformationMessage("Success", "Password Changed Successfully",
                                                                 "The password was changed successfully");
                                                         stage.close();
-                                                        System.out.println("Saved");
-                                                    } else {
-                                                        ErrorMessages.showErrorMessage("Change Password Error", "Password validation error", changePasswordError[0].getValue().toString());
+                                                    }else {
+                                                        ErrorMessages.showErrorMessage("Change Password Error", "Password validation error", ownerChangePassword[0].getValue().toString());
                                                     }
                                                 } else {
-                                                    ErrorMessages.showWarningMessage("Password Mismatch", "Passwords do not equal",
-                                                            "Passwords do not match, please re-check your password");
+                                                    if (SecurePassword.checkPassword(userRepository.findHashFromUserId(updateEmp.getId()),
+                                                            passwordText.getText(), userRepository.findSaltFromUserId(updateEmp.getId()))) {
+
+                                                        Tblusers changePasswordUser = userRepository.findUsername(usernameText.getText());
+
+                                                        Pair[] changePasswordError = Validation.validatePasswordRequirement(newPasswordText.getText());
+
+                                                        if (!(Boolean) changePasswordError[0].getKey()) {
+                                                            byte[] salt = SecurePassword.getSalt();
+                                                            String newPassword = SecurePassword.getSecurePassword(newPasswordText.getText(), salt);
+
+                                                            changePasswordUser.setHashedPassword(newPassword);
+                                                            changePasswordUser.setSaltPassword(salt);
+
+                                                            userRepository.save(changePasswordUser);
+
+                                                            ErrorMessages.showInformationMessage("Success", "Password Changed Successfully",
+                                                                    "The password was changed successfully");
+                                                            stage.close();
+                                                            System.out.println("Saved");
+                                                        } else {
+                                                            ErrorMessages.showErrorMessage("Change Password Error", "Password validation error", changePasswordError[0].getValue().toString());
+                                                        }
+                                                    } else {
+                                                        ErrorMessages.showWarningMessage("Password Mismatch", "Passwords do not equal",
+                                                                "Passwords do not match, please re-check your password");
+                                                    }
                                                 }
                                             } else {
                                                 ErrorMessages.showInformationMessage("Success", "Employee Changed Successfully",
