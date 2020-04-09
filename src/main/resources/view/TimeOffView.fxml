@@ -92,18 +92,12 @@
                <children>
                   <Pane fx:id="formPane" layoutY="35.0" prefWidth="584.0">
                      <children>
-                        <Label layoutX="2.0" layoutY="48.0" prefHeight="27.0" prefWidth="123.0" text="Explain Reason:">
+                        <Label layoutX="2.0" layoutY="6.0" prefHeight="27.0" prefWidth="123.0" text="Explain Reason:">
                            <font>
                               <Font name="System Italic" size="18.0" />
                            </font>
                         </Label>
-                        <ComboBox fx:id="scheduleList" layoutX="133.0" layoutY="1.0" prefWidth="150.0" promptText="Select Schedule" />
-                        <Label layoutX="2.0" text="Select Schedule:">
-                           <font>
-                              <Font name="System Italic" size="18.0" />
-                           </font>
-                        </Label>
-                        <Pane fx:id="datePane" layoutX="1.0" layoutY="93.0" prefHeight="33.0" prefWidth="583.0" visible="false">
+                        <Pane fx:id="datePane" layoutX="1.0" layoutY="51.0" prefHeight="33.0" prefWidth="583.0">
                            <children>
                               <Button fx:id="submitRequestButton1" layoutX="407.0" layoutY="3.0" mnemonicParsing="false" onAction="#submitTimeOffRequestWithoutSchedule" style="-fx-background-color: #39a7c3;" text="Submit" textFill="WHITE">
                                  <cursor>
@@ -128,20 +122,9 @@
                               <DatePicker fx:id="endDate" layoutX="279.0" layoutY="3.0" prefHeight="25.0" prefWidth="112.0" />
                            </children>
                         </Pane>
-                        <Button fx:id="submitRequestButton" layoutX="516.0" layoutY="49.0" mnemonicParsing="false" onAction="#submitTimeOffRequestWithSchedule" style="-fx-background-color: #39a7c3;" text="Submit" textFill="WHITE">
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor>
-                        </Button>
-                        <TextField fx:id="reasonInput" layoutX="133.0" layoutY="49.0" prefHeight="25.0" prefWidth="368.0" />
+                        <TextField fx:id="reasonInput" layoutX="133.0" layoutY="7.0" prefHeight="25.0" prefWidth="368.0" />
                      </children>
                   </Pane>
-                  <RadioButton fx:id="dayOffCheck" mnemonicParsing="false" onAction="#dayOffChecked" text="Schedule Created">
-                     <toggleGroup>
-                        <ToggleGroup fx:id="toggleGroup" />
-                     </toggleGroup>
-                  </RadioButton>
-                  <RadioButton fx:id="noSchedCheck" layoutX="144.0" mnemonicParsing="false" onAction="#noSchedChecked" text="Schedule Not Created" toggleGroup="$toggleGroup" />
                </children>
             </Pane>
          </children>

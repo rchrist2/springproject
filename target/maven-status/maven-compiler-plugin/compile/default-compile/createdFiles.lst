@@ -26,7 +26,6 @@ myproject\controllers\WelcomeLoginSignup\ForgotPassController$1.class
 myproject\models\Tblschedule.class
 myproject\controllers\Dashboard\Calendar\WeeklyScheduleController.class
 myproject\models\TblDay.class
-myproject\controllers\Dashboard\TimeOff\TimeOffController$3.class
 myproject\controllers\Dashboard\ClockInOut\ClockInOutController.class
 myproject\controllers\WelcomeLoginSignup\ForgotPassController$2.class
 myproject\controllers\Dashboard\Report\ReportController.class

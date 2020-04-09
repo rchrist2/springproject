@@ -81,12 +81,6 @@ public class TimeOffController implements Initializable {
     private Button submitRequestButton;
 
     @FXML
-    private RadioButton dayOffCheck;
-
-    @FXML
-    private RadioButton noSchedCheck;
-
-    @FXML
     private TableView<Tbltimeoff> timeOffTable;
 
     @FXML
@@ -108,13 +102,7 @@ public class TimeOffController implements Initializable {
     private TableColumn<Tbltimeoff, String> dayOffCol;
 
     @FXML
-    private TableColumn<String, String> placeHolderCol;
-
-    @FXML
     private TableColumn<Tbltimeoff, String> reasonTimeOffCol;
-
-    @FXML
-    private ComboBox<Tblschedule> scheduleList;
 
     @FXML
     private DatePicker beginDate;
@@ -124,7 +112,6 @@ public class TimeOffController implements Initializable {
     @FXML
     private TextField reasonInput;
 
-    private ObservableList<Tblschedule> scheduleData;
     private FilteredList<Tblschedule> filteredScheduleData;
 
     private ObservableList<Tbltimeoff> listOfTimeOffs;
@@ -145,7 +132,6 @@ public class TimeOffController implements Initializable {
 
         //Initialize the observable lists
         listOfTimeOffs = FXCollections.observableArrayList();
-        scheduleData = FXCollections.observableArrayList();
 
         //if user is owner, don't show request time off forms
         if(currUser.getEmployee().getRole().getRoleName().equals("Owner")){
@@ -175,18 +161,13 @@ public class TimeOffController implements Initializable {
             //reload table, set data, and add listeners to buttons
             reloadTimeOffTableView();
             setDataForTimeOffTableView();
-            reloadScheduleList();
             addActionListenersForCrudButtons(timeOffDeleteButton);
             addActionListenersForCrudButtons(timeOffEditButton);
-            addToggleGroupForRadioButtons();
         }
 
         timeOffTable.getSelectionModel().selectedItemProperty().addListener((obs, old, newv) -> {
             selectedTimeOff = newv;
         });
-
-        //set "Request Day Off" to selected by default
-        dayOffCheck.setSelected(true);
 
         List<Tblschedule> userSchedules = scheduleRepository.findAllScheduleForUser(currentUser);
 
@@ -270,46 +251,6 @@ public class TimeOffController implements Initializable {
     }
 
     @FXML
-    private void submitTimeOffRequestWithSchedule(){
-        //get the current user (String) from LoginController
-        String currentUser = LoginController.userStore;
-        Tblusers currUser = userRepository.findUsername(currentUser);
-
-        //check if any of the fields are empty
-        if (!(scheduleList.getSelectionModel().isEmpty()
-                || reasonInput.getText().trim().isEmpty())) {
-            Tbltimeoff newTimeOff = new Tbltimeoff();
-
-            newTimeOff.setBeginTimeOffDate(scheduleList.getSelectionModel().getSelectedItem().getScheduleDate());
-            newTimeOff.setEndTimeOffDate(scheduleList.getSelectionModel().getSelectedItem().getScheduleDate());
-            newTimeOff.setApproved(false);
-            newTimeOff.setReasonDesc(reasonInput.getText());
-            newTimeOff.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
-            //newTimeOff.setDayOff(true);
-            newTimeOff.setDay(scheduleList.getSelectionModel().getSelectedItem().getDay());
-            newTimeOff.setEmployee(currUser.getEmployee());
-
-            //check if the time range is valid
-            if(scheduleList.getSelectionModel().getSelectedItem().getTimeOffs() == null){
-                timeOffRepository.save(newTimeOff);
-            }
-            else{
-                ErrorMessages.showErrorMessage("Cannot add request to selected schedule",
-                        "This schedule already has a time off request",
-                        "Please select a schedule you have not made a time off request for.");
-            }
-
-            reloadTimeOffTableView();
-        }
-        else {
-            ErrorMessages.showErrorMessage("Fields are empty",
-                    "There are empty fields",
-                    "Please select items from drop-down menus or enter text for fields");
-        }
-
-    }
-
-    @FXML
     private void editTimeOff(){
         String currentUser = LoginController.userStore;
         Tblusers currUser = userRepository.findUsername(currentUser);
@@ -346,12 +287,10 @@ public class TimeOffController implements Initializable {
                     if (userCol.isVisible()) {
                         reloadTimeOffTableViewAllUsers();
                         setDataForTimeOffTableView();
-                        reloadScheduleList();
                         resetButtons();
                     } else {
                         reloadTimeOffTableView();
                         setDataForTimeOffTableView();
-                        reloadScheduleList();
                         resetButtons();
                     }
 
@@ -408,12 +347,10 @@ public class TimeOffController implements Initializable {
                     reloadTimeOffTableViewAllUsers();
                     setDataForTimeOffTableView();
                     resetButtons();
-                    reloadScheduleList();
                 } else {
                     reloadTimeOffTableView();
                     setDataForTimeOffTableView();
                     resetButtons();
-                    reloadScheduleList();
                 }
             }
         else {
@@ -537,36 +474,6 @@ public class TimeOffController implements Initializable {
         tableUserLabel.setText("Time Off Requests for " + currUser.getEmployee().getName());
     }
 
-    //used in case the schedule time range is updated after approval
-    private void reloadScheduleList(){
-        //get the current user (String) from LoginController
-        String currentUser = LoginController.userStore;
-
-        scheduleData.clear();
-        scheduleData.addAll(scheduleRepository.findScheduleForUser(currentUser));
-
-        if(!(scheduleData.isEmpty())){
-            scheduleList.setItems(scheduleData);
-            scheduleList.setPromptText("Select Schedule");
-
-            //used to fix bug where prompt text disappears
-            scheduleList.setButtonCell(new ListCell<Tblschedule>() {
-                @Override
-                protected void updateItem(Tblschedule item, boolean empty) {
-                    super.updateItem(item, empty) ;
-                    if (empty || item == null) {
-                        setText("Select Schedule");
-                    } else {
-                        setText(String.valueOf(item));
-                    }
-                }
-            });
-        }
-        else{
-            scheduleList.setPromptText("No Schedules Exist");
-        }
-    }
-
     private void setButtonsForManagerOwner(){
         //get the current user (String) from LoginController
         String currentUser = LoginController.userStore;
@@ -614,30 +521,6 @@ public class TimeOffController implements Initializable {
     private void resetButtons(){
         timeOffEditButton.setDisable(true);
         timeOffDeleteButton.setDisable(true);
-    }
-
-    private void addToggleGroupForRadioButtons(){
-        ToggleGroup toggleGroup = new ToggleGroup();
-
-        dayOffCheck.setToggleGroup(toggleGroup);
-        noSchedCheck.setToggleGroup(toggleGroup);
-
-    }
-
-    @FXML
-    private void dayOffChecked(){
-        datePane.setVisible(false);
-        submitRequestButton.setVisible(true);
-
-        scheduleList.setDisable(false);
-    }
-
-    @FXML
-    private void noSchedChecked(){
-        datePane.setVisible(true);
-        submitRequestButton.setVisible(false);
-
-        scheduleList.setDisable(true);
     }
 
 }

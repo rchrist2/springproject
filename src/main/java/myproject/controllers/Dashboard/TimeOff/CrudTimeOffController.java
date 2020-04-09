@@ -63,8 +63,6 @@ public class CrudTimeOffController implements Initializable {
     private DatePicker endDate;
 
     @FXML
-    private ComboBox<Tblschedule> scheduleList;
-    @FXML
     private ComboBox<String> beginPMList;
     @FXML
     public ComboBox<String> endPMList;
@@ -73,14 +71,6 @@ public class CrudTimeOffController implements Initializable {
 
     @FXML
     private TextArea reasonInput;
-
-    @FXML
-    private RadioButton dayOffCheck;
-
-    @FXML
-    private RadioButton noSchedCheck;
-
-    private ObservableList<Tblschedule> scheduleData;
 
     private ObservableList<String> hrList;
 
@@ -140,7 +130,6 @@ public class CrudTimeOffController implements Initializable {
         });
 
         setDataForHourPMLists();
-        addToggleGroupForRadioButtons();
     }
 
     @Autowired
@@ -162,47 +151,8 @@ public class CrudTimeOffController implements Initializable {
     }
 
     private void setFieldsForEdit(Tbltimeoff tf1){
-        if(tf1.getSchedule() != null){
-            //initialize the schedule dates for the current user (not done in initialize() method due to nullpointerexception)
-            scheduleData = FXCollections.observableArrayList();
-
-            //either show schedules greater than/equal to current date or all time schedules
-            if(tf1.getSchedule().getScheduleDate().toLocalDate().isAfter(LocalDate.now())
-            || tf1.getSchedule().getScheduleDate().toLocalDate().isEqual(LocalDate.now())){
-                scheduleData.addAll(scheduleRepository.findScheduleForUser(selectedTimeOff.getEmployee().getUser().getUsername()));
-            }
-            else{ //if time off was made in the past
-                scheduleData.addAll(scheduleRepository.findAllScheduleForUser(selectedTimeOff.getEmployee().getUser().getUsername()));
-            }
-            scheduleList.setItems(scheduleData);
-
-            //get the schedule for this time off request and select it in drop-down
-            scheduleList.getSelectionModel().select(selectedTimeOff.getSchedule());
-
-            dayOffCheck.setSelected(true);
-            beginDate.setDisable(true);
-            endDate.setDisable(true);
-        }
-        else{
-            scheduleData = FXCollections.observableArrayList();
-
-            //either show schedules greater than/equal to current date or all time schedules
-            if(tf1.getBeginTimeOffDate().toLocalDate().isAfter(LocalDate.now())
-                    || tf1.getBeginTimeOffDate().toLocalDate().isEqual(LocalDate.now())){
-                scheduleData.addAll(scheduleRepository.findScheduleForUser(selectedTimeOff.getEmployee().getUser().getUsername()));
-            }
-            else{ //if time off was made in the past
-                scheduleData.addAll(scheduleRepository.findAllScheduleForUser(selectedTimeOff.getEmployee().getUser().getUsername()));
-            }
-
-            scheduleList.setItems(scheduleData);
-
-            noSchedCheck.setSelected(true);
-            scheduleList.setDisable(true);
-
-            beginDate.setValue(selectedTimeOff.getBeginTimeOffDate().toLocalDate());
-            endDate.setValue(selectedTimeOff.getEndTimeOffDate().toLocalDate());
-        }
+        beginDate.setValue(selectedTimeOff.getBeginTimeOffDate().toLocalDate());
+        endDate.setValue(selectedTimeOff.getEndTimeOffDate().toLocalDate());
 
         userSchedules = scheduleRepository.findAllScheduleForUser(selectedTimeOff.getEmployee().getUser().getUsername());
 
@@ -251,22 +201,15 @@ public class CrudTimeOffController implements Initializable {
         //tf.setDayOff(true);
 
         //if the schedule list is disabled, don't get dates from the schedule list
-        if(scheduleList.isDisable()){
-            if(!(approveList.getSelectionModel().isEmpty()
+        if(!(approveList.getSelectionModel().isEmpty()
                     || beginDate.getValue() == null
                     || endDate.getValue() == null
                     || reasonInput.getText().trim().isEmpty())) {
 
                         tf.setBeginTimeOffDate(Date.valueOf(beginDate.getValue()));
                         tf.setEndTimeOffDate(Date.valueOf(endDate.getValue()));
-                        tf.setSchedule(null);
-                        //if the time off request has a schedule, set the schedule to that
-                        if(tf.getSchedule() != null){
-                            tf.setDay(scheduleList.getSelectionModel().getSelectedItem().getDay());
-                        }
-                        else{
-                            tf.setDay(null);
-                        }
+                        //tf.setSchedule(null);
+                        tf.setDay(null);
 
                         if (tf.getBeginTimeOffDate().before(tf.getEndTimeOffDate())
                                 && tf.getEndTimeOffDate().after(tf.getBeginTimeOffDate())
@@ -287,44 +230,6 @@ public class CrudTimeOffController implements Initializable {
                         "Selections missing or text fields are blank",
                         "Please select from the drop-down menus and fill in text fields");
             }
-        }
-        else{ //if the schedule list is visible, take dates from there
-            if(!(approveList.getSelectionModel().isEmpty() ||
-                    reasonInput.getText().trim().isEmpty() ||
-                    scheduleList.getSelectionModel().isEmpty())) {
-                //if the schedule doesn't have a time off or has a time off equal to the current one
-                if(scheduleList.getSelectionModel().getSelectedItem().getTimeOffs() == null
-                || scheduleList.getSelectionModel().getSelectedItem().getTimeOffs().getBeginTimeOffDate().equals(tf.getBeginTimeOffDate())){
-                    tf.setBeginTimeOffDate(scheduleList.getSelectionModel().getSelectedItem().getScheduleDate());
-                    tf.setEndTimeOffDate(scheduleList.getSelectionModel().getSelectedItem().getScheduleDate());
-                    tf.setSchedule(scheduleList.getSelectionModel().getSelectedItem());
-
-                    //if the time off request has a schedule, set the schedule to that
-                    if(tf.getSchedule() != null){
-                        tf.setDay(scheduleList.getSelectionModel().getSelectedItem().getDay());
-                    }
-                    else{
-                        tf.setDay(null);
-                    }
-
-                    timeOffRepository.save(tf);
-
-                    Stage stage = (Stage) saveButton.getScene().getWindow();
-                    System.out.println("Saved");
-                    stage.close();
-                }
-                else{
-                    ErrorMessages.showErrorMessage("Cannot add request to selected schedule",
-                            "This schedule already has a time off request",
-                            "Please select a schedule you have not made a time off request for.");
-                }
-            }
-            else{
-                ErrorMessages.showErrorMessage("Fields are empty",
-                        "Selections missing or text fields are blank",
-                        "Please select from the drop-down menus and fill in text fields");
-            }
-        }
 
     }
 
@@ -383,48 +288,6 @@ public class CrudTimeOffController implements Initializable {
             approveList.setDisable(false);
             errorMsgPane.setVisible(false);
         }
-    }
-
-    private void addToggleGroupForRadioButtons(){
-        ToggleGroup toggleGroup = new ToggleGroup();
-
-        dayOffCheck.setToggleGroup(toggleGroup);
-        noSchedCheck.setToggleGroup(toggleGroup);
-
-    }
-
-    @FXML
-    private void hideDatePicker(){
-        //get the current user (String) from LoginController
-        String currentUser = LoginController.userStore;
-        Tblusers currUser = userRepository.findUsername(currentUser);
-
-        //initialize the schedule dates for the current user (not done in initialize() method due to nullpointerexception)
-        //removed since this ends up clearing the schedule list permanently
-        /*scheduleData = FXCollections.observableArrayList();
-        scheduleData.addAll(scheduleRepository.findScheduleForUser(currUser.getUsername()));
-        System.out.println(scheduleData);
-        scheduleList.setItems(scheduleData);*/
-
-        if(selectedTimeOff.getSchedule() != null){
-            //get the schedule for this time off request and select it in drop-down
-            scheduleList.getSelectionModel().select(selectedTimeOff.getSchedule());
-        }
-
-        beginDate.setDisable(true);
-        endDate.setDisable(true);
-        scheduleList.setDisable(false);
-    }
-
-    @FXML
-    private void enableDatePicker(){
-        //removed since this ends up clearing the schedule list permanently
-        /*scheduleData.clear();
-        scheduleList.setItems(scheduleData);*/
-
-        beginDate.setDisable(false);
-        endDate.setDisable(false);
-        scheduleList.setDisable(true);
     }
 
 }
