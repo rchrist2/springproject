@@ -369,7 +369,7 @@ public class CrudEmployeeController implements Initializable {
                                                     }
                                                 } else {
                                                     ErrorMessages.showWarningMessage("Password Mismatch", "Passwords do not equal",
-                                                            "Passwords do not match, please re-check your password");
+                                                            "Password doesn't match the current password");
                                                 }
                                             }
                                         } else {
