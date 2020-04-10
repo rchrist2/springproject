@@ -31,6 +31,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -927,8 +928,24 @@ public class EmployeeSchedulerController implements Initializable {
                             for(Tbltimeoff t : theFutureTimeOffs){
                                 storeReasonDesc = t.getReasonDesc();
                                 wasApproved = t.isApproved();
-                                timeOffService.deleteTimeOff(t.getTimeOffId());
+
+                                //each time a matching schedule is found, increase the begin time by one day
+                                //since a new request will be made for the previous days in the next for loop
+                                t.setBeginTimeOffDate(addDays(t.getBeginTimeOffDate(), 1));
+                                t.setSchedule(null);
+
+                                //if the begin time is after the end time, all the days off have been caught successfully
+                                //and the time off request without a schedule can be deleted
+                                if(t.getBeginTimeOffDate().after(t.getEndTimeOffDate())){
+                                    timeOffService.deleteTimeOff(t.getTimeOffId());
+                                }
+                                else{
+                                    timeOffRepository.save(t);
+                                }
+
                             }
+
+                            //create a new time off request for each day off of the added schedule
                             for(Tblschedule s : hasFutureTimeOff){
                                 Tbltimeoff t = new Tbltimeoff();
                                 t.setBeginTimeOffDate(s.getScheduleDate());
@@ -940,6 +957,7 @@ public class EmployeeSchedulerController implements Initializable {
                                 t.setEmployee(s.getEmployee());
 
                                 timeOffRepository.save(t);
+
                             }
 
                             ErrorMessages.showInformationMessage("Time Off Requests Found",
@@ -968,6 +986,13 @@ public class EmployeeSchedulerController implements Initializable {
 
             }
         }
+    }
+
+    public static Date addDays(Date date, int days) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.add(Calendar.DATE, days);
+        return new Date(c.getTimeInMillis());
     }
 
     private void handleEdittingEmployee(){
