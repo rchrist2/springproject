@@ -357,40 +357,52 @@ public class WeeklyScheduleController implements Initializable {
 
         Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         DirectoryChooser directoryChooser = new DirectoryChooser();
+
         File selectedDirectory = directoryChooser.showDialog(stage);
 
-        Path path = Paths.get(selectedDirectory.getAbsolutePath());
+        if(selectedDirectory == null){
+            nextMonthButton.setVisible(true);
+            previousMonthButton.setVisible(true);
 
-        WritableImage writableImage = calendarAnchorPane.snapshot(new SnapshotParameters(), null);
+            printCalendarButton.setVisible(true);
+        } else {
+            Path path = Paths.get(selectedDirectory.getAbsolutePath());
 
-        File file = new File(path + "/ReportSchedule.png");
+            WritableImage writableImage = calendarAnchorPane.snapshot(new SnapshotParameters(), null);
 
-        if(file.isFile()){
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Save File");
-            alert.setHeaderText("File already exists");
-            alert.setContentText("Would you like to overwrite existing file?");
+            File file = new File(path + "/ReportSchedule " + sunday + " - " + saturday + ".png");
 
-            Optional<ButtonType> choice = alert.showAndWait();
-            if (choice.get() == ButtonType.OK) {
+            if (file.isFile()) {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Save File");
+                alert.setHeaderText("File already exists");
+                alert.setContentText("Would you like to overwrite existing file?");
+
+                Optional<ButtonType> choice = alert.showAndWait();
+                if (choice.get() == ButtonType.OK) {
+                    TextInputDialog textInputDialog = new TextInputDialog();
+                    textInputDialog.setHeaderText("Provide a name for file: ");
+                    textInputDialog.showAndWait();
+
+                    file = new File(path + "/" + textInputDialog.getEditor().getText() + ".png");
+
+                    ImageIO.write(SwingFXUtils.fromFXImage(writableImage, null), "png", file);
+                    System.out.println("snapshot saved: " + file.getAbsolutePath());
+
+                    nextMonthButton.setVisible(true);
+                    previousMonthButton.setVisible(true);
+
+                    printCalendarButton.setVisible(true);
+                }
+            } else {
                 ImageIO.write(SwingFXUtils.fromFXImage(writableImage, null), "png", file);
                 System.out.println("snapshot saved: " + file.getAbsolutePath());
+
+                nextMonthButton.setVisible(true);
+                previousMonthButton.setVisible(true);
+
+                printCalendarButton.setVisible(true);
             }
-        } else {
-            ImageIO.write(SwingFXUtils.fromFXImage(writableImage, null), "png", file);
-            System.out.println("snapshot saved: " + file.getAbsolutePath());
         }
-
-        nextMonthButton.setVisible(true);
-        previousMonthButton.setVisible(true);
-
-        printCalendarButton.setVisible(true);
-
-        /*try {
-            ImageIO.write(SwingFXUtils.fromFXImage(writableImage, null), "png", file);
-            System.out.println("snapshot saved: " + file.getAbsolutePath());
-        } catch (IOException ex) {
-            System.out.println("Something went wrong");
-        }*/
     }
 }
