@@ -153,7 +153,6 @@ public class CrudEmployeeController implements Initializable {
                                         "\t- Contains digit [0-9]\n" +
                                         "\t- Contains special characters (!, $, #, etc)");
 
-
     }
 
     public void setLabel(String string, String buttonLabel){
@@ -172,6 +171,10 @@ public class CrudEmployeeController implements Initializable {
         emailText.setText(emp1.getEmail());
         addressText.setText(emp1.getAddress());
         phoneText.setText(emp1.getPhone());
+
+        listOfRoleObs.setAll(roleRepository.findNotOwnerAndManagerRoles());
+        roleComboBox.setItems(listOfRoleObs);
+
         roleComboBox.getSelectionModel().select(emp1.getRole());
         usernameText.setText(emp1.getUser().getUsername());
     }
@@ -283,108 +286,104 @@ public class CrudEmployeeController implements Initializable {
                         Stage stage = (Stage) saveButton.getScene().getWindow();
 
                         try {
-                                if(!(Boolean)error1[0].getKey()){
-                                    //if the selected employee is an owner and they are trying to change role to something other than owner
-                                    //and there is one owner in the system (themselves) <- may not need this check
-                                    if(updateEmp.getRole().getRoleName().equals("Owner")
-                                            && !(roleComboBox.getSelectionModel().getSelectedItem().getRoleName().equals("Owner"))
-                                            && employeeRepository.numberOfOwner() == 1){
+                            if (!(Boolean) error1[0].getKey()) {
+                                //if the selected employee is an owner and they are trying to change role to something other than owner
+                                //and there is one owner in the system (themselves) <- may not need this check
+                                if (updateEmp.getRole().getRoleName().equals("Owner")
+                                        && !(roleComboBox.getSelectionModel().getSelectedItem().getRoleName().equals("Owner"))
+                                        && employeeRepository.numberOfOwner() == 1) {
+                                    ErrorMessages.showErrorMessage("Error",
+                                            "Cannot demote Owner",
+                                            "There must be exactly one Owner in the system.");
+                                } else {
+                                    //changed this to use setters since previous method doesn't update user
+                                    updateEmp.setName(nameText.getText());
+                                    updateEmp.setEmail(emailText.getText());
+                                    updateEmp.setAddress(addressText.getText());
+                                    updateEmp.setPhone(phoneText.getText());
+                                    updateEmp.setRole(roleComboBox.getSelectionModel().getSelectedItem());
+                                    updateEmp.getUser().setUsername(usernameText.getText());
+
+                                    //if you are changing the role to owner and there is already an owner existing
+                                    //and the existing owner is the selected employee
+                                    if (updateEmp.getRole().getRoleName().equals("Owner")
+                                            && employeeRepository.numberOfOwner() > 0
+                                            && !(employeeRepository.numberOfOwnerGetEmp().getId() == updateEmp.getId())) {
                                         ErrorMessages.showErrorMessage("Error",
-                                                "Cannot demote Owner",
-                                                "There must be exactly one Owner in the system.");
-                                    }
-                                    else{
-                                        //changed this to use setters since previous method doesn't update user
-                                        updateEmp.setName(nameText.getText());
-                                        updateEmp.setEmail(emailText.getText());
-                                        updateEmp.setAddress(addressText.getText());
-                                        updateEmp.setPhone(phoneText.getText());
-                                        updateEmp.setRole(roleComboBox.getSelectionModel().getSelectedItem());
-                                        updateEmp.getUser().setUsername(usernameText.getText());
+                                                "Owner already exists",
+                                                "There is already an employee with the Owner role. Only one Owner can exist at a time.");
 
-                                        //if you are changing the role to owner and there is already an owner existing
-                                        //and the existing owner is the selected employee
-                                        if(updateEmp.getRole().getRoleName().equals("Owner")
-                                                && employeeRepository.numberOfOwner() > 0
-                                                && !(employeeRepository.numberOfOwnerGetEmp().getId() == updateEmp.getId())){
-                                            ErrorMessages.showErrorMessage("Error",
-                                                    "Owner already exists",
-                                                    "There is already an employee with the Owner role. Only one Owner can exist at a time.");
+                                        //reset the employee's role back to their original role
+                                        TblRoles originalRole = employeeRepository.findEmployeeById(updateEmp.getId()).getRole();
+                                        updateEmp.setRole(originalRole);
+                                    } else {
+                                        employeeRepository.save(updateEmp);
 
-                                            //reset the employee's role back to their original role
-                                            TblRoles originalRole = employeeRepository.findEmployeeById(updateEmp.getId()).getRole();
-                                            updateEmp.setRole(originalRole);
-                                        }
-                                        else{
-                                            employeeRepository.save(updateEmp);
+                                        if (changePasswordChecked) {
+                                            //Changing passwords as a owner
+                                            if (currUser.getEmployee().getRole().getRoleName().equals("Owner")) {
+                                                System.out.println("Save as Owner");
+                                                Pair[] ownerChangePassword = Validation.validatePasswordRequirement(passwordText.getText());
 
-                                            if (changePasswordChecked) {
-                                                //Changing passwords as a owner
-                                                if(currUser.getEmployee().getRole().getRoleName().equals("Owner")){
-                                                    System.out.println("Save as Owner");
-                                                    Pair[] ownerChangePassword = Validation.validatePasswordRequirement(passwordText.getText());
+                                                if (!(Boolean) ownerChangePassword[0].getKey()) {
+                                                    System.out.println("Onwer Saved password");
+                                                    Tblusers changePasswordUser = userRepository.findUsername(usernameText.getText());
 
-                                                    if(!(Boolean)ownerChangePassword[0].getKey()) {
-                                                        System.out.println("Onwer Saved password");
-                                                        Tblusers changePasswordUser = userRepository.findUsername(usernameText.getText());
+                                                    byte[] salt = SecurePassword.getSalt();
+                                                    String newPassword = SecurePassword.getSecurePassword(passwordText.getText(), salt);
 
+                                                    changePasswordUser.setHashedPassword(newPassword);
+                                                    changePasswordUser.setSaltPassword(salt);
+
+                                                    userRepository.save(changePasswordUser);
+                                                    System.out.println("New Password: " + passwordText.getText());
+                                                    ErrorMessages.showInformationMessage("Success", "Password Changed Successfully",
+                                                            "The password was changed successfully");
+                                                    stage.close();
+                                                } else {
+                                                    ErrorMessages.showErrorMessage("Change Password Error", "Password validation error", ownerChangePassword[0].getValue().toString());
+                                                }
+                                            } else {
+                                                if (SecurePassword.checkPassword(userRepository.findHashFromUserId(updateEmp.getId()),
+                                                        passwordText.getText(), userRepository.findSaltFromUserId(updateEmp.getId()))) {
+
+                                                    Tblusers changePasswordUser = userRepository.findUsername(usernameText.getText());
+
+                                                    Pair[] changePasswordError = Validation.validatePasswordRequirement(newPasswordText.getText());
+
+                                                    if (!(Boolean) changePasswordError[0].getKey()) {
                                                         byte[] salt = SecurePassword.getSalt();
-                                                        String newPassword = SecurePassword.getSecurePassword(passwordText.getText(), salt);
+                                                        String newPassword = SecurePassword.getSecurePassword(newPasswordText.getText(), salt);
 
                                                         changePasswordUser.setHashedPassword(newPassword);
                                                         changePasswordUser.setSaltPassword(salt);
 
                                                         userRepository.save(changePasswordUser);
-                                                        System.out.println("New Password: " + passwordText.getText());
+
                                                         ErrorMessages.showInformationMessage("Success", "Password Changed Successfully",
                                                                 "The password was changed successfully");
                                                         stage.close();
-                                                    }else {
-                                                        ErrorMessages.showErrorMessage("Change Password Error", "Password validation error", ownerChangePassword[0].getValue().toString());
+                                                        System.out.println("Saved");
+                                                    } else {
+                                                        ErrorMessages.showErrorMessage("Change Password Error", "Password validation error", changePasswordError[0].getValue().toString());
                                                     }
                                                 } else {
-                                                    if (SecurePassword.checkPassword(userRepository.findHashFromUserId(updateEmp.getId()),
-                                                            passwordText.getText(), userRepository.findSaltFromUserId(updateEmp.getId()))) {
-
-                                                        Tblusers changePasswordUser = userRepository.findUsername(usernameText.getText());
-
-                                                        Pair[] changePasswordError = Validation.validatePasswordRequirement(newPasswordText.getText());
-
-                                                        if (!(Boolean) changePasswordError[0].getKey()) {
-                                                            byte[] salt = SecurePassword.getSalt();
-                                                            String newPassword = SecurePassword.getSecurePassword(newPasswordText.getText(), salt);
-
-                                                            changePasswordUser.setHashedPassword(newPassword);
-                                                            changePasswordUser.setSaltPassword(salt);
-
-                                                            userRepository.save(changePasswordUser);
-
-                                                            ErrorMessages.showInformationMessage("Success", "Password Changed Successfully",
-                                                                    "The password was changed successfully");
-                                                            stage.close();
-                                                            System.out.println("Saved");
-                                                        } else {
-                                                            ErrorMessages.showErrorMessage("Change Password Error", "Password validation error", changePasswordError[0].getValue().toString());
-                                                        }
-                                                    } else {
-                                                        ErrorMessages.showWarningMessage("Password Mismatch", "Passwords do not equal",
-                                                                "Passwords do not match, please re-check your password");
-                                                    }
+                                                    ErrorMessages.showWarningMessage("Password Mismatch", "Passwords do not equal",
+                                                            "Passwords do not match, please re-check your password");
                                                 }
-                                            } else {
-                                                ErrorMessages.showInformationMessage("Success", "Employee Changed Successfully",
-                                                        "The employee was saved");
-
-                                                stage.close();
                                             }
+                                        } else {
+                                            ErrorMessages.showInformationMessage("Success", "Employee Changed Successfully",
+                                                    "The employee was saved");
+
+                                            stage.close();
                                         }
                                     }
-
-                                }
-                                else{
-                                    ErrorMessages.showErrorMessage("Error", "Invalid values provided", error1[0].getValue().toString());
                                 }
 
+                            } else {
+                                ErrorMessages.showErrorMessage("Error", "Invalid values provided", error1[0].getValue().toString());
+                            }
 
                         } catch (Exception e) {
                             e.printStackTrace();
