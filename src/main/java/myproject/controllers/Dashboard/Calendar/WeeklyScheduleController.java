@@ -32,7 +32,6 @@ import org.springframework.stereotype.Component;
 import javax.imageio.ImageIO;
 
 import static java.time.temporal.TemporalAdjusters.*;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -322,7 +321,7 @@ public class WeeklyScheduleController implements Initializable {
             monthYearLabel.setText(sunday.getMonth().toString() + ", " + saturday.getYear());
         }
 
-        weekLabel.setText(sunday.format(dateFormat) + ", " + saturday.format(dateFormat));
+        weekLabel.setText(sunday.format(dateFormat) + " - " + saturday.format(dateFormat));
         refreshDayLabels();
         populateWeeklyCalendar();
     }
@@ -341,7 +340,7 @@ public class WeeklyScheduleController implements Initializable {
             monthYearLabel.setText(sunday.getMonth().toString() + ", " + saturday.getYear());
         }
 
-        weekLabel.setText(sunday.format(dateFormat) + ", " + saturday.format(dateFormat));
+        weekLabel.setText(sunday.format(dateFormat) + " - " + saturday.format(dateFormat));
         refreshDayLabels();
         populateWeeklyCalendar();
     }
