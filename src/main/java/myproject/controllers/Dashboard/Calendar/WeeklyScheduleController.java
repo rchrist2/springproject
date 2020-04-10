@@ -1,15 +1,25 @@
 package myproject.controllers.Dashboard.Calendar;
 
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.print.*;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
+import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.transform.Scale;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Stage;
 import myproject.controllers.WelcomeLoginSignup.LoginController;
 import myproject.models.Tblemployee;
 import myproject.models.Tblschedule;
@@ -19,9 +29,16 @@ import myproject.repositories.ScheduleRepository;
 import myproject.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import javax.imageio.ImageIO;
+
 import static java.time.temporal.TemporalAdjusters.*;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
@@ -29,13 +46,15 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Component
 public class WeeklyScheduleController implements Initializable {
+
+    @FXML
+    private AnchorPane calendarAnchorPane;
 
     @FXML
     private GridPane weeklyCalendarGridPane,
@@ -58,7 +77,11 @@ public class WeeklyScheduleController implements Initializable {
 
     @FXML
     private Button nextMonthButton,
-                previousMonthButton;
+                previousMonthButton,
+                printCalendarButton;
+
+    @FXML
+    private WritableImage writeImage;
 
     @FXML
     private VBox titleVBox;
@@ -105,7 +128,6 @@ public class WeeklyScheduleController implements Initializable {
 
         refreshDayLabels();
         populateWeeklyCalendar();
-
     }
 
     private void populateWeeklyCalendar(){
@@ -322,5 +344,53 @@ public class WeeklyScheduleController implements Initializable {
         weekLabel.setText(sunday.format(dateFormat) + ", " + saturday.format(dateFormat));
         refreshDayLabels();
         populateWeeklyCalendar();
+    }
+
+    @FXML
+    public void printCalendar(ActionEvent event) throws IOException {
+        System.out.println("Printing....");
+
+        nextMonthButton.setVisible(false);
+        previousMonthButton.setVisible(false);
+
+        printCalendarButton.setVisible(false);
+
+        Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        File selectedDirectory = directoryChooser.showDialog(stage);
+
+        Path path = Paths.get(selectedDirectory.getAbsolutePath());
+
+        WritableImage writableImage = calendarAnchorPane.snapshot(new SnapshotParameters(), null);
+
+        File file = new File(path + "/ReportSchedule.png");
+
+        if(file.isFile()){
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Save File");
+            alert.setHeaderText("File already exists");
+            alert.setContentText("Would you like to overwrite existing file?");
+
+            Optional<ButtonType> choice = alert.showAndWait();
+            if (choice.get() == ButtonType.OK) {
+                ImageIO.write(SwingFXUtils.fromFXImage(writableImage, null), "png", file);
+                System.out.println("snapshot saved: " + file.getAbsolutePath());
+            }
+        } else {
+            ImageIO.write(SwingFXUtils.fromFXImage(writableImage, null), "png", file);
+            System.out.println("snapshot saved: " + file.getAbsolutePath());
+        }
+
+        nextMonthButton.setVisible(true);
+        previousMonthButton.setVisible(true);
+
+        printCalendarButton.setVisible(true);
+
+        /*try {
+            ImageIO.write(SwingFXUtils.fromFXImage(writableImage, null), "png", file);
+            System.out.println("snapshot saved: " + file.getAbsolutePath());
+        } catch (IOException ex) {
+            System.out.println("Something went wrong");
+        }*/
     }
 }
