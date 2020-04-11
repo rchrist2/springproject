@@ -65,7 +65,7 @@
                               <Insets />
                            </opaqueInsets>
                            <children>
-                              <Button fx:id="printCalendarButton" mnemonicParsing="false" onAction="#printCalendar" text="Print Calender" />
+                              <Button fx:id="printCalendarButton" mnemonicParsing="false" onAction="#printCalendar" style="-fx-background-color: #39a7c3;" text="Save Schedule" />
                            </children>
                         </HBox>
                      </children>
