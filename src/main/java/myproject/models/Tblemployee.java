@@ -89,8 +89,10 @@ public class Tblemployee {
     //Returns the list of days the employee works for the tableview
     public String employeeSchedule(Date startOfTheWeek, Date endOfTheWeek){
         List<String> listOfDays = new ArrayList<>();
+        List<Tblschedule> sortDates = sortList(this.schedules);
 
-        for (Tblschedule schedule : this.schedules) {
+
+        for (Tblschedule schedule : sortDates) {
             //Grabs the schedule within the week
             if(schedule.getScheduleDate().compareTo(startOfTheWeek) >= 0 && schedule.getScheduleDate().compareTo(endOfTheWeek) <= 0)
                 //Checks if time off is null OR if employee doesn't have a day off AND time off is not approved
@@ -104,8 +106,9 @@ public class Tblemployee {
 
     public String employeeDates(Date startOfTheWeek, Date endOfTheWeek){
         List<String> listOfDates = new ArrayList<>();
+        List<Tblschedule> sortDates = sortList(this.schedules);
 
-        for (Tblschedule tblschedule : this.schedules){
+        for (Tblschedule tblschedule : sortDates){
             if(tblschedule.getScheduleDate().compareTo(startOfTheWeek) >= 0 && tblschedule.getScheduleDate().compareTo(endOfTheWeek) <= 0)
                 if(tblschedule.getTimeOffs() == null || !(tblschedule.getTimeOffs().isApproved())){
                     listOfDates.add(tblschedule.getScheduleDate().toString());
@@ -117,10 +120,12 @@ public class Tblemployee {
 
     public String employeeStartHours(Date startOfTheWeek, Date endOfTheWeek){
         List<String> listOfHours = new ArrayList<>();
+        List<Tblschedule> sortDates = sortList(this.schedules);
 
         SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
 
-        for (Tblschedule hours : this.schedules) {
+
+        for (Tblschedule hours : sortDates) {
             if(hours.getScheduleDate().compareTo(startOfTheWeek) >= 0 && hours.getScheduleDate().compareTo(endOfTheWeek) <= 0)
                 if(hours.getTimeOffs() == null || !(hours.getTimeOffs().isApproved())){
                     listOfHours.add(timeFormat.format(hours.getScheduleTimeBegin()));
@@ -132,10 +137,11 @@ public class Tblemployee {
 
     public String employeeEndHours(Date startOfTheWeek, Date endOfTheWeek){
         List<String> listOfHours = new ArrayList<>();
+        List<Tblschedule> sortDates = sortList(this.schedules);
 
         SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
 
-        for(Tblschedule hours : this.schedules) {
+        for(Tblschedule hours : sortDates) {
             if(hours.getScheduleDate().compareTo(startOfTheWeek) >= 0 && hours.getScheduleDate().compareTo(endOfTheWeek) <= 0)
                 if(hours.getTimeOffs() == null || !(hours.getTimeOffs().isApproved())){
                     listOfHours.add(timeFormat.format(hours.getScheduleTimeEnd()));
@@ -215,5 +221,18 @@ public class Tblemployee {
     @Override
     public String toString() {
         return name;
+    }
+
+    private List<Tblschedule> sortList(Set<Tblschedule> unsortedList){
+        List<Tblschedule> sortedList = new ArrayList<>(unsortedList);
+
+        Collections.sort(sortedList, new Comparator<Tblschedule>() {
+            @Override
+            public int compare(Tblschedule o1, Tblschedule o2) {
+                return o1.getScheduleDate().compareTo(o2.getScheduleDate());
+            }
+        });
+
+        return sortedList;
     }
 }
