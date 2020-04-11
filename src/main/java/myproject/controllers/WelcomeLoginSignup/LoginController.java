@@ -93,6 +93,7 @@ public class LoginController implements Initializable {
                 Parent parent = fxmlLoader.load();
                 Scene scene = new Scene(parent);
                 Stage currentStage = (Stage)((Node)event.getSource()).getScene().getWindow();
+
                 currentStage.setScene(scene);
                 currentStage.setX((screenBounds.getWidth() - currentStage.getWidth()) / 2);
                 currentStage.setY((screenBounds.getHeight() - currentStage.getHeight()) / 2);

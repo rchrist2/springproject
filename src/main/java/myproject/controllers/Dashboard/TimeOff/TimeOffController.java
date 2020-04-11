@@ -8,6 +8,7 @@ import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -15,6 +16,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import myproject.ErrorMessages;
@@ -114,6 +116,8 @@ public class TimeOffController implements Initializable {
 
     private FilteredList<Tblschedule> filteredScheduleData;
 
+    public Rectangle2D screenBounds;
+    private double xOffset = 0.0, yOffset = 0.0;
     private ObservableList<Tbltimeoff> listOfTimeOffs;
     private FilteredList<Tbltimeoff> filteredListOfTimeOff;
 
@@ -126,6 +130,9 @@ public class TimeOffController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
+        screenBounds = Screen.getPrimary().getVisualBounds();
+
         //get the current user (String) from LoginController
         String currentUser = LoginController.userStore;
         Tblusers currUser = userRepository.findUsername(currentUser);
@@ -278,7 +285,20 @@ public class TimeOffController implements Initializable {
                     crudTimeOffController.setTimeOff(selectedTimeOff);
                     crudTimeOffController.setController(this);
 
-                    stage.setScene(new Scene(parent));
+                    Scene scene = new Scene(parent);
+                    stage.setScene(scene);
+                    stage.setX((screenBounds.getWidth()) / 2.5);
+                    stage.setY((screenBounds.getHeight()) / 4);
+
+                    parent.setOnMousePressed((moveEvent -> {
+                        xOffset = moveEvent.getSceneX();
+                        yOffset = moveEvent.getSceneY();
+                    }));
+
+                    parent.setOnMouseDragged((moveEvent) -> {
+                        stage.setX(moveEvent.getScreenX() - xOffset);
+                        stage.setY(moveEvent.getScreenY() - yOffset);
+                    });
 
                     stage.showAndWait();
                     parent.requestFocus();

@@ -8,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -16,6 +17,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import myproject.ErrorMessages;
@@ -179,6 +181,8 @@ public class EmployeeRoleUserManagementController implements Initializable {
     private FilteredList<TblRoles> filteredListOfRoles;
     private FilteredList<Tblusers> filteredListOfUsers;
 
+    private double xOffset = 0, yOffset = 0;
+    public Rectangle2D screenBounds;
     private LocalDate today = LocalDate.now();
     public LocalDate sunday = today.with(previousOrSame(DayOfWeek.SUNDAY));
     public LocalDate saturday = today.with(nextOrSame(DayOfWeek.SATURDAY));
@@ -239,6 +243,11 @@ public class EmployeeRoleUserManagementController implements Initializable {
         managementTabPane.getSelectionModel().selectedItemProperty().addListener((observableValue, tab, t1) -> {
             titleLabel.setText(t1.getText() + " Management");
         });
+
+        screenBounds = Screen.getPrimary().getVisualBounds();
+
+        System.out.println("Width: " + screenBounds.getWidth());
+        System.out.println("Height: " + screenBounds.getHeight());
 
         Instant end = Instant.now();
         Duration timeElapsed = Duration.between(start, end);
@@ -342,7 +351,21 @@ public class EmployeeRoleUserManagementController implements Initializable {
                     crudEmployeeController.setLabel("Add Employee", "Add");
                     crudEmployeeController.setController(this);
 
-                    stage.setScene(new Scene(parent));
+                    Scene scene = new Scene(parent);
+                    stage.setScene(scene);
+                    stage.setX((screenBounds.getWidth()) / 2.5);
+                    stage.setY((screenBounds.getHeight()) / 4);
+
+                    parent.setOnMousePressed((moveEvent -> {
+                        xOffset = moveEvent.getSceneX();
+                        yOffset = moveEvent.getSceneY();
+                    }));
+
+                    parent.setOnMouseDragged((moveEvent) -> {
+                        stage.setX(moveEvent.getScreenX() - xOffset);
+                        stage.setY(moveEvent.getScreenY() - yOffset);
+                    });
+
                     stage.showAndWait();
                     reloadEmployeeTableView();
                 } catch (IOException e) {
@@ -373,7 +396,20 @@ public class EmployeeRoleUserManagementController implements Initializable {
                         crudEmployeeController.setEmployee(emp);
                         crudEmployeeController.setController(this);
 
-                        stage.setScene(new Scene(parent));
+                        Scene scene = new Scene(parent);
+                        stage.setScene(scene);
+                        stage.setX((screenBounds.getWidth()) / 2.5);
+                        stage.setY((screenBounds.getHeight()) / 4);
+
+                        parent.setOnMousePressed((moveEvent -> {
+                            xOffset = moveEvent.getSceneX();
+                            yOffset = moveEvent.getSceneY();
+                        }));
+
+                        parent.setOnMouseDragged((moveEvent) -> {
+                            stage.setX(moveEvent.getScreenX() - xOffset);
+                            stage.setY(moveEvent.getScreenY() - yOffset);
+                        });
 
                         stage.showAndWait();
                         reloadEmployeeTableView();
@@ -503,7 +539,21 @@ public class EmployeeRoleUserManagementController implements Initializable {
                     crudRoleController.setLabel("Add Role", "Add");
                     crudRoleController.setController(this);
 
-                    stage.setScene(new Scene(parent));
+                    Scene scene = new Scene(parent);
+                    stage.setScene(scene);
+                    stage.setX((screenBounds.getWidth()) / 2.5);
+                    stage.setY((screenBounds.getHeight()) / 4);
+
+                    parent.setOnMousePressed((moveEvent -> {
+                        xOffset = moveEvent.getSceneX();
+                        yOffset = moveEvent.getSceneY();
+                    }));
+
+                    parent.setOnMouseDragged((moveEvent) -> {
+                        stage.setX(moveEvent.getScreenX() - xOffset);
+                        stage.setY(moveEvent.getScreenY() - yOffset);
+                    });
+
                     stage.showAndWait();
                     reloadRoleTableView();
                 } catch (Exception e) {
@@ -525,7 +575,21 @@ public class EmployeeRoleUserManagementController implements Initializable {
                         crudRoleController.setRole(role);
                         crudRoleController.setController(this);
 
-                        stage.setScene(new Scene(parent));
+                        Scene scene = new Scene(parent);
+                        stage.setScene(scene);
+                        stage.setX((screenBounds.getWidth()) / 2.5);
+                        stage.setY((screenBounds.getHeight()) / 4);
+
+                        parent.setOnMousePressed((moveEvent -> {
+                            xOffset = moveEvent.getSceneX();
+                            yOffset = moveEvent.getSceneY();
+                        }));
+
+                        parent.setOnMouseDragged((moveEvent) -> {
+                            stage.setX(moveEvent.getScreenX() - xOffset);
+                            stage.setY(moveEvent.getScreenY() - yOffset);
+                        });
+
                         stage.showAndWait();
                         reloadRoleTableView();
                     } catch (Exception e) {
