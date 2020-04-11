@@ -130,7 +130,7 @@ public class CrudEmployeeController implements Initializable {
         listOfDaysObs.setAll(dayRepository.findAllDays());
 
         //if they are not an owner, they are a manager and cannot create owner accounts
-        listOfRoleObs.setAll(roleRepository.findNotOwnerRoles());
+        listOfRoleObs.setAll(roleRepository.findNotOwnerAndManagerRoles());
 
         roleComboBox.setItems(listOfRoleObs);
 

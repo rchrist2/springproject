@@ -264,7 +264,7 @@ public class TimeOffController implements Initializable {
 
         //can only edit an approved request if you are manager or owner
         if((userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Owner")
-                && selectedTimeOff.isApproved()  || !(selectedTimeOff.isApproved()))
+                && selectedTimeOff.isApproved() || !(selectedTimeOff.isApproved()))
                 || ((userRepository.findUsername(currentUser).getEmployee().getRole().getRoleName().equals("Manager")
                 && (selectedTimeOff.isApproved()  || !(selectedTimeOff.isApproved()))
                 && !(selectedTimeOff.getEmployee().getRole().getRoleName().equals("Manager"))))) {
