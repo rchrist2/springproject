@@ -14,6 +14,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -231,6 +232,9 @@ public class EmployeeRoleUserManagementController implements Initializable {
 
         //reload tables when a new tab is clicked
         addActionListenersForTabPane();
+
+        //Allows the columns to wrap text
+        setWrappableColumns();
 
         managementTabPane.getSelectionModel().selectedItemProperty().addListener((observableValue, tab, t1) -> {
             titleLabel.setText(t1.getText() + " Management");
@@ -582,6 +586,68 @@ public class EmployeeRoleUserManagementController implements Initializable {
                 editRoleButton.setDisable(true);
                 deleteRoleButton.setDisable(true);
             }
+        });
+    }
+
+    private void setWrappableColumns(){
+        nameColumn.setCellFactory(tc -> {
+            TableCell<Tblemployee, String> cell = new TableCell<>();
+            Text text = new Text();
+            cell.setGraphic(text);
+            cell.setPrefHeight(Control.USE_COMPUTED_SIZE);
+            text.wrappingWidthProperty().bind(nameColumn.widthProperty());
+            text.textProperty().bind(cell.itemProperty());
+            return cell ;
+        });
+
+        emailColumn.setCellFactory(tc -> {
+            TableCell<Tblemployee, String> cell = new TableCell<>();
+            Text text = new Text();
+            cell.setGraphic(text);
+            cell.setPrefHeight(Control.USE_COMPUTED_SIZE);
+            text.wrappingWidthProperty().bind(emailColumn.widthProperty());
+            text.textProperty().bind(cell.itemProperty());
+            return cell ;
+        });
+
+        addressColumn.setCellFactory(tc -> {
+            TableCell<Tblemployee, String> cell = new TableCell<>();
+            Text text = new Text();
+            cell.setGraphic(text);
+            cell.setPrefHeight(Control.USE_COMPUTED_SIZE);
+            text.wrappingWidthProperty().bind(addressColumn.widthProperty());
+            text.textProperty().bind(cell.itemProperty());
+            return cell ;
+        });
+
+        phoneColumn.setCellFactory(tc -> {
+            TableCell<Tblemployee, String> cell = new TableCell<>();
+            Text text = new Text();
+            cell.setGraphic(text);
+            cell.setPrefHeight(Control.USE_COMPUTED_SIZE);
+            text.wrappingWidthProperty().bind(phoneColumn.widthProperty());
+            text.textProperty().bind(cell.itemProperty());
+            return cell ;
+        });
+
+        employeeRoleColumn.setCellFactory(tc -> {
+            TableCell<Tblemployee, String> cell = new TableCell<>();
+            Text text = new Text();
+            cell.setGraphic(text);
+            cell.setPrefHeight(Control.USE_COMPUTED_SIZE);
+            text.wrappingWidthProperty().bind(employeeRoleColumn.widthProperty());
+            text.textProperty().bind(cell.itemProperty());
+            return cell ;
+        });
+
+        descriptionColumn.setCellFactory(tc -> {
+            TableCell<Tblemployee, String> cell = new TableCell<>();
+            Text text = new Text();
+            cell.setGraphic(text);
+            cell.setPrefHeight(Control.USE_COMPUTED_SIZE);
+            text.wrappingWidthProperty().bind(descriptionColumn.widthProperty());
+            text.textProperty().bind(cell.itemProperty());
+            return cell ;
         });
     }
 
