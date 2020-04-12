@@ -105,3 +105,6 @@ https://stackoverflow.com/questions/30180180/how-would-i-completely-restart-a-fo
 https://stackoverflow.com/questions/48238855/how-to-disable-past-dates-in-datepicker-of-javafx-scene-builder
 https://stackoverflow.com/questions/41001703/how-to-customize-datepicker-in-javafx-so-that-i-can-restrict-the-user-to-not-be
 https://stackoverflow.com/questions/22732013/javafx-tablecolumn-text-wrapping
+https://stackoverflow.com/questions/18860489/joining-multiple-queries-of-sum-into-one-result
+https://stackoverflow.com/questions/15802010/how-to-add-days-to-java-sql-date
+https://code.makery.ch/library/javafx-tutorial/part4/
